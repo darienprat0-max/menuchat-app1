@@ -1,0 +1,1316 @@
+<!doctype html>
+<html lang="es" class="h-full">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MenuChat — Sistema de Control de Pedidos & Cocina</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Library PapaParse para CSV / Google Sheets -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          darkbg: '#101317',
+          darkpanel: '#191f25',
+          darkpanel2: '#222a32',
+          darkline: '#343e48',
+          brandorange: '#ff922b',
+          brandorange2: '#ffad55',
+          brandgreen: '#43c982',
+          brandblue: '#63a9ff',
+          brandred: '#ff6b6b'
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+:root{
+  --bg:#101317;
+  --panel:#191f25;
+  --panel2:#222a32;
+  --line:#343e48;
+  --text:#f4f6f8;
+  --muted:#a4adb7;
+  --orange:#ff922b;
+  --orange2:#ffad55;
+  --green:#43c982;
+  --blue:#63a9ff;
+  --red:#ff6b6b
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Inter,system-ui,Segoe UI,Arial,sans-serif;height:100vh;overflow:hidden}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:11px;padding:10px 14px;font-weight:700;background:var(--orange);color:#211407;transition:all 0.15s ease;display:flex;align-items:center;justify-content:flex-start;text-align:left;gap:8px}
+button:hover{filter:brightness(1.08)}
+button.secondary{background:#303943;color:var(--text);border:1px solid var(--line)}
+button.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+button.danger{background:#522b2b;color:#ffdede}
+
+.app{max-width:1600px;margin:auto;height:100vh;display:grid;grid-template-columns:240px 1fr}
+aside{background:#151a1f;border-right:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;gap:20px;height:100vh}
+.brand{padding:4px 10px}
+.brand strong{font-size:25px;letter-spacing:-1px}
+.brand span{color:var(--orange)}
+.brand small{display:block;color:var(--muted);margin-top:3px}
+.nav{display:grid;gap:7px}
+.nav button{background:transparent;color:#c4cbd2;text-align:left;border:1px solid transparent;display:flex;align-items:center;justify-content:flex-start;gap:10px;padding:12px 14px;width:100%}
+.nav button.active{background:#3a2819;border-color:#70451f;color:#ffbd7b}
+.side-note{margin-top:auto;color:var(--muted);font-size:12px;padding:10px;background:#101317;border-radius:10px;border:1px solid var(--line)}
+
+main{padding:24px;min-width:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}
+.top h1{font-size:24px;margin:0;font-weight:800}
+.top p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.pill{font-size:11px;border:1px solid #77502e;color:#ffbf80;background:#382719;padding:5px 10px;border-radius:30px;font-weight:800;letter-spacing:.5px}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}
+.stat,.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px}
+.stat small,.muted{color:var(--muted)}
+.stat b{display:block;font-size:27px;margin-top:5px}
+
+.orders{display:grid;gap:12px}
+.order{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px;transition:all 0.2s}
+.order:hover{border-color:#4a5664}
+.order-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.order h3{font-size:16px;margin:0;font-weight:700}
+.order p{color:var(--muted);font-size:13px;margin:5px 0}
+.tag{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800;background:#303943;color:#dbe2e8}
+.tag.new{background:#463018;color:#ffc27f;border:1px solid #7a5026}
+.tag.prep{background:#493819;color:#ffdc83;border:1px solid #7c5d21}
+.tag.done{background:#26384a;color:#a7d0ff;border:1px solid #335170}
+
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actions button{font-size:12px;padding:8px 12px;width:auto}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.filters button{padding:7px 12px;font-size:12px;background:#222a32;color:#c4cbd2;border:1px solid var(--line);width:auto}
+.filters button.selected{background:var(--orange);color:#211407;border-color:var(--orange)}
+
+input,select,textarea{width:100%;background:#11161b;border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--orange)}
+label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:600}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.product{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;justify-content:space-between}
+.product h3{margin:0 0 4px;font-size:16px}
+.price{font-weight:800;color:var(--orange2);font-size:19px;margin:8px 0}
+.product small{color:var(--muted);display:block}
+.product .actions{justify-content:space-between;align-items:center;margin-top:14px}
+.switch{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;cursor:pointer;user-select:none}
+.switch input{width:auto;accent-color:var(--orange);cursor:pointer}
+
+.table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.table-tile{background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:16px;text-align:left;color:var(--text);min-height:120px;cursor:pointer;transition:all 0.15s;display:block}
+.table-tile:hover{border-color:#4a5664}
+.table-tile.selected{border-color:var(--orange);background:#3a2819}
+.table-tile b{font-size:20px;display:block}
+.table-tile small{display:block;margin-top:7px;color:var(--muted)}
+.table-tile.free small{color:var(--green)}
+.table-tile.preparing small{color:#ffc56e}
+.table-tile.ready small{color:var(--blue)}
+
+.dayrow{display:grid;grid-template-columns:100px 1fr 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.dayrow input[type=checkbox]{width:auto;accent-color:var(--orange)}
+
+.toast{position:fixed;bottom:20px;right:20px;background:#1e3328;border:1px solid #366d4f;color:#d0ffe4;padding:12px 18px;border-radius:10px;box-shadow:0 8px 30px #0008;display:none;z-index:100;font-weight:600;font-size:13px}
+.modal{position:fixed;inset:0;background:#000b;backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:18px;z-index:90}
+.modal.show{display:flex}
+.modalbox{width:min(520px,100%);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;max-height:90vh;overflow-y:auto}
+.modalbox h2{margin-top:0;font-size:19px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.empty{color:var(--muted);padding:30px;text-align:center;background:var(--panel2);border-radius:14px;border:1px dashed var(--line)}
+.hidden{display:none!important}
+
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  aside{height:auto;padding:12px;border-right:0;border-bottom:1px solid var(--line);gap:10px}
+  .brand{display:flex;align-items:center;justify-content:space-between}
+  .nav{display:flex;overflow-x:auto;padding-bottom:4px}
+  .nav button{white-space:nowrap;padding:9px 12px;width:auto}
+  .side-note{display:none}
+  main{padding:16px;height:auto;overflow-y:visible}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Navegación Lateral -->
+  <aside>
+    <div class="brand">
+      <div>
+        <strong>Menu<span>Chat</span></strong>
+        <small id="subBrandTitle">Panel Mazatlán</small>
+      </div>
+      <span class="pill">V 1.0</span>
+    </div>
+
+    <nav class="nav">
+      <button class="active" data-page="tab-pending" id="navPendingBtn">
+        🕒 <span>Pendientes</span>
+        <span id="navCountPending" class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-amber-950 text-amber-400 font-bold border border-amber-800">0</span>
+      </button>
+      <button data-page="tab-prep" id="navPrepBtn">
+        🔥 <span>En Preparación</span>
+        <span id="navCountPrep" class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-amber-950 text-amber-400 font-bold border border-amber-800">0</span>
+      </button>
+      <button data-page="tab-done" id="navDoneBtn">
+        🏁 <span>Finalizadas</span>
+        <span id="navCountDone" class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-blue-950 text-blue-300 font-bold border border-blue-800">0</span>
+      </button>
+      <button data-page="tables">
+        🪑 <span>Mesas</span>
+      </button>
+      <button data-page="menu">
+        📋 <span>Mi menú</span>
+      </button>
+      <button data-page="settings">
+        ⚙️ <span>Ajustes</span>
+      </button>
+    </nav>
+
+    <div class="side-note">
+      <p class="font-bold text-slate-200 mb-1">📡 Sincronización</p>
+      <span>Multi-pantalla en vivo con LocalStorage.</span>
+    </div>
+  </aside>
+
+  <!-- Área Principal -->
+  <main>
+    <div class="top">
+      <div>
+        <h1 id="pageTitle">🕒 Pedidos Pendientes</h1>
+        <p id="pageSubtitle">Confirma y procesa los pedidos entrantes.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="simularPedidoWhatsApp()">
+          🔔 Simular Pedido (Sonido)
+        </button>
+        <span class="pill">🟢 EN VIVO</span>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 1: PENDIENTES -->
+    <section id="page-tab-pending">
+      <div class="stats">
+        <div class="stat"><small>Pendientes por Confirmar</small><b id="statNew" class="text-amber-400">0</b></div>
+        <div class="stat"><small>En Cocina</small><b id="statPrep" class="text-orange-400">0</b></div>
+        <div class="stat"><small>Finalizados</small><b id="statDone" class="text-blue-400">0</b></div>
+        <div class="stat"><small>Venta Acumulada (Finalizadas)</small><b id="statSales" class="text-emerald-400">$0.00</b></div>
+      </div>
+
+      <div class="panel">
+        <div class="section-head flex justify-between items-center mb-3">
+          <h2>Bandeja de Pedidos Pendientes</h2>
+          <button onclick="openOrderModal()">➕ Nuevo pedido manual</button>
+        </div>
+        <div class="filters" id="pendingFilters">
+          <button class="selected" data-filter="Todos">🌐 Todos</button>
+          <button data-filter="WhatsApp">💬 WhatsApp</button>
+          <button data-filter="Mostrador">🏬 Mostrador</button>
+        </div>
+        <div class="orders" id="pendingOrdersList"></div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: EN PREPARACIÓN (COCINA) -->
+    <section id="page-tab-prep" class="hidden">
+      <div class="stats">
+        <div class="stat"><small>Comandas en Cocina</small><b id="statPrepKitchenCount" class="text-orange-400">0</b></div>
+        <div class="stat"><small>A Domicilio</small><b id="statDeliveryCount" class="text-blue-400">0</b></div>
+        <div class="stat"><small>Para Recoger</small><b id="statPickupCount" class="text-purple-400">0</b></div>
+        <div class="stat"><small>En Mesa</small><b id="statDineinCount" class="text-emerald-400">0</b></div>
+      </div>
+
+      <div class="panel">
+        <div class="section-head flex justify-between items-center mb-3">
+          <h2>🔥 Pantalla de Cocina / KDS</h2>
+          <span class="text-xs text-slate-400">Comandas activas</span>
+        </div>
+        <div class="filters" id="prepFilters">
+          <button class="selected" data-filter="Todos">🌐 Todos</button>
+          <button data-filter="Comer en restaurante">🪑 Mesas</button>
+          <button data-filter="Recoger">🛍️ Recoger</button>
+          <button data-filter="Domicilio">🛵 Domicilio</button>
+        </div>
+        <div class="orders" id="prepOrdersList"></div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: FINALIZADAS -->
+    <section id="page-tab-done" class="hidden">
+      <div class="panel">
+        <div class="section-head flex justify-between items-center mb-3">
+          <h2>🏁 Historial de Pedidos Concluidos</h2>
+          <div class="w-64">
+            <input type="text" id="doneSearchInput" oninput="renderOrders()" placeholder="🔍 Buscar cliente o comanda..." class="text-xs py-1.5">
+          </div>
+        </div>
+        <div class="filters" id="doneFilters">
+          <button class="selected" data-filter="Todos">🌐 Todos</button>
+          <button data-filter="WhatsApp">💬 WhatsApp</button>
+          <button data-filter="Mostrador">🏬 Mostrador</button>
+        </div>
+        <div class="orders" id="doneOrdersList"></div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: MESAS -->
+    <section id="page-tables" class="hidden">
+      <div class="stats">
+        <div class="stat"><small>Mesas libres</small><b id="freeCount">0</b></div>
+        <div class="stat"><small>En servicio</small><b id="busyCount">0</b></div>
+        <div class="stat"><small>En preparación</small><b id="tablePrepCount">0</b></div>
+        <div class="stat"><small>Listas</small><b id="tableReadyCount">0</b></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="panel md:col-span-2">
+          <div class="section-head flex justify-between items-center mb-3">
+            <h2>Plano de mesas de Salón</h2>
+            <div class="flex gap-2">
+              <button class="secondary text-xs py-1 px-2" onclick="toggleTablesModule()"><span id="tableModuleToggleText">🔌 Apagar Módulo</span></button>
+              <button class="secondary text-xs py-1 px-2" onclick="addTable()">➕ Agregar mesa</button>
+            </div>
+          </div>
+          <div class="table-grid" id="tableGrid"></div>
+        </div>
+        <div class="panel">
+          <h2 id="tableDetailTitle">Selecciona una mesa</h2>
+          <div id="tableDetail" class="muted text-sm mt-3">Elige una mesa para ver sus detalles o asignar un pedido.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 5: MENÚ -->
+    <section id="page-menu" class="hidden">
+      <div class="panel mb-4">
+        <div class="section-head flex justify-between items-center mb-3">
+          <div>
+            <h2>Productos y Platillos del Menú</h2>
+            <p class="muted">Edita precios, cambia nombres o apaga platillos agotados.</p>
+          </div>
+          <div class="flex gap-2">
+            <label class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer flex items-center gap-1.5">
+              📁 Importar CSV / Sheets
+              <input type="file" id="csv-input" accept=".csv" class="hidden" onchange="importarCSV(event)">
+            </label>
+            <button onclick="openProductModal()">➕ Agregar producto</button>
+          </div>
+        </div>
+        <div class="filters" id="menuFilters">
+          <button class="selected" data-cat="Todos">🌐 Todos</button>
+          <button data-cat="Hamburguesas">🍔 Hamburguesas</button>
+          <button data-cat="Pizzas">🍕 Pizzas</button>
+          <button data-cat="Mariscos">🦐 Mariscos</button>
+          <button data-cat="Complementos">🍟 Complementos</button>
+          <button data-cat="Bebidas">🥤 Bebidas</button>
+        </div>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <!-- PESTAÑA 6: AJUSTES -->
+    <section id="page-settings" class="hidden">
+      <div class="panel">
+        <div class="section-head flex justify-between items-center mb-3">
+          <h2>Información del restaurante</h2>
+          <button onclick="saveSettings()">💾 Guardar cambios</button>
+        </div>
+        <div class="formgrid">
+          <div><label>Nombre comercial</label><input id="restName" value="Mariscos & Tacos Demo Mazatlán"></div>
+          <div><label>Teléfono de Atención</label><input id="restPhone" value="669 912 3456"></div>
+          <div><label>Dirección física</label><input id="restAddress" value="Av. Del Mar #500, Mazatlán, Sin."></div>
+          <div><label>Descripción corta</label><input id="restDesc" value="Los mejores mariscos y tacos al carbón del puerto"></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:14px">
+        <h2>Preferencias de la Operación y Modalidades</h2>
+        <div class="formgrid">
+          <div><label><input type="checkbox" id="settingDelivery" checked style="width:auto"> Aceptar pedidos a domicilio</label></div>
+          <div><label><input type="checkbox" id="settingPickup" checked style="width:auto"> Aceptar pasar a recoger en local</label></div>
+          <div><label><input type="checkbox" id="settingDinein" checked style="width:auto"> Aceptar atención en mesa (Salón)</label></div>
+          <div><label>Pedido mínimo ($)</label><input type="number" id="minimum" value="50" min="0"></div>
+          <div><label>Costo tarifa de envío ($)</label><input type="number" id="shipping" value="30" min="0"></div>
+          <div><label><input type="checkbox" id="manual" checked style="width:auto"> Confirmación manual por caja</label></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:14px">
+        <h2>Horarios de Atención</h2>
+        <div id="hours"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- TOAST NOTIFICACIÓN -->
+<div id="toast" class="toast"></div>
+
+<!-- MODAL: VER COMANDA / ORDEN COMPLETA -->
+<div class="modal" id="orderDetailModal">
+  <div class="modalbox">
+    <div class="flex justify-between items-start border-b border-slate-700 pb-3 mb-4">
+      <div>
+        <h2 id="modalDetailId" class="text-xl font-extrabold text-amber-400 mb-0">#PED-000</h2>
+        <p id="modalDetailCustomer" class="text-xs text-slate-400 font-semibold mt-1"></p>
+      </div>
+      <span id="modalDetailStatusTag" class="tag"></span>
+    </div>
+
+    <div class="space-y-3 text-xs">
+      <div class="grid grid-cols-2 gap-2 p-3 bg-slate-900 rounded-xl border border-slate-700">
+        <div>
+          <span class="text-slate-400 block text-[10px] uppercase font-bold">Modalidad</span>
+          <b id="modalDetailType" class="text-slate-200 text-sm"></b>
+        </div>
+        <div>
+          <span class="text-slate-400 block text-[10px] uppercase font-bold">Canal de Entrada</span>
+          <b id="modalDetailChannel" class="text-amber-400 text-sm"></b>
+        </div>
+      </div>
+
+      <div id="modalDetailAddressBox" class="p-3 bg-slate-900 rounded-xl border border-slate-700">
+        <span class="text-amber-400 block text-[10px] uppercase font-bold mb-1">📍 Ubicación / Dirección</span>
+        <p id="modalDetailAddress" class="text-slate-200 font-medium text-xs"></p>
+      </div>
+
+      <div>
+        <span class="text-slate-400 block text-[10px] uppercase font-bold mb-1">🌮 Detalle Completo de la Comanda</span>
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono text-sm leading-relaxed text-amber-200">
+          <div id="modalDetailItems" class="whitespace-pre-wrap"></div>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-700 pt-3 flex justify-between items-center">
+        <div>
+          <span class="text-slate-400 block text-[10px] uppercase font-bold">Método y Estado de Pago</span>
+          <b id="modalDetailPayment" class="text-slate-200 text-xs"></b>
+        </div>
+        <div class="text-right">
+          <span class="text-slate-400 block text-[10px] uppercase font-bold">Total de la Orden</span>
+          <b id="modalDetailTotal" class="text-amber-400 text-lg font-mono"></b>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions border-t border-slate-700 pt-3">
+      <button class="secondary" onclick="closeModal('orderDetailModal')">Cerrar</button>
+      <div id="modalDetailActions" class="flex gap-2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NUEVO / EDITAR PEDIDO -->
+<div class="modal" id="orderModal">
+  <div class="modalbox">
+    <h2 id="orderModalTitle">Crear pedido manual</h2>
+    <input type="hidden" id="editOrderId">
+    <div class="formgrid">
+      <div>
+        <label>Nombre del Cliente</label>
+        <input id="newCustomer" value="Cliente de prueba">
+      </div>
+      <div>
+        <label>Número de Celular / WhatsApp</label>
+        <input id="newPhone" placeholder="669 123 4567">
+      </div>
+    </div>
+    <div class="formgrid">
+      <div>
+        <label>Canal</label>
+        <select id="newChannel"><option>WhatsApp</option><option>Mostrador</option></select>
+      </div>
+      <div>
+        <label>Modalidad</label>
+        <select id="newType" onchange="onModalTypeChange()">
+          <option value="Domicilio">Domicilio</option>
+          <option value="Recoger">Recoger</option>
+          <option value="Comer en restaurante">Comer en restaurante</option>
+        </select>
+      </div>
+    </div>
+    <div id="addressFieldContainer">
+      <label>Dirección de entrega (Domicilio)</label>
+      <input id="newAddress" placeholder="Ej. Av. Insurgentes #502, Col. Centro">
+    </div>
+    <div id="tableAssignContainer" class="hidden">
+      <label>Asignar Mesa Disponible</label>
+      <select id="newTableSelect"></select>
+    </div>
+    <label>Productos / Comanda explícita</label>
+    <textarea id="newItems" rows="2">1x Taco Gobernador ($48.00)</textarea>
+    <div class="formgrid">
+      <div>
+        <label>Método de Pago</label>
+        <select id="newPayment"><option>Efectivo</option><option>Transferencia</option><option>Terminal</option></select>
+      </div>
+      <div>
+        <label>Total ($ MXN)</label>
+        <input id="newTotal" type="number" value="48" min="0">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal('orderModal')">Cancelar</button>
+      <button onclick="saveOrderForm()">Guardar pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ASIGNAR MESA MANUAL -->
+<div class="modal" id="assignTableModal">
+  <div class="modalbox">
+    <h2>Asignar Mesa Disponible</h2>
+    <input type="hidden" id="assignTableOrderId">
+    <label>Selecciona una mesa libre:</label>
+    <select id="freeTableSelect"></select>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal('assignTableModal')">Cancelar</button>
+      <button onclick="confirmManualTableAssignment()">Asignar Mesa</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: AGREGAR / EDITAR PRODUCTO -->
+<div class="modal" id="productModal">
+  <div class="modalbox">
+    <h2 id="prodModalTitle">Agregar producto al Menú</h2>
+    <input type="hidden" id="editProdId">
+    <label>Nombre del platillo</label>
+    <input id="prodName">
+    <label>Categoría</label>
+    <select id="prodCat">
+      <option>Hamburguesas</option>
+      <option>Pizzas</option>
+      <option>Mariscos</option>
+      <option>Complementos</option>
+      <option>Bebidas</option>
+    </select>
+    <label>Descripción</label>
+    <input id="prodDesc">
+    <label>Precio ($ MXN)</label>
+    <input id="prodPrice" type="number" min="0">
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal('productModal')">Cancelar</button>
+      <button onclick="saveProduct()">Guardar producto</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const STORAGE_KEY = 'menuchat_orders_db_v4';
+const PRODUCTS_KEY = 'menuchat_products_db_v4';
+const TABLES_KEY = 'menuchat_tables_db_v4';
+const SETTINGS_KEY = 'menuchat_settings_v4';
+
+// --- ALERTA SONORA RUIDOSA DE COCINA (WEB AUDIO API) ---
+function playNotificationSound() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioContext();
+    
+    // Generar 3 bips ruidosos y agudos
+    [0, 0.18, 0.36].forEach((delay, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(880 + (idx * 220), ctx.currentTime + delay);
+      
+      gain.gain.setValueAtTime(0.5, ctx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + delay + 0.15);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + 0.15);
+    });
+  } catch (e) {
+    console.log("Audio no habilitado.");
+  }
+}
+
+// DATOS BASE INICIALES
+let defaultOrders = [
+  {id:104,customer:"Mariana López",phone:"6691112233",channel:"WhatsApp",type:"Comer en restaurante",address:"Mesa 2",items:"2x Taco Gobernador ($96), 1x Agua de Cebada 1L ($45)",total:141,status:"Nuevo",payment:"Efectivo",paymentStatus:"Pendiente",time:"12:42",table:"M2"},
+  {id:105,customer:"Carlos Méndez",phone:"6692223344",channel:"WhatsApp",type:"Comer en restaurante",address:"Mesa 3",items:"1x Ceviche de Camarón ($180), 2x Refresco ($70)",total:250,status:"Preparando",payment:"Transferencia",paymentStatus:"Pagado",time:"12:38",table:"M3"},
+  {id:103,customer:"Andrea Ruiz",phone:"6693334455",channel:"WhatsApp",type:"Recoger",address:"Sucursal Centro",items:"1x Pizza Peperoni Mediana ($189)",total:189,status:"Preparando",payment:"Efectivo",paymentStatus:"Pendiente",time:"12:25",table:""},
+  {id:102,customer:"Luis Torres",phone:"6694445566",channel:"WhatsApp",type:"Domicilio",address:"Av. Del Mar #400, Mazatlán",items:"2x Hamburguesa Clásica ($298), 1x Refresco ($35)",total:333,status:"Finalizado",payment:"Transferencia",paymentStatus:"Pagado",time:"12:10",table:""}
+];
+
+let defaultTables = [
+  {id:"M1",status:"Libre",order:"",minutes:0},
+  {id:"M2",status:"Ocupada",order:"#104",minutes:0},
+  {id:"M3",status:"Preparando",order:"#105",minutes:18},
+  {id:"M4",status:"Libre",order:"",minutes:0},
+  {id:"M5",status:"Libre",order:"",minutes:0},
+  {id:"M6",status:"Libre",order:"",minutes:0}
+];
+
+let defaultProducts = [
+  {id:1,name:"Taco Gobernador",cat:"Mariscos",desc:"Camarón con queso flameado",price:48,active:true},
+  {id:2,name:"Ceviche de Camarón",cat:"Mariscos",desc:"Frescura mazatleca 500g",price:180,active:true},
+  {id:3,name:"Hamburguesa clásica",cat:"Hamburguesas",desc:"Carne, queso, lechuga y tomate",price:149,active:true},
+  {id:4,name:"Pizza pepperoni",cat:"Pizzas",desc:"Pizza mediana con queso mozzarella",price:189,active:true},
+  {id:5,name:"Papas a la francesa",cat:"Complementos",desc:"Porción individual crujiente",price:69,active:true},
+  {id:6,name:"Agua de Cebada 1L",cat:"Bebidas",desc:"Receta tradicional del puerto",price:45,active:true}
+];
+
+let defaultSettings = {
+  restName: "Mariscos & Tacos Demo Mazatlán",
+  restPhone: "669 912 3456",
+  restAddress: "Av. Del Mar #500, Mazatlán, Sin.",
+  restDesc: "Los mejores mariscos y tacos al carbón del puerto",
+  delivery: true,
+  pickup: true,
+  dinein: true,
+  minimum: 50,
+  shipping: 30,
+  tablesActive: true
+};
+
+let orders = [], products = [], tables = [], settings = {};
+let pendingFilter="Todos", prepFilter="Todos", doneFilter="Todos", menuFilter="Todos", selectedTable="M1", nextId=106;
+
+// PERSISTENCIA Y SINCRONIZACIÓN
+function loadState() {
+  const o = localStorage.getItem(STORAGE_KEY);
+  orders = o ? JSON.parse(o) : [...defaultOrders];
+
+  const p = localStorage.getItem(PRODUCTS_KEY);
+  products = p ? JSON.parse(p) : [...defaultProducts];
+
+  const t = localStorage.getItem(TABLES_KEY);
+  tables = t ? JSON.parse(t) : [...defaultTables];
+
+  const s = localStorage.getItem(SETTINGS_KEY);
+  settings = s ? JSON.parse(s) : {...defaultSettings};
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+  localStorage.setItem(TABLES_KEY, JSON.stringify(tables));
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+window.addEventListener('storage', (e) => {
+  if ([STORAGE_KEY, PRODUCTS_KEY, TABLES_KEY, SETTINGS_KEY].includes(e.key)) {
+    loadState();
+    renderAll();
+  }
+});
+
+function toast(msg){
+  $("toast").textContent = msg;
+  $("toast").style.display = "block";
+  setTimeout(() => $("toast").style.display = "none", 2600);
+}
+
+// CONTROL DE PESTAÑAS
+function showPage(page){
+  document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
+  $("page-"+page).classList.remove("hidden");
+  document.querySelectorAll(".nav button").forEach(b => b.classList.toggle("active", b.dataset.page===page));
+
+  let names={
+    "tab-pending":["🕒 Pedidos Pendientes","Confirma los pedidos entrantes."],
+    "tab-prep":["🔥 En Preparación (Cocina)","Comandas activas en cocina."],
+    "tab-done":["🏁 Finalizadas","Historial de órdenes concluidas."],
+    "tables":["🪑 Mesas","Disponibilidad de mesas de salón."],
+    "menu":["📋 Mi menú","Administra tus platillos y precios."],
+    "settings":["⚙️ Ajustes","Configura tu restaurante y modalidades."]
+  };
+  if(names[page]){
+    $("pageTitle").textContent = names[page][0];
+    $("pageSubtitle").textContent = names[page][1];
+  }
+  renderAll();
+}
+
+document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click", () => showPage(b.dataset.page)));
+
+// FILTROS
+document.querySelectorAll("#pendingFilters button").forEach(b => b.onclick = () => {
+  pendingFilter = b.dataset.filter;
+  document.querySelectorAll("#pendingFilters button").forEach(x => x.classList.toggle("selected", x===b));
+  renderOrders();
+});
+
+document.querySelectorAll("#prepFilters button").forEach(b => b.onclick = () => {
+  prepFilter = b.dataset.filter;
+  document.querySelectorAll("#prepFilters button").forEach(x => x.classList.toggle("selected", x===b));
+  renderOrders();
+});
+
+document.querySelectorAll("#doneFilters button").forEach(b => b.onclick = () => {
+  doneFilter = b.dataset.filter;
+  document.querySelectorAll("#doneFilters button").forEach(x => x.classList.toggle("selected", x===b));
+  renderOrders();
+});
+
+// RENDERIZADO DE PEDIDOS
+function renderOrders(){
+  // 1. Pendientes
+  let pendingList = orders.filter(o => o.status === "Nuevo" && (pendingFilter === "Todos" || o.channel === pendingFilter));
+  $("pendingOrdersList").innerHTML = pendingList.map(o => `
+    <article class="order">
+      <div class="order-top">
+        <div>
+          <h3>Pedido #${o.id} · ${o.customer}</h3>
+          <p>💬 ${o.channel} · 🕒 ${o.time} · <b>${o.type}</b>${o.table?" · Mesa "+o.table:""}${o.address && o.type==='Domicilio'?' · 📍 '+o.address:''}</p>
+        </div>
+        <span class="tag new">Nuevo</span>
+      </div>
+      <p class="text-amber-200 font-mono my-2">🛒 ${o.items}</p>
+      <div class="flex justify-between items-center mt-2">
+        <b>Total: $${o.total.toFixed(2)} MXN</b>
+        <div class="actions">
+          <button onclick="changeOrder(${o.id},'Preparando')">✅ Aceptar</button>
+          <button class="secondary" onclick="openOrderDetail(${o.id})">👁️ Ver</button>
+          <button class="secondary" onclick="openEditOrderModal(${o.id})">✏️ Editar</button>
+          <button class="secondary" onclick="sendWhatsAppMessage(${o.id})">💬 Mensaje</button>
+          <button class="danger" onclick="cancelOrder(${o.id})">❌ Eliminar</button>
+        </div>
+      </div>
+    </article>
+  `).join("") || '<div class="empty">No hay pedidos pendientes por confirmar.</div>';
+
+  // 2. En Preparación
+  let prepList = orders.filter(o => o.status === "Preparando" && (prepFilter === "Todos" || o.type === prepFilter));
+  $("prepOrdersList").innerHTML = prepList.map(o => `
+    <article class="order" style="border-left: 4px solid var(--orange);">
+      <div class="order-top">
+        <div>
+          <h3>Comanda #${o.id} · ${o.customer}</h3>
+          <p>🕒 ${o.time} · <b>${o.type}</b> ${o.address ? "· 📍 "+o.address : ""}</p>
+        </div>
+        <span class="tag prep">🔥 Preparando</span>
+      </div>
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 my-2 font-mono text-sm text-amber-300">
+        ${o.items.replace(/,/g, '<br>')}
+      </div>
+      <div class="flex justify-between items-center mt-2">
+        <span class="text-xs text-slate-400">Pago: <b>${o.payment} (${o.paymentStatus})</b></span>
+        <div class="actions">
+          <button onclick="changeOrder(${o.id},'Finalizado')">🏁 Finalizar</button>
+          <button class="secondary" onclick="openOrderDetail(${o.id})">👁️ Ver</button>
+          <button class="secondary" onclick="openEditOrderModal(${o.id})">✏️ Editar</button>
+          <button class="secondary" onclick="sendWhatsAppMessage(${o.id})">💬 Mensaje</button>
+          <button class="danger" onclick="cancelOrder(${o.id})">❌ Eliminar</button>
+        </div>
+      </div>
+    </article>
+  `).join("") || '<div class="empty">No hay comandes activas en la cocina.</div>';
+
+  // 3. Finalizadas
+  const searchVal = $("doneSearchInput") ? $("doneSearchInput").value.toLowerCase() : "";
+  let doneList = orders.filter(o => o.status === "Finalizado" && (doneFilter === "Todos" || o.channel === doneFilter) && (!searchVal || o.customer.toLowerCase().includes(searchVal) || o.id.toString().includes(searchVal)));
+  $("doneOrdersList").innerHTML = doneList.map(o => `
+    <article class="order">
+      <div class="order-top">
+        <div>
+          <h3>Pedido #${o.id} · ${o.customer}</h3>
+          <p>💬 ${o.channel} · 🕒 ${o.time} · <b>${o.type}</b>${o.address && o.type==='Domicilio'?' · 📍 '+o.address:''}</p>
+        </div>
+        <span class="tag done">🏁 Concluido</span>
+      </div>
+      <p class="text-slate-300 text-xs my-1">${o.items}</p>
+      <div class="flex justify-between items-center mt-2">
+        <b class="text-emerald-400">$${o.total.toFixed(2)} MXN</b>
+        <div class="actions">
+          <button class="secondary" onclick="openOrderDetail(${o.id})">👁️ Ver</button>
+          <button class="secondary" onclick="openEditOrderModal(${o.id})">✏️ Editar</button>
+          <button class="secondary" onclick="sendWhatsAppMessage(${o.id})">💬 Mensaje</button>
+          <button class="danger" onclick="cancelOrder(${o.id})">❌ Eliminar</button>
+        </div>
+      </div>
+    </article>
+  `).join("") || '<div class="empty">No hay pedidos en el historial de finalizados.</div>';
+
+  // Contadores
+  const newCount = orders.filter(o=>o.status==="Nuevo").length;
+  const prepCount = orders.filter(o=>o.status==="Preparando").length;
+  const doneCount = orders.filter(o=>o.status==="Finalizado").length;
+
+  $("statNew").textContent = newCount;
+  $("statPrep").textContent = prepCount;
+  $("statDone").textContent = doneCount;
+
+  $("navCountPending").textContent = newCount;
+  $("navCountPrep").textContent = prepCount;
+  $("navCountDone").textContent = doneCount;
+
+  $("statPrepKitchenCount").textContent = prepCount;
+  $("statDeliveryCount").textContent = orders.filter(o=>o.status==="Preparando" && o.type==="Domicilio").length;
+  $("statPickupCount").textContent = orders.filter(o=>o.status==="Preparando" && o.type==="Recoger").length;
+  $("statDineinCount").textContent = orders.filter(o=>o.status==="Preparando" && o.type==="Comer en restaurante").length;
+
+  // Venta acumulada solo de los finalizados
+  const totalSalesSum = orders.filter(o => o.status === "Finalizado").reduce((sum, o) => sum + o.total, 0);
+  $("statSales").textContent = `$${totalSalesSum.toFixed(2)}`;
+}
+
+// CAMBIOS DE ESTADO Y ACCIONES
+function changeOrder(id, status){
+  let o = orders.find(x => x.id === id);
+  if(!o) return;
+
+  o.status = status;
+  if(status === "Finalizado") o.paymentStatus = "Pagado";
+
+  if(status === "Preparando" && o.type === "Comer en restaurante" && !o.table){
+    let t = tables.find(x => x.status === "Libre");
+    if(t){
+      o.table = t.id;
+      t.status = "Preparando";
+      t.order = "#" + id;
+      t.minutes = 15;
+    }
+  }
+
+  if(status === "Finalizado" && o.table){
+    let t = tables.find(x => x.id === o.table);
+    if(t){
+      t.status = "Libre";
+      t.order = "";
+      t.minutes = 0;
+    }
+  }
+
+  saveState();
+  renderAll();
+  toast("Pedido #" + id + " actualizado: " + status);
+}
+
+function cancelOrder(id){
+  let o = orders.find(x => x.id === id);
+  if(o && o.table){
+    let t = tables.find(x => x.id === o.table);
+    if(t){ t.status="Libre"; t.order=""; t.minutes=0; }
+  }
+  orders = orders.filter(x => x.id !== id);
+  saveState();
+  renderAll();
+  toast("Pedido #" + id + " eliminado.");
+}
+
+function sendWhatsAppMessage(id){
+  let o = orders.find(x => x.id === id);
+  if(!o) return;
+  let phone = o.phone || "526690000000";
+  let text = `Hola ${o.customer}, tu pedido #${o.id} (${o.items}) por un total de $${o.total.toFixed(2)} MXN se encuentra en estado: ${o.status}. ¡Gracias por preferirnos!`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+// MODAL COMANDA COMPLETA
+function openOrderDetail(id){
+  let o = orders.find(x => x.id === id);
+  if(!o) return;
+
+  $("modalDetailId").textContent = "Comanda #" + o.id;
+  $("modalDetailCustomer").textContent = "Cliente: " + o.customer + " (" + (o.phone || 'Sin tel') + ") · " + o.time;
+  $("modalDetailType").textContent = o.type;
+  $("modalDetailChannel").textContent = o.channel;
+  
+  const addrBox = $("modalDetailAddressBox");
+  if(o.address && o.type === 'Domicilio'){
+    addrBox.classList.remove("hidden");
+    $("modalDetailAddress").textContent = o.address;
+  } else {
+    addrBox.classList.add("hidden");
+  }
+
+  $("modalDetailItems").textContent = o.items.replace(/,/g, '\n');
+  $("modalDetailPayment").textContent = o.payment + " (" + o.paymentStatus + ")";
+  $("modalDetailTotal").textContent = "$" + o.total.toFixed(2) + " MXN";
+
+  const statusTag = $("modalDetailStatusTag");
+  statusTag.textContent = o.status;
+  statusTag.className = "tag " + (o.status === "Nuevo" ? "new" : o.status === "Preparando" ? "prep" : "done");
+
+  const actions = $("modalDetailActions");
+  actions.innerHTML = "";
+  if(o.status === "Nuevo"){
+    actions.innerHTML = `<button onclick="changeOrder(${o.id},'Preparando'); closeModal('orderDetailModal');">✅ Aceptar</button>`;
+  } else if(o.status === "Preparando"){
+    actions.innerHTML = `<button onclick="changeOrder(${o.id},'Finalizado'); closeModal('orderDetailModal');">🏁 Finalizar</button>`;
+  }
+
+  $("orderDetailModal").classList.add("show");
+}
+
+// SIMULAR PEDIDO WHATSAPP CON SONIDO ALTO Y RUIDOSO
+function simularPedidoWhatsApp(){
+  const activeProds = products.filter(p => p.active);
+  if(activeProds.length === 0){
+    toast("No hay productos activos en el menú.");
+    return;
+  }
+
+  const p1 = activeProds[Math.floor(Math.random() * activeProds.length)];
+  const randomId = Math.floor(Math.random() * 900) + 100;
+  const names = ["María Fernanda", "José Luis Osuna", "Ana Sofía", "Alejandro Valenzuela", "Guadalupe Lizárraga"];
+  const customer = names[Math.floor(Math.random() * names.length)];
+  
+  // Respetar configuraciones de ajustes
+  let availableTypes = [];
+  if(settings.delivery) availableTypes.push("Domicilio");
+  if(settings.pickup) availableTypes.push("Recoger");
+  if(settings.dinein) availableTypes.push("Comer en restaurante");
+  
+  if(availableTypes.length === 0){
+    toast("Todas las modalidades de servicio están apagadas en Ajustes.");
+    return;
+  }
+
+  const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+  const payments = ["Efectivo", "Transferencia"];
+  const payment = payments[Math.floor(Math.random() * payments.length)];
+
+  orders.unshift({
+    id: randomId,
+    customer: customer,
+    phone: "6691234567",
+    channel: "WhatsApp",
+    type: type,
+    address: type === "Domicilio" ? "Fracc. Real del Valle #120, Mazatlán" : type === "Comer en restaurante" ? "Salón" : "Sucursal",
+    items: `1x ${p1.name} ($${p1.price}.00)`,
+    total: p1.price,
+    status: "Nuevo",
+    payment: payment,
+    paymentStatus: "Pendiente",
+    time: new Date().toLocaleTimeString("es-MX", {hour:"2-digit", minute:"2-digit"}),
+    table: ""
+  });
+
+  playNotificationSound();
+  saveState();
+  renderAll();
+  toast("🔔 ¡Nuevo pedido de WhatsApp recibido!");
+}
+
+// CREAR / EDITAR PEDIDO MANUAL
+function openOrderModal(){
+  $("editOrderId").value = "";
+  $("orderModalTitle").textContent = "Crear pedido manual";
+  $("newCustomer").value = "Cliente de prueba";
+  $("newPhone").value = "669 123 4567";
+  $("newItems").value = "1x Taco Gobernador ($48.00)";
+  $("newTotal").value = 48;
+  
+  // Validar modalidades en select
+  let typeSelect = $("newType");
+  typeSelect.innerHTML = "";
+  if(settings.delivery) typeSelect.innerHTML += `<option value="Domicilio">Domicilio</option>`;
+  if(settings.pickup) typeSelect.innerHTML += `<option value="Recoger">Recoger</option>`;
+  if(settings.dinein) typeSelect.innerHTML += `<option value="Comer en restaurante">Comer en restaurante</option>`;
+
+  if(typeSelect.options.length === 0){
+    toast("Activa al menos una modalidad en Ajustes.");
+    return;
+  }
+
+  onModalTypeChange();
+  $("orderModal").classList.add("show");
+}
+
+function openEditOrderModal(id){
+  let o = orders.find(x => x.id === id);
+  if(!o) return;
+
+  $("editOrderId").value = o.id;
+  $("orderModalTitle").textContent = "Editar Pedido #" + o.id;
+  $("newCustomer").value = o.customer;
+  $("newPhone").value = o.phone || "";
+  $("newChannel").value = o.channel;
+  
+  let typeSelect = $("newType");
+  typeSelect.innerHTML = `<option value="${o.type}">${o.type}</option>`;
+  typeSelect.value = o.type;
+
+  $("newAddress").value = o.address || "";
+  $("newItems").value = o.items;
+  $("newPayment").value = o.payment;
+  $("newTotal").value = o.total;
+
+  onModalTypeChange();
+  $("orderModal").classList.add("show");
+}
+
+function onModalTypeChange(){
+  let type = $("newType").value;
+  let addrCont = $("addressFieldContainer");
+  let tableCont = $("tableAssignContainer");
+
+  if(type === "Domicilio"){
+    addrCont.classList.remove("hidden");
+    tableCont.classList.add("hidden");
+  } else if(type === "Comer en restaurante" && settings.tablesActive){
+    addrCont.classList.add("hidden");
+    tableCont.classList.remove("hidden");
+    let freeTables = tables.filter(t => t.status === "Libre");
+    let tSelect = $("newTableSelect");
+    tSelect.innerHTML = freeTables.map(t => `<option value="${t.id}">${t.id}</option>`).join("") || '<option value="">Sin mesas libres</option>';
+  } else {
+    addrCont.classList.add("hidden");
+    tableCont.classList.add("hidden");
+  }
+}
+
+function saveOrderForm(){
+  let editId = $("editOrderId").value;
+  let customer = $("newCustomer").value.trim();
+  let phone = $("newPhone").value.trim();
+  let type = $("newType").value;
+  let address = type === "Domicilio" ? $("newAddress").value : (type === "Comer en restaurante" ? "Mesa " + $("newTableSelect").value : "Sucursal");
+  let tableAssign = type === "Comer en restaurante" ? $("newTableSelect").value : "";
+  let items = $("newItems").value.trim();
+  let total = Number($("newTotal").value) || 0;
+
+  if(!customer || !items){
+    toast("Completa el cliente y los productos.");
+    return;
+  }
+
+  if(editId){
+    let o = orders.find(x => x.id == editId);
+    if(o){
+      o.customer = customer;
+      o.phone = phone;
+      o.channel = $("newChannel").value;
+      o.type = type;
+      o.address = address;
+      o.items = items;
+      o.total = total;
+      o.payment = $("newPayment").value;
+      if(tableAssign && settings.tablesActive){
+        o.table = tableAssign;
+        let t = tables.find(x => x.id === tableAssign);
+        if(t){ t.status = "Ocupada"; t.order = "#"+o.id; }
+      }
+    }
+  } else {
+    let newId = nextId++;
+    let assignedTable = "";
+    if(type === "Comer en restaurante" && settings.tablesActive){
+      assignedTable = $("newTableSelect").value;
+      let t = tables.find(x => x.id === assignedTable);
+      if(t){ t.status = "Ocupada"; t.order = "#"+newId; }
+    }
+
+    orders.unshift({
+      id: newId,
+      customer: customer,
+      phone: phone,
+      channel: $("newChannel").value,
+      type: type,
+      address: address,
+      items: items,
+      total: total,
+      status: "Nuevo",
+      payment: $("newPayment").value,
+      paymentStatus: "Pendiente",
+      time: new Date().toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"}),
+      table: assignedTable
+    });
+  }
+
+  closeModal("orderModal");
+  saveState();
+  renderAll();
+  toast("Pedido guardado con éxito.");
+}
+
+function closeModal(id){$(id).classList.remove("show")}
+
+// GESTIÓN DE MESAS
+function renderTables(){
+  if(!settings.tablesActive){
+    $("tableGrid").innerHTML = '<div class="empty md:col-span-3">El módulo de mesas se encuentra apagado en Ajustes.</div>';
+    $("tableDetail").innerHTML = "Módulo de salón desactivado.";
+    return;
+  }
+
+  $("freeCount").textContent = tables.filter(t=>t.status==="Libre").length;
+  $("busyCount").textContent = tables.filter(t=>t.status!=="Libre").length;
+  $("tablePrepCount").textContent = tables.filter(t=>t.status==="Preparando").length;
+  $("tableReadyCount").textContent = tables.filter(t=>t.status==="Lista").length;
+  
+  $("tableGrid").innerHTML = tables.map(t=>`
+    <button class="table-tile ${t.status.toLowerCase()} ${selectedTable===t.id?"selected":""}" onclick="selectTable('${t.id}')">
+      <b>${t.id}</b>
+      <small>${t.status}</small>
+      <small>${t.order||"Disponible"} ${t.minutes? "· "+t.minutes+" min":""}</small>
+    </button>
+  `).join("") || '<div class="empty">No hay mesas configuradas.</div>';
+  renderTableDetail();
+}
+
+function selectTable(id){selectedTable=id;renderTables()}
+
+function renderTableDetail(){
+  let t = tables.find(x=>x.id===selectedTable);
+  if(!t){$("tableDetail").textContent="Selecciona una mesa.";return}
+  $("tableDetailTitle").textContent="Gestión de "+t.id;
+  let html=`<p>Estado: <span class="tag">${t.status}</span></p><p class="muted">Pedido asignado: ${t.order||"Ninguno"}</p>`;
+  if(t.status==="Libre"){
+    html+=`<div class="actions mt-3"><button onclick="openAssignTableModal('${t.id}')">➕ Asignar pedido existente</button></div>`
+  }else if(t.status==="Preparando" || t.status==="Ocupada"){
+    html+=`<div class="actions mt-3"><button onclick="tableReady('${t.id}')">✅ Marcar lista</button><button class="secondary" onclick="releaseTable('${t.id}')">🔓 Liberar</button></div>`
+  }else{
+    html+=`<div class="actions mt-3"><button onclick="releaseTable('${t.id}')">🔓 Liberar mesa</button></div>`
+  }
+  $("tableDetail").innerHTML=html;
+}
+
+function openAssignTableModal(tableId){
+  let pendingOrPrep = orders.filter(o => o.status !== "Finalizado" && (!o.table || o.table === ""));
+  if(pendingOrPrep.length === 0){
+    toast("No hay pedidos activos sin mesa asignada.");
+    return;
+  }
+  // Guardamos temporalmente en el modal
+  $("assignTableOrderId").value = tableId;
+  let select = $("freeTableSelect");
+  select.innerHTML = pendingOrPrep.map(o => `<option value="${o.id}">Pedido #${o.id} - ${o.customer}</option>`).join("");
+  $("assignTableModal").classList.add("show");
+}
+
+function confirmManualTableAssignment(){
+  let tableId = $("assignTableOrderId").value;
+  let orderId = Number($("freeTableSelect").value);
+  let o = orders.find(x => x.id === orderId);
+  let t = tables.find(x => x.id === tableId);
+
+  if(o && t){
+    o.table = t.id;
+    t.status = "Preparando";
+    t.order = "#" + o.id;
+    t.minutes = 15;
+    saveState();
+    renderAll();
+    closeModal("assignTableModal");
+    toast("Mesa " + t.id + " asignada al pedido #" + o.id);
+  }
+}
+
+function tableReady(id){
+  let t = tables.find(x=>x.id===id);
+  if(t){ t.status="Lista"; t.minutes=0; saveState(); renderTables(); toast("Mesa "+id+" lista"); }
+}
+
+function releaseTable(id){
+  let t = tables.find(x=>x.id===id);
+  if(t){
+    t.status="Libre"; t.order=""; t.minutes=0;
+    saveState(); renderTables(); toast("Mesa "+id+" liberada");
+  }
+}
+
+function addTable(){
+  let n = tables.length + 1;
+  tables.push({id:"M"+n, status:"Libre", order:"", minutes:0});
+  selectedTable = "M"+n;
+  saveState();
+  renderTables();
+  toast("Mesa agregada.");
+}
+
+function toggleTablesModule(){
+  settings.tablesActive = !settings.tablesActive;
+  saveState();
+  renderTables();
+  $("tableModuleToggleText").textContent = settings.tablesActive ? "🔌 Apagar Módulo" : "🔌 Encender Módulo";
+  toast(settings.tablesActive ? "Módulo de mesas encendido" : "Módulo de mesas apagado");
+}
+
+// GESTIÓN DE MENÚ
+document.querySelectorAll("#menuFilters button").forEach(b => b.onclick = () => {
+  menuFilter = b.dataset.cat;
+  document.querySelectorAll("#menuFilters button").forEach(x => x.classList.toggle("selected", x===b));
+  renderProducts();
+});
+
+function renderProducts(){
+  let list = products.filter(p => menuFilter === "Todos" || p.cat === menuFilter);
+  $("productGrid").innerHTML = list.map(p => `
+    <article class="product">
+      <div>
+        <h3>${p.name}</h3>
+        <small>${p.cat} · ${p.desc}</small>
+        <p class="price">$${p.price.toFixed(2)} MXN</p>
+      </div>
+      <div class="actions">
+        <label class="switch">
+          <input type="checkbox" ${p.active?"checked":""} onchange="toggleProduct(${p.id},this.checked)">
+          ${p.active?"🟢 Activo":"🔴 Agotado"}
+        </label>
+        <button class="secondary" onclick="openEditProduct(${p.id})">✏️ Editar</button>
+      </div>
+    </article>
+  `).join("") || '<div class="empty">No hay productos en esta categoría.</div>';
+}
+
+function toggleProduct(id, active){
+  let p = products.find(x => x.id === id);
+  if(p) p.active = active;
+  saveState();
+  renderProducts();
+  toast(active ? "Platillo activado" : "Platillo agotado/apagado");
+}
+
+function openProductModal(){
+  $("prodModalTitle").textContent = "Agregar producto al Menú";
+  $("editProdId").value = "";
+  $("prodName").value = "";
+  $("prodDesc").value = "";
+  $("prodPrice").value = "";
+  $("productModal").classList.add("show");
+}
+
+function openEditProduct(id){
+  let p = products.find(x => x.id === id);
+  if(!p) return;
+  $("prodModalTitle").textContent = "Editar Producto";
+  $("editProdId").value = p.id;
+  $("prodName").value = p.name;
+  $("prodCat").value = p.cat;
+  $("prodDesc").value = p.desc;
+  $("prodPrice").value = p.price;
+  $("productModal").classList.add("show");
+}
+
+function saveProduct(){
+  let editId = $("editProdId").value;
+  let name = $("prodName").value.trim();
+  let price = Number($("prodPrice").value);
+
+  if(!name || isNaN(price) || price < 0){
+    toast("Ingresa un nombre y precio válido.");
+    return;
+  }
+
+  if(editId){
+    let p = products.find(x => x.id == editId);
+    if(p){
+      p.name = name;
+      p.cat = $("prodCat").value;
+      p.desc = $("prodDesc").value;
+      p.price = price;
+    }
+  } else {
+    products.push({
+      id: Date.now(),
+      name: name,
+      cat: $("prodCat").value,
+      desc: $("prodDesc").value,
+      price: price,
+      active: true
+    });
+  }
+
+  closeModal("productModal");
+  saveState();
+  renderProducts();
+  toast("Producto guardado con éxito.");
+}
+
+function importarCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      results.data.forEach((row, index) => {
+        if(row.Platillo && row.Precio) {
+          products.push({
+            id: Date.now() + index,
+            cat: row.Categoria || 'General',
+            name: row.Platillo,
+            desc: row.Descripcion || '',
+            price: parseFloat(row.Precio) || 0,
+            active: true
+          });
+        }
+      });
+      saveState();
+      renderProducts();
+      toast("¡Menú cargado desde CSV con éxito!");
+    }
+  });
+}
+
+// HORARIOS Y AJUSTES
+const days = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+function renderHours(){
+  $("hours").innerHTML = days.map((d,i)=>`
+    <div class="dayrow">
+      <b>${d}</b>
+      <input type="time" value="09:00">
+      <input type="time" value="21:00">
+      <label style="margin:0"><input type="checkbox" ${i<6?"checked":""} style="width:auto"> Abierto</label>
+    </div>
+  `).join("");
+}
+
+function saveSettings(){
+  settings.restName = $("restName").value;
+  settings.restPhone = $("restPhone").value;
+  settings.restAddress = $("restAddress").value;
+  settings.restDesc = $("restDesc").value;
+  settings.delivery = $("settingDelivery").checked;
+  settings.pickup = $("settingPickup").checked;
+  settings.dinein = $("settingDinein").checked;
+  settings.minimum = Number($("minimum").value);
+  settings.shipping = Number($("shipping").value);
+
+  saveState();
+  toast("Configuración guardada correctamente.");
+}
+
+function loadSettingsToUI(){
+  $("restName").value = settings.restName;
+  $("restPhone").value = settings.restPhone;
+  $("restAddress").value = settings.restAddress;
+  $("restDesc").value = settings.restDesc;
+  $("settingDelivery").checked = settings.delivery;
+  $("settingPickup").checked = settings.pickup;
+  $("settingDinein").checked = settings.dinein;
+  $("minimum.value") = settings.minimum;
+  $("shipping").value = settings.shipping;
+  $("tableModuleToggleText").textContent = settings.tablesActive ? "🔌 Apagar Módulo" : "🔌 Encender Módulo";
+}
+
+function renderAll(){
+  renderOrders();
+  renderTables();
+  renderProducts();
+}
+
+// INICIALIZADOR
+loadState();
+loadSettingsToUI();
+renderHours();
+renderAll();
+</script>
+
+</body>
+</html>
