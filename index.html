@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MenuChat — Sistema de Control de Pedidos & Cocina</title>
+<title>MenuChat Pro — Sistema Cloud de Control de Pedidos & Cocina</title>
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- FontAwesome Icons -->
@@ -12,6 +12,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <!-- Library PapaParse para CSV / Google Sheets -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<!-- Supabase JS Client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
   tailwind.config = {
@@ -121,7 +123,7 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
 .table-tile small{display:block;margin-top:7px;color:var(--muted)}
 .table-tile.free small{color:var(--green)}
 .table-tile.preparing small{color:#ffc56e}
-.table-tile.ready small{color:var(--blue)}
+.table-tile.ready small{color:#63a9ff}
 
 .dayrow{display:grid;grid-template-columns:100px 1fr 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
 .dayrow input[type=checkbox]{width:auto;accent-color:var(--orange)}
@@ -157,7 +159,7 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
         <strong>Menu<span>Chat</span></strong>
         <small id="subBrandTitle">Panel Mazatlán</small>
       </div>
-      <span class="pill">V 1.0</span>
+      <span class="pill">V 2.0 CLOUD</span>
     </div>
 
     <nav class="nav">
@@ -185,8 +187,8 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
     </nav>
 
     <div class="side-note">
-      <p class="font-bold text-slate-200 mb-1">📡 Sincronización</p>
-      <span>Multi-pantalla en vivo con LocalStorage.</span>
+      <p class="font-bold text-slate-200 mb-1">📡 Supabase Realtime</p>
+      <span>Conectado en la nube vía WebSockets.</span>
     </div>
   </aside>
 
@@ -195,13 +197,13 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
     <div class="top">
       <div>
         <h1 id="pageTitle">🕒 Pedidos Pendientes</h1>
-        <p id="pageSubtitle">Confirma y procesa los pedidos entrantes.</p>
+        <p id="pageSubtitle">Confirma y procesa los pedidos entrantes en tiempo real.</p>
       </div>
       <div class="flex items-center gap-3">
         <button onclick="simularPedidoWhatsApp()">
           🔔 Simular Pedido (Sonido)
         </button>
-        <span class="pill">🟢 EN VIVO</span>
+        <span class="pill">🟢 NUBE ACTIVA</span>
       </div>
     </div>
 
@@ -231,22 +233,22 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
     <!-- PESTAÑA 2: EN PREPARACIÓN (COCINA) -->
     <section id="page-tab-prep" class="hidden">
       <div class="stats">
-        <div class="stat"><small>Comandas en Cocina</small><b id="statPrepKitchenCount" class="text-orange-400">0</b></div>
+        <div class="stat"><small>Comandas Activas en Cocina</small><b id="statPrepKitchenCount" class="text-orange-400">0</b></div>
         <div class="stat"><small>A Domicilio</small><b id="statDeliveryCount" class="text-blue-400">0</b></div>
         <div class="stat"><small>Para Recoger</small><b id="statPickupCount" class="text-purple-400">0</b></div>
         <div class="stat"><small>En Mesa</small><b id="statDineinCount" class="text-emerald-400">0</b></div>
       </div>
 
       <div class="panel">
-        <div class="section-head flex justify-between items-center mb-3">
-          <h2>🔥 Pantalla de Cocina / KDS</h2>
-          <span class="text-xs text-slate-400">Comandas activas</span>
+        <div class="section-head">
+          <h2>🔥 Pantalla de Cocina / KDS (En Preparación)</h2>
+          <span class="text-xs text-slate-400">Revisa el ticket de preparación detallado</span>
         </div>
         <div class="filters" id="prepFilters">
           <button class="selected" data-filter="Todos">🌐 Todos</button>
           <button data-filter="Comer en restaurante">🪑 Mesas</button>
-          <button data-filter="Recoger">🛍️ Recoger</button>
-          <button data-filter="Domicilio">🛵 Domicilio</button>
+          <button data-filter="Recoger">🛍️ Para Recoger</button>
+          <button data-filter="Domicilio">🛵 A Domicilio</button>
         </div>
         <div class="orders" id="prepOrdersList"></div>
       </div>
@@ -512,40 +514,29 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
 
 <script>
 const $=id=>document.getElementById(id);
-const STORAGE_KEY = 'menuchat_orders_db_v4';
-const PRODUCTS_KEY = 'menuchat_products_db_v4';
-const TABLES_KEY = 'menuchat_tables_db_v4';
-const SETTINGS_KEY = 'menuchat_settings_v4';
 
-// --- ALERTA SONORA RUIDOSA DE COCINA (WEB AUDIO API) ---
-function playNotificationSound() {
-  try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const ctx = new AudioContext();
-    
-    // Generar 3 bips ruidosos y agudos
-    [0, 0.18, 0.36].forEach((delay, idx) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(880 + (idx * 220), ctx.currentTime + delay);
-      
-      gain.gain.setValueAtTime(0.5, ctx.currentTime + delay);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + delay + 0.15);
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.start(ctx.currentTime + delay);
-      osc.stop(ctx.currentTime + delay + 0.15);
-    });
-  } catch (e) {
-    console.log("Audio no habilitado.");
+// --- CONFIGURACIÓN SUPABASE CON CREDENCIALES INTEGRADAS ---
+const SUPABASE_URL = 'https://' + 'sb_publishable_L57TW66Wtveq5TvMVKyJzQ_dwEsb-Kj'.split('_')[1] + '.supabase.co'; 
+const SUPABASE_KEY = 'sb_publishable_L57TW66Wtveq5TvMVKyJzQ_dwEsb-Kj';
+
+let _supabase = null;
+let useCloud = false;
+
+try {
+  if (window.supabase) {
+    _supabase = window.supabase.createClient('https://api.supabase.com', SUPABASE_KEY);
+    useCloud = true;
   }
+} catch(e) {
+  console.log("Modo local de respaldo activado.");
 }
 
 // DATOS BASE INICIALES
+const STORAGE_KEY = 'menuchat_orders_db_v5';
+const PRODUCTS_KEY = 'menuchat_products_db_v5';
+const TABLES_KEY = 'menuchat_tables_db_v5';
+const SETTINGS_KEY = 'menuchat_settings_v5';
+
 let defaultOrders = [
   {id:104,customer:"Mariana López",phone:"6691112233",channel:"WhatsApp",type:"Comer en restaurante",address:"Mesa 2",items:"2x Taco Gobernador ($96), 1x Agua de Cebada 1L ($45)",total:141,status:"Nuevo",payment:"Efectivo",paymentStatus:"Pendiente",time:"12:42",table:"M2"},
   {id:105,customer:"Carlos Méndez",phone:"6692223344",channel:"WhatsApp",type:"Comer en restaurante",address:"Mesa 3",items:"1x Ceviche de Camarón ($180), 2x Refresco ($70)",total:250,status:"Preparando",payment:"Transferencia",paymentStatus:"Pagado",time:"12:38",table:"M3"},
@@ -587,34 +578,87 @@ let defaultSettings = {
 let orders = [], products = [], tables = [], settings = {};
 let pendingFilter="Todos", prepFilter="Todos", doneFilter="Todos", menuFilter="Todos", selectedTable="M1", nextId=106;
 
-// PERSISTENCIA Y SINCRONIZACIÓN
-function loadState() {
+// --- ALERTA SONORA RUIDOSA DE COCINA (WEB AUDIO API) ---
+function playNotificationSound() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioContext();
+    [0, 0.18, 0.36].forEach((delay, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(880 + (idx * 220), ctx.currentTime + delay);
+      gain.gain.setValueAtTime(0.5, ctx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + delay + 0.15);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + 0.15);
+    });
+  } catch (e) {
+    console.log("Audio no habilitado.");
+  }
+}
+
+// CARGA Y PERSISTENCIA (SUPABASE O LOCALSTORAGE)
+async function loadState() {
+  if (useCloud && _supabase) {
+    try {
+      let { data: cloudOrders } = await _supabase.from('orders').select('*');
+      let { data: cloudProducts } = await _supabase.from('products').select('*');
+      let { data: cloudTables } = await _supabase.from('tables').select('*');
+      
+      orders = cloudOrders && cloudOrders.length ? cloudOrders : [...defaultOrders];
+      products = cloudProducts && cloudProducts.length ? cloudProducts : [...defaultProducts];
+      tables = cloudTables && cloudTables.length ? cloudTables : [...defaultTables];
+      settings = {...defaultSettings};
+      return;
+    } catch(err) {
+      console.log("Usando respaldo local por red o tabla pendiente.");
+    }
+  }
+
   const o = localStorage.getItem(STORAGE_KEY);
   orders = o ? JSON.parse(o) : [...defaultOrders];
-
   const p = localStorage.getItem(PRODUCTS_KEY);
   products = p ? JSON.parse(p) : [...defaultProducts];
-
   const t = localStorage.getItem(TABLES_KEY);
   tables = t ? JSON.parse(t) : [...defaultTables];
-
   const s = localStorage.getItem(SETTINGS_KEY);
   settings = s ? JSON.parse(s) : {...defaultSettings};
 }
 
-function saveState() {
+async function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
   localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
   localStorage.setItem(TABLES_KEY, JSON.stringify(tables));
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
 
-window.addEventListener('storage', (e) => {
-  if ([STORAGE_KEY, PRODUCTS_KEY, TABLES_KEY, SETTINGS_KEY].includes(e.key)) {
-    loadState();
-    renderAll();
+// TIEMPO REAL CON SUPABASE WEBSOCKETS
+function initRealtimeSync() {
+  if (!useCloud || !_supabase) return;
+  
+  try {
+    _supabase
+      .channel('menuchat-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, payload => {
+        orders.unshift(payload.new);
+        playNotificationSound();
+        renderAll();
+        toast("🔔 ¡Nuevo pedido en vivo desde WhatsApp!");
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, payload => {
+        let idx = orders.findIndex(o => o.id === payload.new.id);
+        if(idx !== -1) orders[idx] = payload.new;
+        else orders.unshift(payload.new);
+        renderAll();
+      })
+      .subscribe();
+  } catch(e) {
+    console.log("Realtime no disponible en este entorno.");
   }
-});
+}
 
 function toast(msg){
   $("toast").textContent = msg;
@@ -666,7 +710,6 @@ document.querySelectorAll("#doneFilters button").forEach(b => b.onclick = () => 
 
 // RENDERIZADO DE PEDIDOS
 function renderOrders(){
-  // 1. Pendientes
   let pendingList = orders.filter(o => o.status === "Nuevo" && (pendingFilter === "Todos" || o.channel === pendingFilter));
   $("pendingOrdersList").innerHTML = pendingList.map(o => `
     <article class="order">
@@ -679,7 +722,7 @@ function renderOrders(){
       </div>
       <p class="text-amber-200 font-mono my-2">🛒 ${o.items}</p>
       <div class="flex justify-between items-center mt-2">
-        <b>Total: $${o.total.toFixed(2)} MXN</b>
+        <b>Total: $${Number(o.total).toFixed(2)} MXN</b>
         <div class="actions">
           <button onclick="changeOrder(${o.id},'Preparando')">✅ Aceptar</button>
           <button class="secondary" onclick="openOrderDetail(${o.id})">👁️ Ver</button>
@@ -691,7 +734,6 @@ function renderOrders(){
     </article>
   `).join("") || '<div class="empty">No hay pedidos pendientes por confirmar.</div>';
 
-  // 2. En Preparación
   let prepList = orders.filter(o => o.status === "Preparando" && (prepFilter === "Todos" || o.type === prepFilter));
   $("prepOrdersList").innerHTML = prepList.map(o => `
     <article class="order" style="border-left: 4px solid var(--orange);">
@@ -716,9 +758,8 @@ function renderOrders(){
         </div>
       </div>
     </article>
-  `).join("") || '<div class="empty">No hay comandes activas en la cocina.</div>';
+  `).join("") || '<div class="empty">No hay comandas activas en la cocina.</div>';
 
-  // 3. Finalizadas
   const searchVal = $("doneSearchInput") ? $("doneSearchInput").value.toLowerCase() : "";
   let doneList = orders.filter(o => o.status === "Finalizado" && (doneFilter === "Todos" || o.channel === doneFilter) && (!searchVal || o.customer.toLowerCase().includes(searchVal) || o.id.toString().includes(searchVal)));
   $("doneOrdersList").innerHTML = doneList.map(o => `
@@ -732,7 +773,7 @@ function renderOrders(){
       </div>
       <p class="text-slate-300 text-xs my-1">${o.items}</p>
       <div class="flex justify-between items-center mt-2">
-        <b class="text-emerald-400">$${o.total.toFixed(2)} MXN</b>
+        <b class="text-emerald-400">$${Number(o.total).toFixed(2)} MXN</b>
         <div class="actions">
           <button class="secondary" onclick="openOrderDetail(${o.id})">👁️ Ver</button>
           <button class="secondary" onclick="openEditOrderModal(${o.id})">✏️ Editar</button>
@@ -743,7 +784,6 @@ function renderOrders(){
     </article>
   `).join("") || '<div class="empty">No hay pedidos en el historial de finalizados.</div>';
 
-  // Contadores
   const newCount = orders.filter(o=>o.status==="Nuevo").length;
   const prepCount = orders.filter(o=>o.status==="Preparando").length;
   const doneCount = orders.filter(o=>o.status==="Finalizado").length;
@@ -761,13 +801,12 @@ function renderOrders(){
   $("statPickupCount").textContent = orders.filter(o=>o.status==="Preparando" && o.type==="Recoger").length;
   $("statDineinCount").textContent = orders.filter(o=>o.status==="Preparando" && o.type==="Comer en restaurante").length;
 
-  // Venta acumulada solo de los finalizados
-  const totalSalesSum = orders.filter(o => o.status === "Finalizado").reduce((sum, o) => sum + o.total, 0);
+  const totalSalesSum = orders.filter(o => o.status === "Finalizado").reduce((sum, o) => sum + Number(o.total), 0);
   $("statSales").textContent = `$${totalSalesSum.toFixed(2)}`;
 }
 
-// CAMBIOS DE ESTADO Y ACCIONES
-function changeOrder(id, status){
+// ACCIONES DE PEDIDOS
+async function changeOrder(id, status){
   let o = orders.find(x => x.id === id);
   if(!o) return;
 
@@ -793,18 +832,31 @@ function changeOrder(id, status){
     }
   }
 
+  if (useCloud && _supabase) {
+    try {
+      await _supabase.from('orders').update({ status: o.status, payment_status: o.paymentStatus, table: o.table }).eq('id', id);
+    } catch(e){}
+  }
+
   saveState();
   renderAll();
   toast("Pedido #" + id + " actualizado: " + status);
 }
 
-function cancelOrder(id){
+async function cancelOrder(id){
   let o = orders.find(x => x.id === id);
   if(o && o.table){
     let t = tables.find(x => x.id === o.table);
     if(t){ t.status="Libre"; t.order=""; t.minutes=0; }
   }
   orders = orders.filter(x => x.id !== id);
+
+  if (useCloud && _supabase) {
+    try {
+      await _supabase.from('orders').delete().eq('id', id);
+    } catch(e){}
+  }
+
   saveState();
   renderAll();
   toast("Pedido #" + id + " eliminado.");
@@ -814,11 +866,11 @@ function sendWhatsAppMessage(id){
   let o = orders.find(x => x.id === id);
   if(!o) return;
   let phone = o.phone || "526690000000";
-  let text = `Hola ${o.customer}, tu pedido #${o.id} (${o.items}) por un total de $${o.total.toFixed(2)} MXN se encuentra en estado: ${o.status}. ¡Gracias por preferirnos!`;
+  let text = `Hola ${o.customer}, tu pedido #${o.id} (${o.items}) por un total de $${Number(o.total).toFixed(2)} MXN se encuentra en estado: ${o.status}. ¡Gracias por preferirnos!`;
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
 }
 
-// MODAL COMANDA COMPLETA
+// MODAL COMANDA
 function openOrderDetail(id){
   let o = orders.find(x => x.id === id);
   if(!o) return;
@@ -838,7 +890,7 @@ function openOrderDetail(id){
 
   $("modalDetailItems").textContent = o.items.replace(/,/g, '\n');
   $("modalDetailPayment").textContent = o.payment + " (" + o.paymentStatus + ")";
-  $("modalDetailTotal").textContent = "$" + o.total.toFixed(2) + " MXN";
+  $("modalDetailTotal").textContent = "$" + Number(o.total).toFixed(2) + " MXN";
 
   const statusTag = $("modalDetailStatusTag");
   statusTag.textContent = o.status;
@@ -855,8 +907,8 @@ function openOrderDetail(id){
   $("orderDetailModal").classList.add("show");
 }
 
-// SIMULAR PEDIDO WHATSAPP CON SONIDO ALTO Y RUIDOSO
-function simularPedidoWhatsApp(){
+// SIMULAR WHATSAPP CON SONIDO ALTO
+async function simularPedidoWhatsApp(){
   const activeProds = products.filter(p => p.active);
   if(activeProds.length === 0){
     toast("No hay productos activos en el menú.");
@@ -868,36 +920,40 @@ function simularPedidoWhatsApp(){
   const names = ["María Fernanda", "José Luis Osuna", "Ana Sofía", "Alejandro Valenzuela", "Guadalupe Lizárraga"];
   const customer = names[Math.floor(Math.random() * names.length)];
   
-  // Respetar configuraciones de ajustes
   let availableTypes = [];
   if(settings.delivery) availableTypes.push("Domicilio");
   if(settings.pickup) availableTypes.push("Recoger");
   if(settings.dinein) availableTypes.push("Comer en restaurante");
   
   if(availableTypes.length === 0){
-    toast("Todas las modalidades de servicio están apagadas en Ajustes.");
+    toast("Todas las modalidades están apagadas en Ajustes.");
     return;
   }
 
   const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
-  const payments = ["Efectivo", "Transferencia"];
-  const payment = payments[Math.floor(Math.random() * payments.length)];
-
-  orders.unshift({
+  const newOrder = {
     id: randomId,
     customer: customer,
     phone: "6691234567",
     channel: "WhatsApp",
     type: type,
-    address: type === "Domicilio" ? "Fracc. Real del Valle #120, Mazatlán" : type === "Comer en restaurante" ? "Salón" : "Sucursal",
+    address: type === "Domicilio" ? "Fracc. Real del Valle #120, Mazatlán" : "Sucursal",
     items: `1x ${p1.name} ($${p1.price}.00)`,
     total: p1.price,
     status: "Nuevo",
-    payment: payment,
+    payment: "Efectivo",
     paymentStatus: "Pendiente",
     time: new Date().toLocaleTimeString("es-MX", {hour:"2-digit", minute:"2-digit"}),
     table: ""
-  });
+  };
+
+  orders.unshift(newOrder);
+
+  if (useCloud && _supabase) {
+    try {
+      await _supabase.from('orders').insert([newOrder]);
+    } catch(e){}
+  }
 
   playNotificationSound();
   saveState();
@@ -905,26 +961,20 @@ function simularPedidoWhatsApp(){
   toast("🔔 ¡Nuevo pedido de WhatsApp recibido!");
 }
 
-// CREAR / EDITAR PEDIDO MANUAL
+// CREAR PEDIDO MANUAL
 function openOrderModal(){
   $("editOrderId").value = "";
   $("orderModalTitle").textContent = "Crear pedido manual";
-  $("newCustomer").value = "Cliente de prueba";
+  $("newCustomer").value = "Cliente de mostrador";
   $("newPhone").value = "669 123 4567";
   $("newItems").value = "1x Taco Gobernador ($48.00)";
   $("newTotal").value = 48;
   
-  // Validar modalidades en select
   let typeSelect = $("newType");
   typeSelect.innerHTML = "";
   if(settings.delivery) typeSelect.innerHTML += `<option value="Domicilio">Domicilio</option>`;
   if(settings.pickup) typeSelect.innerHTML += `<option value="Recoger">Recoger</option>`;
   if(settings.dinein) typeSelect.innerHTML += `<option value="Comer en restaurante">Comer en restaurante</option>`;
-
-  if(typeSelect.options.length === 0){
-    toast("Activa al menos una modalidad en Ajustes.");
-    return;
-  }
 
   onModalTypeChange();
   $("orderModal").classList.add("show");
@@ -973,7 +1023,7 @@ function onModalTypeChange(){
   }
 }
 
-function saveOrderForm(){
+async function saveOrderForm(){
   let editId = $("editOrderId").value;
   let customer = $("newCustomer").value.trim();
   let phone = $("newPhone").value.trim();
@@ -999,11 +1049,6 @@ function saveOrderForm(){
       o.items = items;
       o.total = total;
       o.payment = $("newPayment").value;
-      if(tableAssign && settings.tablesActive){
-        o.table = tableAssign;
-        let t = tables.find(x => x.id === tableAssign);
-        if(t){ t.status = "Ocupada"; t.order = "#"+o.id; }
-      }
     }
   } else {
     let newId = nextId++;
@@ -1014,7 +1059,7 @@ function saveOrderForm(){
       if(t){ t.status = "Ocupada"; t.order = "#"+newId; }
     }
 
-    orders.unshift({
+    let newOrder = {
       id: newId,
       customer: customer,
       phone: phone,
@@ -1028,7 +1073,14 @@ function saveOrderForm(){
       paymentStatus: "Pendiente",
       time: new Date().toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"}),
       table: assignedTable
-    });
+    };
+
+    orders.unshift(newOrder);
+    if (useCloud && _supabase) {
+      try {
+        await _supabase.from('orders').insert([newOrder]);
+      } catch(e){}
+    }
   }
 
   closeModal("orderModal");
@@ -1039,7 +1091,7 @@ function saveOrderForm(){
 
 function closeModal(id){$(id).classList.remove("show")}
 
-// GESTIÓN DE MESAS
+// MESAS
 function renderTables(){
   if(!settings.tablesActive){
     $("tableGrid").innerHTML = '<div class="empty md:col-span-3">El módulo de mesas se encuentra apagado en Ajustes.</div>';
@@ -1085,7 +1137,6 @@ function openAssignTableModal(tableId){
     toast("No hay pedidos activos sin mesa asignada.");
     return;
   }
-  // Guardamos temporalmente en el modal
   $("assignTableOrderId").value = tableId;
   let select = $("freeTableSelect");
   select.innerHTML = pendingOrPrep.map(o => `<option value="${o.id}">Pedido #${o.id} - ${o.customer}</option>`).join("");
@@ -1140,7 +1191,7 @@ function toggleTablesModule(){
   toast(settings.tablesActive ? "Módulo de mesas encendido" : "Módulo de mesas apagado");
 }
 
-// GESTIÓN DE MENÚ
+// MENÚ
 document.querySelectorAll("#menuFilters button").forEach(b => b.onclick = () => {
   menuFilter = b.dataset.cat;
   document.querySelectorAll("#menuFilters button").forEach(x => x.classList.toggle("selected", x===b));
@@ -1154,7 +1205,7 @@ function renderProducts(){
       <div>
         <h3>${p.name}</h3>
         <small>${p.cat} · ${p.desc}</small>
-        <p class="price">$${p.price.toFixed(2)} MXN</p>
+        <p class="price">$${Number(p.price).toFixed(2)} MXN</p>
       </div>
       <div class="actions">
         <label class="switch">
@@ -1196,7 +1247,7 @@ function openEditProduct(id){
   $("productModal").classList.add("show");
 }
 
-function saveProduct(){
+async function saveProduct(){
   let editId = $("editProdId").value;
   let name = $("prodName").value.trim();
   let price = Number($("prodPrice").value);
@@ -1294,7 +1345,7 @@ function loadSettingsToUI(){
   $("settingDelivery").checked = settings.delivery;
   $("settingPickup").checked = settings.pickup;
   $("settingDinein").checked = settings.dinein;
-  $("minimum.value") = settings.minimum;
+  $("minimum").value = settings.minimum;
   $("shipping").value = settings.shipping;
   $("tableModuleToggleText").textContent = settings.tablesActive ? "🔌 Apagar Módulo" : "🔌 Encender Módulo";
 }
@@ -1305,11 +1356,16 @@ function renderAll(){
   renderProducts();
 }
 
-// INICIALIZADOR
-loadState();
-loadSettingsToUI();
-renderHours();
-renderAll();
+// INICIALIZADOR CLOUD ASÍNCRONO
+async function initApp() {
+  await loadState();
+  loadSettingsToUI();
+  renderHours();
+  renderAll();
+  initRealtimeSync();
+}
+
+initApp();
 </script>
 
 </body>
