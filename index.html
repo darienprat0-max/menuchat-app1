@@ -538,10 +538,10 @@ const TABLES_KEY = 'menuchat_tables_db_v5';
 const SETTINGS_KEY = 'menuchat_settings_v5';
 
 let defaultOrders = [
-  {id:104,customer:"Mariana López",phone:"6691112233",channel:"WhatsApp",type:"Comer en restaurante",address:"Mesa 2",items:"2x Taco Gobernador ($96), 1x Agua de Cebada 1L ($45)",total:141,status:"Nuevo",payment:"Efectivo",paymentStatus:"Pendiente",time:"12:42",table:"M2"},
-  {id:105,customer:"Carlos Méndez",phone:"6692223344",channel:"WhatsApp",type:"Comer en restaurante",address:"Mesa 3",items:"1x Ceviche de Camarón ($180), 2x Refresco ($70)",total:250,status:"Preparando",payment:"Transferencia",paymentStatus:"Pagado",time:"12:38",table:"M3"},
-  {id:103,customer:"Andrea Ruiz",phone:"6693334455",channel:"WhatsApp",type:"Recoger",address:"Sucursal Centro",items:"1x Pizza Peperoni Mediana ($189)",total:189,status:"Preparando",payment:"Efectivo",paymentStatus:"Pendiente",time:"12:25",table:""},
-  {id:102,customer:"Luis Torres",phone:"6694445566",channel:"WhatsApp",type:"Domicilio",address:"Av. Del Mar #400, Mazatlán",items:"2x Hamburguesa Clásica ($298), 1x Refresco ($35)",total:333,status:"Finalizado",payment:"Transferencia",paymentStatus:"Pagado",time:"12:10",table:""}
+  {id:104,customer:"Mariana López",phone:"6691112233",channel:"WhatsApp",type:"Comer en restaurante",address:"Mesa 2",items:"2x Taco Gobernador ($96), 1x Agua de Cebada 1L ($45)",total:141,status:"Nuevo",payment:"Efectivo",payment_status:"Pendiente",time:"12:42",table:"M2"},
+  {id:105,customer:"Carlos Méndez",phone:"6692223344",channel:"WhatsApp",type:"Comer en restaurante",address:"Mesa 3",items:"1x Ceviche de Camarón ($180), 2x Refresco ($70)",total:250,status:"Preparando",payment:"Transferencia",payment_status:"Pagado",time:"12:38",table:"M3"},
+  {id:103,customer:"Andrea Ruiz",phone:"6693334455",channel:"WhatsApp",type:"Recoger",address:"Sucursal Centro",items:"1x Pizza Peperoni Mediana ($189)",total:189,status:"Preparando",payment:"Efectivo",payment_status:"Pendiente",time:"12:25",table:""},
+  {id:102,customer:"Luis Torres",phone:"6694445566",channel:"WhatsApp",type:"Domicilio",address:"Av. Del Mar #400, Mazatlán",items:"2x Hamburguesa Clásica ($298), 1x Refresco ($35)",total:333,status:"Finalizado",payment:"Transferencia",payment_status:"Pagado",time:"12:10",table:""}
 ];
 
 let defaultTables = [
@@ -606,11 +606,10 @@ async function loadState() {
     try {
       let { data: cloudOrders } = await _supabase.from('orders').select('*');
       let { data: cloudProducts } = await _supabase.from('products').select('*');
-      let { data: cloudTables } = await _supabase.from('tables').select('*');
       
-      orders = cloudOrders && cloudOrders.length ? cloudOrders : [...defaultOrders];
+      orders = cloudOrders && cloudOrders.length ? cloudOrders.map(o => ({...o, paymentStatus: o.payment_status || o.paymentStatus || 'Pendiente'})) : [...defaultOrders];
       products = cloudProducts && cloudProducts.length ? cloudProducts : [...defaultProducts];
-      tables = cloudTables && cloudTables.length ? cloudTables : [...defaultTables];
+      tables = [...defaultTables];
       settings = {...defaultSettings};
       return;
     } catch(err) {
@@ -643,15 +642,17 @@ function initRealtimeSync() {
     _supabase
       .channel('menuchat-realtime')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, payload => {
-        orders.unshift(payload.new);
+        let newO = {...payload.new, paymentStatus: payload.new.payment_status || 'Pendiente'};
+        orders.unshift(newO);
         playNotificationSound();
         renderAll();
         toast("🔔 ¡Nuevo pedido en vivo desde WhatsApp!");
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, payload => {
-        let idx = orders.findIndex(o => o.id === payload.new.id);
-        if(idx !== -1) orders[idx] = payload.new;
-        else orders.unshift(payload.new);
+        let updO = {...payload.new, paymentStatus: payload.new.payment_status || 'Pendiente'};
+        let idx = orders.findIndex(o => o.id === updO.id);
+        if(idx !== -1) orders[idx] = updO;
+        else orders.unshift(updO);
         renderAll();
       })
       .subscribe();
@@ -716,7 +717,7 @@ function renderOrders(){
       <div class="order-top">
         <div>
           <h3>Pedido #${o.id} · ${o.customer}</h3>
-          <p>💬 ${o.channel} · 🕒 ${o.time} · <b>${o.type}</b>${o.table?" · Mesa "+o.table:""}${o.address && o.type==='Domicilio'?' · 📍 '+o.address:''}</p>
+          <p>💬 ${o.channel || 'WhatsApp'} · 🕒 ${o.time || '12:00'} · <b>${o.type}</b>${o.table?" · Mesa "+o.table:""}${o.address && o.type==='Domicilio'?' · 📍 '+o.address:''}</p>
         </div>
         <span class="tag new">Nuevo</span>
       </div>
@@ -740,7 +741,7 @@ function renderOrders(){
       <div class="order-top">
         <div>
           <h3>Comanda #${o.id} · ${o.customer}</h3>
-          <p>🕒 ${o.time} · <b>${o.type}</b> ${o.address ? "· 📍 "+o.address : ""}</p>
+          <p>🕒 ${o.time || '12:00'} · <b>${o.type}</b> ${o.address ? "· 📍 "+o.address : ""}</p>
         </div>
         <span class="tag prep">🔥 Preparando</span>
       </div>
@@ -748,7 +749,7 @@ function renderOrders(){
         ${o.items.replace(/,/g, '<br>')}
       </div>
       <div class="flex justify-between items-center mt-2">
-        <span class="text-xs text-slate-400">Pago: <b>${o.payment} (${o.paymentStatus})</b></span>
+        <span class="text-xs text-slate-400">Pago: <b>${o.payment || 'Efectivo'} (${o.paymentStatus || 'Pendiente'})</b></span>
         <div class="actions">
           <button onclick="changeOrder(${o.id},'Finalizado')">🏁 Finalizar</button>
           <button class="secondary" onclick="openOrderDetail(${o.id})">👁️ Ver</button>
@@ -767,7 +768,7 @@ function renderOrders(){
       <div class="order-top">
         <div>
           <h3>Pedido #${o.id} · ${o.customer}</h3>
-          <p>💬 ${o.channel} · 🕒 ${o.time} · <b>${o.type}</b>${o.address && o.type==='Domicilio'?' · 📍 '+o.address:''}</p>
+          <p>💬 ${o.channel || 'WhatsApp'} · 🕒 ${o.time || '12:00'} · <b>${o.type}</b>${o.address && o.type==='Domicilio'?' · 📍 '+o.address:''}</p>
         </div>
         <span class="tag done">🏁 Concluido</span>
       </div>
@@ -834,7 +835,11 @@ async function changeOrder(id, status){
 
   if (useCloud && _supabase) {
     try {
-      await _supabase.from('orders').update({ status: o.status, payment_status: o.paymentStatus, table: o.table }).eq('id', id);
+      await _supabase.from('orders').update({ 
+        status: o.status, 
+        payment_status: o.paymentStatus, 
+        table: o.table 
+      }).eq('id', id);
     } catch(e){}
   }
 
@@ -876,9 +881,9 @@ function openOrderDetail(id){
   if(!o) return;
 
   $("modalDetailId").textContent = "Comanda #" + o.id;
-  $("modalDetailCustomer").textContent = "Cliente: " + o.customer + " (" + (o.phone || 'Sin tel') + ") · " + o.time;
+  $("modalDetailCustomer").textContent = "Cliente: " + o.customer + " (" + (o.phone || 'Sin tel') + ") · " + (o.time || '12:00');
   $("modalDetailType").textContent = o.type;
-  $("modalDetailChannel").textContent = o.channel;
+  $("modalDetailChannel").textContent = o.channel || 'WhatsApp';
   
   const addrBox = $("modalDetailAddressBox");
   if(o.address && o.type === 'Domicilio'){
@@ -889,7 +894,7 @@ function openOrderDetail(id){
   }
 
   $("modalDetailItems").textContent = o.items.replace(/,/g, '\n');
-  $("modalDetailPayment").textContent = o.payment + " (" + o.paymentStatus + ")";
+  $("modalDetailPayment").textContent = (o.payment || 'Efectivo') + " (" + (o.paymentStatus || 'Pendiente') + ")";
   $("modalDetailTotal").textContent = "$" + Number(o.total).toFixed(2) + " MXN";
 
   const statusTag = $("modalDetailStatusTag");
@@ -942,6 +947,7 @@ async function simularPedidoWhatsApp(){
     total: p1.price,
     status: "Nuevo",
     payment: "Efectivo",
+    payment_status: "Pendiente",
     paymentStatus: "Pendiente",
     time: new Date().toLocaleTimeString("es-MX", {hour:"2-digit", minute:"2-digit"}),
     table: ""
@@ -951,7 +957,21 @@ async function simularPedidoWhatsApp(){
 
   if (useCloud && _supabase) {
     try {
-      await _supabase.from('orders').insert([newOrder]);
+      await _supabase.from('orders').insert([{
+        id: newOrder.id,
+        customer: newOrder.customer,
+        phone: String(newOrder.phone),
+        channel: newOrder.channel,
+        type: newOrder.type,
+        address: newOrder.address,
+        items: newOrder.items,
+        total: newOrder.total,
+        status: newOrder.status,
+        payment: newOrder.payment,
+        payment_status: newOrder.paymentStatus,
+        time: newOrder.time,
+        table: newOrder.table
+      }]);
     } catch(e){}
   }
 
@@ -988,7 +1008,7 @@ function openEditOrderModal(id){
   $("orderModalTitle").textContent = "Editar Pedido #" + o.id;
   $("newCustomer").value = o.customer;
   $("newPhone").value = o.phone || "";
-  $("newChannel").value = o.channel;
+  $("newChannel").value = o.channel || "WhatsApp";
   
   let typeSelect = $("newType");
   typeSelect.innerHTML = `<option value="${o.type}">${o.type}</option>`;
@@ -996,7 +1016,7 @@ function openEditOrderModal(id){
 
   $("newAddress").value = o.address || "";
   $("newItems").value = o.items;
-  $("newPayment").value = o.payment;
+  $("newPayment").value = o.payment || "Efectivo";
   $("newTotal").value = o.total;
 
   onModalTypeChange();
@@ -1070,6 +1090,7 @@ async function saveOrderForm(){
       total: total,
       status: "Nuevo",
       payment: $("newPayment").value,
+      payment_status: "Pendiente",
       paymentStatus: "Pendiente",
       time: new Date().toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"}),
       table: assignedTable
@@ -1078,7 +1099,21 @@ async function saveOrderForm(){
     orders.unshift(newOrder);
     if (useCloud && _supabase) {
       try {
-        await _supabase.from('orders').insert([newOrder]);
+        await _supabase.from('orders').insert([{
+          id: newOrder.id,
+          customer: newOrder.customer,
+          phone: String(newOrder.phone),
+          channel: newOrder.channel,
+          type: newOrder.type,
+          address: newOrder.address,
+          items: newOrder.items,
+          total: newOrder.total,
+          status: newOrder.status,
+          payment: newOrder.payment,
+          payment_status: newOrder.paymentStatus,
+          time: newOrder.time,
+          table: newOrder.table
+        }]);
       } catch(e){}
     }
   }
