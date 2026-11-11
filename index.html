@@ -9,7 +9,8 @@
 <!-- FontAwesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 <!-- Library PapaParse para CSV / Google Sheets -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 <!-- Supabase JS Client -->
@@ -147,6 +148,91 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
   main{padding:16px;height:auto;overflow-y:visible}
   .stats{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ===== VISTAS DE PANTALLA: Cocina / Meseros / Caja (solo presentación) ===== */
+#toast{z-index:200}
+#svLauncher{position:fixed;left:14px;bottom:14px;z-index:20;display:flex;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 8px;font-size:12px;color:var(--muted)}
+#svLauncher button{padding:6px 10px;font-size:12px}
+#screenView{position:fixed;inset:0;z-index:30;background:var(--bg);color:var(--text);display:none;flex-direction:column;font-size:clamp(14px,1.3vw,24px)}
+#screenView.on{display:flex}
+.sv-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+.sv-top h1{font-size:1.7em;font-weight:900;margin-right:auto}
+.sv-top button{font-size:.8em}.sv-top button.cur{background:var(--orange);color:#fff}
+#svClock{font-size:1.6em;font-weight:900;font-variant-numeric:tabular-nums}
+#svBody{flex:1;overflow:auto;padding:18px 20px;display:grid;gap:18px;align-content:start}
+.sv-cols{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));align-items:start}
+.sv-col>h2{font-size:1.25em;font-weight:900;margin-bottom:10px;color:var(--muted)}
+.sv-list{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
+.sv-card{background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:14px 16px}
+.sv-card.new{border-color:var(--orange)}.sv-card.prep{border-color:#ffc56e}.sv-card.done{opacity:.75}
+.sv-h{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.sv-h b{font-size:1.9em;font-weight:900}
+.sv-pill{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:3px 10px;font-size:.8em;font-weight:800}
+.sv-sub{color:var(--muted);margin:4px 0 8px}
+.sv-card ul{list-style:none;display:grid;gap:4px;font-size:1.15em;font-weight:700}
+.sv-card button{width:100%;margin-top:12px;font-size:1.05em;padding:12px}
+.sv-total{font-size:1.9em;font-weight:900;color:var(--green);margin-top:8px}
+.sv-stats{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.sv-stats div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+.sv-stats small{color:var(--muted);display:block}.sv-stats b{font-size:2em;font-weight:900}
+.sv-tables{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.sv-table{border:3px solid var(--line);background:var(--panel2);border-radius:16px;padding:14px;text-align:center}
+.sv-table b{font-size:2em;font-weight:900;display:block}.sv-table small{display:block;font-weight:800}
+.sv-table.free{border-color:#2f8f5f}.sv-table.free small{color:var(--green)}
+.sv-table.busy{border-color:#c9951f}.sv-table.prep{border-color:var(--orange)}.sv-table.prep small{color:#ffc56e}
+.sv-empty{color:var(--muted);padding:26px;text-align:center;border:2px dashed var(--line);border-radius:14px}
+
+/* ===== MEJORAS VISUALES: tipografía, botones y emojis ===== */
+body{font-family:Inter,"Noto Color Emoji","Segoe UI Emoji",system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;letter-spacing:-.005em}
+.em{display:inline-flex;align-items:center;justify-content:center;flex:none;width:1.3em;height:1.3em;font-size:1.1em;line-height:1;font-style:normal;letter-spacing:0;vertical-align:-.2em;font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji","Twemoji Mozilla",sans-serif;filter:drop-shadow(0 1px 1px #0006)}
+.top h1{font-size:27px;font-weight:800;letter-spacing:-.025em}
+.top p{font-size:13.5px}
+.stat b,.price,.order b{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat small{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.order{border-radius:16px;box-shadow:0 2px 10px #0003}
+.order h3{font-size:17.5px;font-weight:800;letter-spacing:-.02em}
+.order p{font-size:13.5px}
+.order p.font-mono{font-family:Inter,"Noto Color Emoji",system-ui,sans-serif!important;font-size:14px;font-weight:600;color:#ffdcb0!important;background:#2a2119;border:1px solid #4a3722;border-radius:11px;padding:9px 12px;margin:10px 0;line-height:1.5}
+.tag{letter-spacing:.03em}
+
+/* Botones (body button supera el reset de Tailwind) */
+body button{display:inline-flex;align-items:center;justify-content:center;text-align:center;gap:8px;border-radius:12px;padding:10px 16px;font-weight:700;letter-spacing:-.005em;background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604;border:1px solid #ffb261;box-shadow:inset 0 1px 0 #ffffff55,0 4px 14px #ff922b30;transition:transform .12s,box-shadow .15s,background .15s,border-color .15s;filter:none}
+body button:hover{filter:none;transform:translateY(-1px);box-shadow:inset 0 1px 0 #ffffff55,0 7px 18px #ff922b45}
+body button:active{transform:translateY(0) scale(.98)}
+body button:focus-visible{outline:2px solid #ffd2a1;outline-offset:2px}
+body button.secondary{background:linear-gradient(180deg,#38424d,#2d363f);color:#eef1f4;border:1px solid #475565;box-shadow:inset 0 1px 0 #ffffff14}
+body button.secondary:hover{background:linear-gradient(180deg,#414d5a,#343e49);box-shadow:0 6px 16px #0005}
+body button.ghost{background:transparent;color:var(--muted);box-shadow:none}
+body button.danger{background:linear-gradient(180deg,#4a2a2e,#3a2226);color:#ffbcbc;border:1px solid #7a3a40;box-shadow:none}
+body button.danger:hover{background:linear-gradient(180deg,#5a3035,#46282c)}
+body .actions button{font-size:13px;padding:9px 14px}
+body button .em{font-size:1.15em;width:1.25em;height:1.25em}
+
+/* Menú lateral */
+body .nav button{justify-content:flex-start;text-align:left;background:transparent;box-shadow:none;border:1px solid transparent;color:#c9d0d7;font-size:14.5px;font-weight:600;padding:9px 12px;border-radius:14px;gap:12px}
+body .nav button:hover{background:#1c242c;transform:none;box-shadow:none}
+body .nav button.active{background:linear-gradient(90deg,#3d2a17,#2a2018);border-color:#70451f;color:#ffbd7b}
+.nav button .em{width:36px;height:36px;font-size:19px;border-radius:11px;background:#222a32;border:1px solid #303b46}
+.nav button.active .em{background:#4a3219;border-color:#8a5a28}
+
+/* Filtros */
+body .filters button{background:#222a32;color:#cdd4db;border:1px solid var(--line);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:600;box-shadow:none}
+body .filters button:hover{background:#2a343e;transform:none}
+body .filters button.selected{background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604;border-color:#ffb261;box-shadow:0 4px 14px #ff922b38}
+
+/* Barra Pantallas y vistas */
+body #svLauncher{left:260px;border-radius:16px;padding:8px 12px;gap:8px;font-weight:700;box-shadow:0 8px 24px #0007;background:#171d23}
+body #svLauncher button{background:linear-gradient(180deg,#38424d,#2d363f);color:#eef1f4;border:1px solid #475565;padding:7px 12px;font-size:12.5px;box-shadow:none;border-radius:10px}
+body .sv-top button.cur{background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604}
+.sv-top h1{letter-spacing:-.025em}
+.sv-card{border-radius:18px;box-shadow:0 4px 18px #0004}
+.sv-h b{color:#ffbd7b;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.sv-card ul{padding:0;margin:0}
+@media(max-width:900px){body #svLauncher{left:14px}}
+.sv-card ul li{display:flex;gap:8px;padding:6px 0;border-bottom:1px dashed #2f3a45;line-height:1.3}
+.sv-card ul li:last-child{border-bottom:0}
+.sv-total{letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.sv-card button{border-radius:14px}
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
 </head>
@@ -513,6 +599,16 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
   </div>
 </div>
 
+<div id="svLauncher">🖥️ Pantallas:
+  <button onclick="location.hash='cocina'">🍳 Cocina</button>
+  <button onclick="location.hash='meseros'">🍽️ Meseros</button>
+  <button onclick="location.hash='caja'">💰 Caja</button>
+</div>
+<div id="screenView">
+  <div class="sv-top"><h1 id="svTitle"></h1><span id="svNav"></span><span id="svClock"></span></div>
+  <div id="svBody"></div>
+</div>
+
 <script>
 const $=id=>document.getElementById(id);
 
@@ -525,16 +621,18 @@ let useCloud = false;
 const RESTAURANT_ID = 'menuchat-demo';
 
 // Fila limpia para la tabla orders (nombres de columna exactos de Supabase)
+// Repara textos con precios mal formados guardados antes: $48.00.00 -> $48.00, $48.5.00 -> $48.50
+const cleanItems = t => String(t ?? '').replace(/(\d+)\.(\d)\.00/g, (m,a,b) => a+'.'+b+'0').replace(/(\d+\.\d{2})(\.\d{2})+/g, (m,a) => a);
 const toRow = o => ({
   id: Math.trunc(Number(o.id)), restaurantid: RESTAURANT_ID,
   customer: o.customer ?? '', phone: String(o.phone ?? ''), channel: o.channel ?? '',
-  type: o.type ?? '', address: o.address ?? '', items: String(o.items ?? ''),
+  type: o.type ?? '', address: o.address ?? '', items: cleanItems(o.items),
   total: Number(String(o.total).replace(/[^0-9.]/g,'')) || 0,
   status: o.status ?? '', payment: o.payment ?? '',
   paymentstatus: o.paymentStatus ?? o.paymentstatus ?? 'Pendiente',
   time: o.time ?? '', table: o.table ?? ''
 });
-const fromRow = r => ({...r, paymentStatus: r.paymentstatus || r.payment_status || r.paymentStatus || 'Pendiente', table: r.table || ''});
+const fromRow = r => ({...r, items: cleanItems(r.items), paymentStatus: r.paymentstatus || r.payment_status || r.paymentStatus || 'Pendiente', table: r.table || ''});
 const nextOrderId = () => Math.max(105, ...orders.map(o => Number(o.id) || 0)) + 1;
 
 function cloudFail(msg, err){ console.error('Supabase:', err && (err.code + ' ' + err.message)); toast('⚠️ ' + msg + (err ? ': ' + err.message : '')); }
@@ -663,6 +761,7 @@ async function loadState() {
       console.log("Usando respaldo local por red o tabla pendiente.");
     }
   }
+  orders.forEach(o => { o.items = cleanItems(o.items); });
 }
 
 async function saveState() {
@@ -980,8 +1079,8 @@ async function simularPedidoWhatsApp(){
     channel: "WhatsApp",
     type: type,
     address: type === "Domicilio" ? "Fracc. Real del Valle #120, Mazatlán" : "Sucursal",
-    items: `1x ${p1.name} ($${p1.price}.00)`,
-    total: p1.price,
+    items: `1x ${p1.name} ($${Number(p1.price).toFixed(2)})`,
+    total: Number(p1.price),
     status: "Nuevo",
     payment: "Efectivo",
     payment_status: "Pendiente",
@@ -1392,6 +1491,80 @@ function renderAll(){
   renderTables();
   renderProducts();
 }
+
+// ===== VISTAS DE PANTALLA (Cocina / Meseros / Caja): solo presentación, usan las mismas funciones y datos =====
+const SCREEN_VIEWS = {cocina:'🍳 Cocina', meseros:'🍽️ Meseros', caja:'💰 Caja'};
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '$' + Number(n || 0).toFixed(2);
+const TYPE_EMOJI = {"Domicilio":"🛵","Recoger":"🛍️","Comer en restaurante":"🍽️"};
+const screenMode = () => { const h = location.hash.replace('#',''); return SCREEN_VIEWS[h] ? h : ''; };
+const sum = l => l.reduce((a,o) => a + (Number(o.total) || 0), 0);
+
+function svCard(o, cls, extra){
+  const items = String(o.items || '').split(/,\s*(?=\d+\s*x\s)/).map(i => `<li>${esc(i)}</li>`).join('');
+  return `<div class="sv-card ${cls}"><div class="sv-h"><b>#${esc(o.id)}</b><span class="sv-pill">${TYPE_EMOJI[o.type] || '🧾'} ${esc(o.type)}</span></div>
+    <div class="sv-sub">${esc(o.customer)} · ${esc(o.time)}${o.table ? ' · 🪑 ' + esc(o.table) : ''}</div><ul>${items}</ul>${extra || ''}</div>`;
+}
+const svCol = (title, list, fn) => `<div class="sv-col"><h2>${title} (${list.length})</h2><div class="sv-list">${list.length ? list.map(fn).join('') : '<div class="sv-empty">Sin pedidos</div>'}</div></div>`;
+
+function renderScreen(){
+  const m = screenMode(), root = $('screenView');
+  root.classList.toggle('on', !!m);
+  if(!m) return;
+  $('svTitle').textContent = SCREEN_VIEWS[m] + ' · ' + (settings.restName || '');
+  $('svNav').innerHTML = Object.keys(SCREEN_VIEWS).map(k => `<button class="${k===m?'cur':'secondary'}" onclick="location.hash='${k}'">${SCREEN_VIEWS[k]}</button>`).join(' ') + ' <button class="secondary" onclick="location.hash=\'panel\'">↩️ Panel</button>';
+  const nuevos = orders.filter(o => o.status === 'Nuevo'), prep = orders.filter(o => o.status === 'Preparando'), fin = orders.filter(o => o.status === 'Finalizado');
+  let h = '';
+  if(m === 'cocina'){
+    h = '<div class="sv-cols">'
+      + svCol('🆕 Nuevos por aceptar', nuevos, o => svCard(o, 'new', `<button onclick="changeOrder(${o.id},'Preparando')">✅ Aceptar</button>`))
+      + svCol('🔥 En preparación', prep, o => svCard(o, 'prep', `<button onclick="changeOrder(${o.id},'Finalizado')">🏁 Finalizar</button>`)) + '</div>';
+  } else if(m === 'meseros'){
+    const sala = orders.filter(o => o.type === 'Comer en restaurante' && o.status !== 'Finalizado');
+    const tcls = t => t.status === 'Libre' ? 'free' : t.status === 'Preparando' ? 'prep' : 'busy';
+    h = '<div class="sv-cols"><div class="sv-col"><h2>🪑 Mesas</h2>' + (settings.tablesActive
+      ? '<div class="sv-tables">' + tables.map(t => `<div class="sv-table ${tcls(t)}"><b>${esc(t.id)}</b><small>${esc(t.status)}</small>${t.order ? `<small>${esc(t.order)}${t.minutes ? ' · ' + t.minutes + ' min' : ''}</small>` : ''}</div>`).join('') + '</div>'
+      : '<div class="sv-empty">Módulo de mesas apagado</div>') + '</div>'
+      + svCol('🍽️ Pedidos en sala', sala, o => svCard(o, o.status === 'Nuevo' ? 'new' : 'prep', `<div class="sv-sub">${o.status === 'Nuevo' ? '⏳ Por confirmar' : '🔥 En cocina'}</div>`)) + '</div>';
+  } else {
+    const cobrar = orders.filter(o => o.status !== 'Finalizado');
+    h = `<div class="sv-stats"><div><small>💰 Ventas (finalizadas)</small><b>${money(sum(fin))}</b></div><div><small>🧾 Por cobrar</small><b>${money(sum(cobrar))}</b></div><div><small>🏁 Pedidos finalizados</small><b>${fin.length}</b></div></div><div class="sv-cols">`
+      + svCol('🧾 Por cobrar', cobrar, o => svCard(o, o.status === 'Nuevo' ? 'new' : 'prep',
+          `<div class="sv-sub">💳 ${esc(o.payment || 'Efectivo')} · ${esc(o.paymentStatus || 'Pendiente')}</div><div class="sv-total">${money(o.total)}</div>`
+          + (o.status === 'Preparando' ? `<button onclick="changeOrder(${o.id},'Finalizado')">💰 Cobrar y finalizar</button>` : '<div class="sv-sub">⏳ Por confirmar en cocina</div>')))
+      + svCol('✅ Cobrados recientes', fin.slice(0, 8), o => svCard(o, 'done', `<div class="sv-total">${money(o.total)}</div>`)) + '</div>';
+  }
+  $('svBody').innerHTML = h;
+}
+const _renderAllBase = renderAll;
+renderAll = function(){ _renderAllBase(); renderScreen(); };
+window.addEventListener('hashchange', renderScreen);
+setInterval(() => { const c = $('svClock'); if(c) c.textContent = new Date().toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}); }, 1000);
+
+// ===== EMOJIS UNIFORMES: cada emoji va en una caja del mismo tamaño y con la misma fuente =====
+const EMOJI_TEST = /\p{Extended_Pictographic}/u;
+const EMOJI_RE = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}])*/gu;
+function wrapEmoji(root){
+  const found = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  while(w.nextNode()){
+    const n = w.currentNode, p = n.parentElement;
+    if(p && EMOJI_TEST.test(n.nodeValue) && !p.closest('.em,script,style,textarea,option,title')) found.push(n);
+  }
+  found.forEach(n => {
+    const t = n.nodeValue, f = document.createDocumentFragment(); let last = 0;
+    t.replace(EMOJI_RE, (m, i) => {
+      if(i > last) f.append(t.slice(last, i));
+      const sp = document.createElement('span'); sp.className = 'em'; sp.textContent = m; f.append(sp);
+      last = i + m.length; return m;
+    });
+    if(last < t.length) f.append(t.slice(last));
+    n.replaceWith(f);
+  });
+}
+new MutationObserver(muts => muts.forEach(m => m.addedNodes.forEach(n => {
+  if(n.nodeType === 1) wrapEmoji(n); else if(n.nodeType === 3 && n.parentElement) wrapEmoji(n.parentElement);
+}))).observe(document.body, {childList:true, subtree:true});
+wrapEmoji(document.body);
 
 // INICIALIZADOR CLOUD ASÍNCRONO
 async function initApp() {
