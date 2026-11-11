@@ -793,27 +793,6 @@ const $=id=>document.getElementById(id);
    usa Supabase Auth + politicas RLS en la base de datos.
    ===================================================================== */
 
-/* ---------------------------------------------------------------------
-   SUGERENCIAS (de mayor a menor prioridad)
-   1. SEGURIDAD: activa Supabase Auth + politicas RLS (la clave anon es publica) y usa roles
-      (encargado / cocina / mesero) en lugar de una contrasena en pantalla.
-   2. COMPARTIR DATOS: Mi menu, mesas y ajustes hoy viven solo en cada dispositivo. Pasarlos a
-      tablas de Supabase (products, tables, settings) los sincroniza entre tablets y celulares.
-   3. HORARIOS: la seccion Horarios de Ajustes todavia no se guarda ni se aplica. Guardarlos y
-      rechazar pedidos fuera de horario.
-   4. PEDIDOS COMO DATOS: orders.items es texto. Una tabla order_items (producto, cantidad,
-      precio) habilita reportes por producto, inventario y totales confiables.
-   5. NOTAS Y TIEMPOS: nota por producto (sin cebolla), cronometro en cocina y alerta si un
-      pedido pasa de X minutos en preparacion.
-   6. TICKET: boton Imprimir comanda (@media print) o impresora termica ESC/POS.
-   7. PWA: manifest + service worker para instalar la app en celular y trabajar sin internet con
-      cola de sincronizacion.
-   8. CAJA: corte por turno, descuentos, propina y pago dividido; el bot de WhatsApp tambien debe
-      aplicar pedido minimo y costo de envio (ya se aplican en el pedido manual).
-   9. MULTI-RESTAURANTE: filtrar pedidos por restaurantid en consultas y en tiempo real.
-  10. CALIDAD: separar CSS/JS en archivos, agregar pruebas y un build (Vite) cuando el proyecto
-      crezca; trampa de foco en modales para accesibilidad.
-   --------------------------------------------------------------------- */
 const CONFIG = Object.assign({
   version: '2.2.0',
   cloud: true,
@@ -886,12 +865,12 @@ function hydrateIcons(root){
 const cleanItems = t => String(t ?? '').replace(/(\d+)\.(\d)\.00/g, (m,a,b) => a+'.'+b+'0').replace(/(\d+\.\d{2})(\.\d{2})+/g, (m,a) => a);
 const toRow = o => ({
   id: Math.trunc(Number(o.id)), restaurantid: RESTAURANT_ID,
-  customer: o.customer ?? '', phone: String(o.phone ?? ''), channel: o.channel ?? '',
-  type: o.type ?? '', address: o.address ?? '', items: cleanItems(o.items),
+  customer: String(o.customer ?? ''), phone: String(o.phone ?? ''), channel: String(o.channel ?? ''),
+  type: String(o.type ?? ''), address: String(o.address ?? ''), items: cleanItems(o.items),
   total: Number(String(o.total).replace(/[^0-9.]/g,'')) || 0,
-  status: o.status ?? '', payment: o.payment ?? '',
-  paymentstatus: o.paymentStatus ?? o.paymentstatus ?? 'Pendiente',
-  time: o.time ?? '', table: o.table ?? ''
+  status: String(o.status ?? ''), payment: String(o.payment ?? ''),
+  paymentstatus: String(o.paymentStatus ?? o.paymentstatus ?? 'Pendiente'),
+  time: String(o.time ?? ''), table: String(o.table ?? '')
 });
 const fromRow = r => ({...r, items: cleanItems(r.items), paymentStatus: r.paymentstatus || r.payment_status || r.paymentStatus || 'Pendiente', table: r.table || ''});
 const nextOrderId = () => Math.max(105, ...orders.map(o => Number(o.id) || 0)) + 1;
@@ -902,7 +881,8 @@ function cloudFail(msg, err){ console.error('Supabase:', err); toast(msg + (err 
 async function cloudSave(o){
   if(!(useCloud && _supabase)) return;
   try{
-    const {error} = await _supabase.from('orders').upsert(toRow(o), {onConflict:'id'});
+    const payload = toRow(o);
+    const {error} = await _supabase.from('orders').upsert(payload, {onConflict:'id'});
     if(error) cloudFail('No se pudo sincronizar el pedido', error);
   }catch(e){ cloudFail('Sin conexión con la nube', e); }
 }
@@ -912,7 +892,8 @@ async function cloudInsert(o){
   if(!(useCloud && _supabase)) return;
   for(let i=0;i<4;i++){
     try{
-      const {error} = await _supabase.from('orders').insert([toRow(o)]);
+      const payload = toRow(o);
+      const {error} = await _supabase.from('orders').insert([payload]);
       if(!error) return;
       if(error.code === '23505'){
         const old = o.id; o.id = nextOrderId();
@@ -1049,12 +1030,16 @@ async function loadState() {
   if (useCloud && _supabase && sysOn()) {
     try {
       const {data, error} = await _supabase.from('orders').select('*').order('id', {ascending:false});
-      if (error) { console.error('Supabase orders:', error.code, error.message); toast('No se pudieron cargar los pedidos de la nube. Se muestran los datos de este dispositivo.', 'err'); }
-      else orders = data.length ? data.map(fromRow) : [...defaultOrders];
+      if (error) {
+        console.error('Supabase orders:', error.code, error.message);
+        toast('No se pudieron cargar los pedidos de la nube. Se muestran los datos locales.', 'err');
+      } else if (data) {
+        orders = data.length ? data.map(fromRow) : [];
+      }
       const {data: cp, error: pe} = await _supabase.from('products').select('*');
       if (!pe && cp && cp.length) products = cp;
     } catch(err) {
-      console.log("Usando respaldo local por red o tabla pendiente.");
+      console.log("Error cargando desde la nube, usando respaldo local.", err);
       toast("Sin conexión con la nube. Trabajando con datos locales.", "warn");
     }
   }
@@ -1083,27 +1068,18 @@ function initRealtimeSync() {
   if (!useCloud || !_supabase || !sysOn() || rtChannel) return;
   try {
     rtChannel = _supabase
-      .channel('menuchat-realtime')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, payload => {
-        const newO = fromRow(payload.new);
-        if (orders.some(o => Number(o.id) === Number(newO.id))) return; // ya existe (lo creó esta misma pantalla)
-        orders.unshift(newO);
-        playNotificationSound();
-        renderAll();
-        toast("Nuevo pedido en vivo desde " + (newO.channel || "WhatsApp") + ".", "info");
-      })
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, payload => {
-        const updO = fromRow(payload.new);
-        const idx = orders.findIndex(o => Number(o.id) === Number(updO.id));
-        if(idx !== -1) orders[idx] = updO; else orders.unshift(updO);
-        renderAll();
-      })
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'orders' }, payload => {
-        orders = orders.filter(o => Number(o.id) !== Number(payload.old.id));
-        renderAll();
+      .channel('public:orders')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => {
+        console.log("Cambio detectado en tiempo real:", payload);
+        if(payload.eventType === 'INSERT'){
+            playNotificationSound();
+            toast("Nuevo pedido en vivo desde la nube.", "info");
+        }
+        loadState().then(() => renderAll());
       })
       .subscribe(status => {
         rtStatus = status; updateNet();
+        console.log("Estado de suscripción Realtime:", status);
         if(status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') toast('Se perdió la conexión en vivo con la nube. Reintentando...', 'err');
       });
   } catch(e) {
