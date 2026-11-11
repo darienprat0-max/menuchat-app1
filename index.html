@@ -13,6 +13,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 <!-- Library PapaParse para CSV / Google Sheets -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<!-- SheetJS: exportar a Excel (.xlsx) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- Supabase JS Client -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -215,6 +217,12 @@ body .nav button.active{background:linear-gradient(90deg,#3d2a17,#2a2018);border
 .nav button .em{width:36px;height:36px;font-size:19px;border-radius:11px;background:#222a32;border:1px solid #303b46}
 .nav button.active .em{background:#4a3219;border-color:#8a5a28}
 
+/* Menú lateral: Mi menú, Mesas y Ajustes al fondo (Ajustes hasta abajo) */
+@media(min-width:901px){
+  .nav{display:flex;flex-direction:column;flex:1;min-height:0}
+  .nav button[data-page="menu"]{margin-top:auto}
+}
+
 /* Filtros */
 body .filters button{background:#222a32;color:#cdd4db;border:1px solid var(--line);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:600;box-shadow:none}
 body .filters button:hover{background:#2a343e;transform:none}
@@ -233,6 +241,31 @@ body .sv-top button.cur{background:linear-gradient(180deg,#ffa347,#ff8a1f);color
 .sv-card ul li:last-child{border-bottom:0}
 .sv-total{letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .sv-card button{border-radius:14px}
+
+/* Selector de mesas en el pedido */
+.tp{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 4px}
+.tp-l{font-size:13px;font-weight:800;color:#cdd4db}
+body .tp-chip{padding:6px 14px;font-size:13px;border-radius:999px;font-weight:800;box-shadow:none;background:#1d2a25;color:#8be0b3;border:1px solid #2f8f5f}
+body .tp-chip:hover{background:#244034}
+body .tp-chip.sel{background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604;border-color:#ffb261}
+.tp-none{font-size:13px;color:#ffb4b4;font-weight:700}
+
+/* Caja: secciones desplegables y tabla */
+.sv-stats button{width:100%;margin-top:6px;padding:10px}
+.sv-det{border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+.sv-det>summary{cursor:pointer;padding:14px 18px;font-weight:900;font-size:1.2em;display:flex;align-items:center;gap:10px;list-style:none;user-select:none}
+.sv-det>summary::-webkit-details-marker{display:none}
+.sv-det>summary::before{content:"▾";color:var(--orange);transition:transform .15s}
+.sv-det:not([open])>summary::before{transform:rotate(-90deg)}
+.sv-tw{overflow:auto;max-height:62vh;border-top:1px solid var(--line)}
+table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
+.sv-t th{position:sticky;top:0;z-index:1;background:#222a32;color:var(--muted);text-align:left;padding:10px 12px;font-size:.78em;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;cursor:pointer;user-select:none}
+.sv-t th:hover{color:var(--text)}
+.sv-t td{padding:10px 12px;border-top:1px solid #2a343e;vertical-align:top}
+.sv-t tbody tr:hover{background:#202830}
+.sv-t .num{text-align:right;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sv-t ul{list-style:none;padding:0;margin:0;min-width:200px;font-weight:600}
+.sv-t td button{width:auto;margin:0;padding:7px 12px;font-size:.95em;white-space:nowrap}
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
 </head>
@@ -262,21 +295,16 @@ body .sv-top button.cur{background:linear-gradient(180deg,#ffa347,#ff8a1f);color
         🏁 <span>Finalizadas</span>
         <span id="navCountDone" class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-blue-950 text-blue-300 font-bold border border-blue-800">0</span>
       </button>
-      <button data-page="tables">
-        🪑 <span>Mesas</span>
-      </button>
       <button data-page="menu">
         📋 <span>Mi menú</span>
+      </button>
+      <button data-page="tables">
+        🪑 <span>Mesas</span>
       </button>
       <button data-page="settings">
         ⚙️ <span>Ajustes</span>
       </button>
     </nav>
-
-    <div class="side-note">
-      <p class="font-bold text-slate-200 mb-1">📡 Supabase Realtime</p>
-      <span>Conectado en la nube vía WebSockets.</span>
-    </div>
   </aside>
 
   <!-- Área Principal -->
@@ -865,6 +893,7 @@ function renderOrders(){
         <span class="tag new">Nuevo</span>
       </div>
       <p class="text-amber-200 font-mono my-2">🛒 ${o.items}</p>
+      ${tablePicker(o)}
       <div class="flex justify-between items-center mt-2">
         <b>Total: $${Number(o.total).toFixed(2)} MXN</b>
         <div class="actions">
@@ -891,6 +920,7 @@ function renderOrders(){
       <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 my-2 font-mono text-sm text-amber-300">
         ${o.items.replace(/,/g, '<br>')}
       </div>
+      ${tablePicker(o)}
       <div class="flex justify-between items-center mt-2">
         <span class="text-xs text-slate-400">Pago: <b>${o.payment || 'Efectivo'} (${o.paymentStatus || 'Pendiente'})</b></span>
         <div class="actions">
@@ -1081,6 +1111,7 @@ async function simularPedidoWhatsApp(){
     address: type === "Domicilio" ? "Fracc. Real del Valle #120, Mazatlán" : "Sucursal",
     items: `1x ${p1.name} ($${Number(p1.price).toFixed(2)})`,
     total: Number(p1.price),
+    created: new Date().toISOString(),
     status: "Nuevo",
     payment: "Efectivo",
     payment_status: "Pendiente",
@@ -1207,6 +1238,7 @@ async function saveOrderForm(){
       address: address,
       items: items,
       total: total,
+      created: new Date().toISOString(),
       status: "Nuevo",
       payment: $("newPayment").value,
       payment_status: "Pendiente",
@@ -1525,14 +1557,11 @@ function renderScreen(){
     h = '<div class="sv-cols"><div class="sv-col"><h2>🪑 Mesas</h2>' + (settings.tablesActive
       ? '<div class="sv-tables">' + tables.map(t => `<div class="sv-table ${tcls(t)}"><b>${esc(t.id)}</b><small>${esc(t.status)}</small>${t.order ? `<small>${esc(t.order)}${t.minutes ? ' · ' + t.minutes + ' min' : ''}</small>` : ''}</div>`).join('') + '</div>'
       : '<div class="sv-empty">Módulo de mesas apagado</div>') + '</div>'
-      + svCol('🍽️ Pedidos en sala', sala, o => svCard(o, o.status === 'Nuevo' ? 'new' : 'prep', `<div class="sv-sub">${o.status === 'Nuevo' ? '⏳ Por confirmar' : '🔥 En cocina'}</div>`)) + '</div>';
+      + svCol('🍽️ Pedidos en sala', sala, o => svCard(o, o.status === 'Nuevo' ? 'new' : 'prep', `<div class="sv-sub">${o.status === 'Nuevo' ? '⏳ Por confirmar' : '🔥 En cocina'}</div>` + tablePicker(o))) + '</div>';
   } else {
     const cobrar = orders.filter(o => o.status !== 'Finalizado');
-    h = `<div class="sv-stats"><div><small>💰 Ventas (finalizadas)</small><b>${money(sum(fin))}</b></div><div><small>🧾 Por cobrar</small><b>${money(sum(cobrar))}</b></div><div><small>🏁 Pedidos finalizados</small><b>${fin.length}</b></div></div><div class="sv-cols">`
-      + svCol('🧾 Por cobrar', cobrar, o => svCard(o, o.status === 'Nuevo' ? 'new' : 'prep',
-          `<div class="sv-sub">💳 ${esc(o.payment || 'Efectivo')} · ${esc(o.paymentStatus || 'Pendiente')}</div><div class="sv-total">${money(o.total)}</div>`
-          + (o.status === 'Preparando' ? `<button onclick="changeOrder(${o.id},'Finalizado')">💰 Cobrar y finalizar</button>` : '<div class="sv-sub">⏳ Por confirmar en cocina</div>')))
-      + svCol('✅ Cobrados recientes', fin.slice(0, 8), o => svCard(o, 'done', `<div class="sv-total">${money(o.total)}</div>`)) + '</div>';
+    h = `<div class="sv-stats"><div><small>💰 Ventas (finalizadas)</small><b>${money(sum(fin))}</b></div><div><small>🧾 Por cobrar</small><b>${money(sum(cobrar))}</b></div><div><small>🏁 Pedidos finalizados</small><b>${fin.length}</b></div><div><small>📊 Todos los datos de las comandas</small><button onclick="exportOrders()">📥 Exportar a Excel</button></div></div>`
+      + cajaSection('por', '🧾 Por cobrar', cobrar) + cajaSection('cob', '✅ Cobrados', fin);
   }
   $('svBody').innerHTML = h;
 }
@@ -1540,6 +1569,92 @@ const _renderAllBase = renderAll;
 renderAll = function(){ _renderAllBase(); renderScreen(); };
 window.addEventListener('hashchange', renderScreen);
 setInterval(() => { const c = $('svClock'); if(c) c.textContent = new Date().toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}); }, 1000);
+
+// ===== ASIGNACIÓN DE MESAS DESDE EL PEDIDO =====
+function tablePicker(o){
+  if(o.type !== 'Comer en restaurante' || o.status === 'Finalizado' || !settings.tablesActive) return '';
+  const opts = tables.filter(t => t.status === 'Libre' || t.id === o.table);
+  const chips = opts.map(t => `<button class="tp-chip ${t.id === o.table ? 'sel' : 'free'}" title="${t.id === o.table ? 'Quitar mesa' : 'Asignar mesa'}" onclick="assignTable(${o.id},'${esc(t.id)}')">${t.id === o.table ? '✅ ' : ''}${esc(t.id)}</button>`).join('');
+  return `<div class="tp"><span class="tp-l">🪑 ${o.table ? 'Mesa asignada:' : 'Asignar mesa:'}</span>${chips || '<span class="tp-none">Sin mesas libres</span>'}</div>`;
+}
+async function assignTable(id, tableId){
+  const o = orders.find(x => Number(x.id) === Number(id));
+  if(!o) return;
+  const prevId = o.table;
+  if(tableId && tableId !== prevId){
+    const t = tables.find(x => x.id === tableId);
+    if(!t || t.status !== 'Libre'){ toast('Esa mesa ya no está libre.'); renderAll(); return; }
+  }
+  if(prevId){ const p = tables.find(x => x.id === prevId); if(p){ p.status = 'Libre'; p.order = ''; p.minutes = 0; } }
+  if(tableId && tableId !== prevId){
+    const t = tables.find(x => x.id === tableId), prep = o.status === 'Preparando';
+    t.status = prep ? 'Preparando' : 'Ocupada'; t.order = '#' + o.id; t.minutes = prep ? 15 : 0;
+    o.table = tableId; o.address = 'Mesa ' + tableId;
+    toast('🪑 Pedido #' + o.id + ' asignado a la mesa ' + tableId + '.');
+  } else {
+    o.table = ''; o.address = 'Sin mesa asignada';
+    toast('Mesa liberada del pedido #' + o.id + '.');
+  }
+  saveState(); renderAll();
+  await cloudSave(o);
+}
+
+// ===== CAJA: tabla ordenable, secciones desplegables y exportación a Excel =====
+const cajaOpen = {por:true, cob:true};
+let cajaSort = {key:'fecha', dir:-1};
+const orderKey = o => { const t = Date.parse(o.created_at || o.created || ''); return isNaN(t) ? 0 : t; };
+const fmtDate = o => { const t = orderKey(o); return t ? new Date(t).toLocaleDateString('es-MX', {day:'2-digit', month:'2-digit', year:'numeric'}) : ''; };
+const itemsList = o => String(o.items || '').split(/,\s*(?=\d+\s*x\s)/);
+const CAJA_COLS = [
+  {k:'id',      l:'#',               g:o => Number(o.id),            v:o => '#' + esc(o.id)},
+  {k:'fecha',   l:'Fecha',           g:orderKey,                     v:o => esc(fmtDate(o) || '—'), x:fmtDate},
+  {k:'hora',    l:'Hora',            g:o => o.time || '',            v:o => esc(o.time)},
+  {k:'cliente', l:'Cliente',         g:o => o.customer || '',        v:o => esc(o.customer)},
+  {k:'tel',     l:'Teléfono / Usuario', g:o => o.phone || '',        v:o => esc(o.phone)},
+  {k:'canal',   l:'Canal',           g:o => o.channel || '',         v:o => esc(o.channel)},
+  {k:'tipo',    l:'Tipo de pedido',  g:o => o.type || '',            v:o => (TYPE_EMOJI[o.type] || '🧾') + ' ' + esc(o.type)},
+  {k:'mesa',    l:'Mesa',            g:o => o.table || '',           v:o => esc(o.table || '—')},
+  {k:'dir',     l:'Dirección / Detalle', g:o => o.address || '',     v:o => esc(o.address)},
+  {k:'items',   l:'Productos',       g:o => String(o.items || ''),   v:o => '<ul>' + itemsList(o).map(i => '<li>' + esc(i) + '</li>').join('') + '</ul>', x:o => itemsList(o).join(' | ')},
+  {k:'total',   l:'Total (MXN)',     g:o => Number(o.total) || 0,    v:o => money(o.total), c:'num', x:o => Number(o.total) || 0},
+  {k:'pago',    l:'Método de pago',  g:o => o.payment || '',         v:o => esc(o.payment || 'Efectivo'), x:o => o.payment || 'Efectivo'},
+  {k:'epago',   l:'Estado de pago',  g:o => o.paymentStatus || '',   v:o => esc(o.paymentStatus || 'Pendiente'), x:o => o.paymentStatus || 'Pendiente'},
+  {k:'estado',  l:'Estado del pedido', g:o => o.status || '',        v:o => esc(o.status)}
+];
+function sortOrders(list){
+  const col = CAJA_COLS.find(c => c.k === cajaSort.key) || CAJA_COLS[1], d = cajaSort.dir;
+  return list.slice().sort((a, b) => {
+    const x = col.g(a), y = col.g(b);
+    const r = (typeof x === 'number' && typeof y === 'number') ? x - y : String(x).localeCompare(String(y), 'es', {numeric:true});
+    return (r || (Number(a.id) - Number(b.id))) * d;
+  });
+}
+function cajaSortBy(k){ cajaSort = {key:k, dir: cajaSort.key === k ? -cajaSort.dir : (k === 'fecha' ? -1 : 1)}; renderScreen(); }
+function cajaSection(key, title, list){
+  const head = CAJA_COLS.map(c => `<th class="${c.c || ''}" onclick="cajaSortBy('${c.k}')">${c.l}${cajaSort.key === c.k ? (cajaSort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('') + '<th>Acción</th>';
+  const rows = sortOrders(list).map(o => '<tr>' + CAJA_COLS.map(c => `<td class="${c.c || ''}">${c.v(o)}</td>`).join('')
+    + `<td>${o.status === 'Preparando' ? `<button onclick="changeOrder(${o.id},'Finalizado')">💰 Cobrar</button>` : (o.status === 'Nuevo' ? '⏳ Por confirmar' : '✅')}</td></tr>`).join('');
+  return `<details class="sv-det" ${cajaOpen[key] ? 'open' : ''} ontoggle="cajaOpen['${key}']=this.open"><summary>${title} (${list.length}) · ${money(sum(list))}</summary>`
+    + (list.length ? `<div class="sv-tw"><table class="sv-t"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="sv-empty">Sin pedidos</div>') + '</details>';
+}
+function exportOrders(){
+  const list = sortOrders(orders);
+  if(!list.length){ toast('No hay pedidos para exportar.'); return; }
+  const rows = list.map(o => { const r = {}; CAJA_COLS.forEach(c => { r[c.l] = (c.x || c.g)(o); }); return r; });
+  const name = 'pedidos_menuchat_' + new Date().toISOString().slice(0, 10);
+  if(window.XLSX){
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols'] = CAJA_COLS.map(c => ({wch: c.k === 'items' ? 60 : c.k === 'dir' ? 32 : Math.max(12, c.l.length + 2)}));
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Pedidos');
+    XLSX.writeFile(wb, name + '.xlsx');
+  } else {
+    const q = v => '"' + String(v).replace(/"/g, '""') + '"';
+    const csv = '\ufeff' + [CAJA_COLS.map(c => q(c.l)).join(',')].concat(rows.map(r => CAJA_COLS.map(c => q(r[c.l])).join(','))).join('\r\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'})); a.download = name + '.csv'; a.click();
+  }
+  toast('📥 Exportados ' + rows.length + ' pedidos.');
+}
 
 // ===== EMOJIS UNIFORMES: cada emoji va en una caja del mismo tamaño y con la misma fuente =====
 const EMOJI_TEST = /\p{Extended_Pictographic}/u;
