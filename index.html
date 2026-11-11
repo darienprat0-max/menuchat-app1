@@ -3,20 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101317">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="MenuChat Pro: control de pedidos, cocina, mesas y caja en la nube.">
 <title>MenuChat Pro — Sistema Cloud de Control de Pedidos & Cocina</title>
 <!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- FontAwesome Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 <!-- Library PapaParse para CSV / Google Sheets -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 <!-- SheetJS: exportar a Excel (.xlsx) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- Supabase JS Client -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 
 <script>
   tailwind.config = {
@@ -185,8 +185,8 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
 .sv-empty{color:var(--muted);padding:26px;text-align:center;border:2px dashed var(--line);border-radius:14px}
 
 /* ===== MEJORAS VISUALES: tipografía, botones y emojis ===== */
-body{font-family:Inter,"Noto Color Emoji","Segoe UI Emoji",system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;letter-spacing:-.005em}
-.em{display:inline-flex;align-items:center;justify-content:center;flex:none;width:1.3em;height:1.3em;font-size:1.1em;line-height:1;font-style:normal;letter-spacing:0;vertical-align:-.2em;font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji","Twemoji Mozilla",sans-serif;filter:drop-shadow(0 1px 1px #0006)}
+body{font-family:Inter,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;letter-spacing:-.005em}
+.ic{display:inline-block;width:1.15em;height:1.15em;flex:none;vertical-align:-.2em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .top h1{font-size:27px;font-weight:800;letter-spacing:-.025em}
 .top p{font-size:13.5px}
 .stat b,.price,.order b{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
@@ -194,7 +194,7 @@ body{font-family:Inter,"Noto Color Emoji","Segoe UI Emoji",system-ui,sans-serif;
 .order{border-radius:16px;box-shadow:0 2px 10px #0003}
 .order h3{font-size:17.5px;font-weight:800;letter-spacing:-.02em}
 .order p{font-size:13.5px}
-.order p.font-mono{font-family:Inter,"Noto Color Emoji",system-ui,sans-serif!important;font-size:14px;font-weight:600;color:#ffdcb0!important;background:#2a2119;border:1px solid #4a3722;border-radius:11px;padding:9px 12px;margin:10px 0;line-height:1.5}
+.order p.font-mono{font-family:Inter,system-ui,sans-serif!important;font-size:14px;font-weight:600;color:#ffdcb0!important;background:#2a2119;border:1px solid #4a3722;border-radius:11px;padding:9px 12px;margin:10px 0;line-height:1.5}
 .tag{letter-spacing:.03em}
 
 /* Botones (body button supera el reset de Tailwind) */
@@ -208,14 +208,14 @@ body button.ghost{background:transparent;color:var(--muted);box-shadow:none}
 body button.danger{background:linear-gradient(180deg,#4a2a2e,#3a2226);color:#ffbcbc;border:1px solid #7a3a40;box-shadow:none}
 body button.danger:hover{background:linear-gradient(180deg,#5a3035,#46282c)}
 body .actions button{font-size:13px;padding:9px 14px}
-body button .em{font-size:1.15em;width:1.25em;height:1.25em}
+body button .ic{width:1.15em;height:1.15em}
 
 /* Menú lateral */
 body .nav button{justify-content:flex-start;text-align:left;background:transparent;box-shadow:none;border:1px solid transparent;color:#c9d0d7;font-size:14.5px;font-weight:600;padding:9px 12px;border-radius:14px;gap:12px}
 body .nav button:hover{background:#1c242c;transform:none;box-shadow:none}
 body .nav button.active{background:linear-gradient(90deg,#3d2a17,#2a2018);border-color:#70451f;color:#ffbd7b}
-.nav button .em{width:36px;height:36px;font-size:19px;border-radius:11px;background:#222a32;border:1px solid #303b46}
-.nav button.active .em{background:#4a3219;border-color:#8a5a28}
+.nav button .ic{width:36px;height:36px;padding:9px;border-radius:11px;background:#222a32;border:1px solid #303b46}
+.nav button.active .ic{background:#4a3219;border-color:#8a5a28}
 
 /* Menú lateral: Mi menú, Mesas y Ajustes al fondo (Ajustes hasta abajo) */
 @media(min-width:901px){
@@ -266,8 +266,96 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
 .sv-t .num{text-align:right;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
 .sv-t ul{list-style:none;padding:0;margin:0;min-width:200px;font-weight:600}
 .sv-t td button{width:auto;margin:0;padding:7px 12px;font-size:.95em;white-space:nowrap}
+
+/* ===== V2.1: interruptor general, estados, sonidos y validaciones ===== */
+body button.pwr{background:#2a1719;color:#ff9b9b;border:1px solid #7a3a40;box-shadow:none;padding:5px 14px 5px 6px;border-radius:999px;font-size:11.5px;letter-spacing:.07em;gap:10px}
+body button.pwr:hover{transform:none;box-shadow:none;background:#331c1f}
+body button.pwr.on{background:#12261b;color:#7ee2ab;border-color:#2f8f5f}
+body button.pwr.on:hover{background:#163122}
+.pwr .trk{position:relative;flex:none;width:42px;height:24px;border-radius:999px;background:#c0392b;transition:background .2s}
+.pwr .trk::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0006;transition:transform .2s}
+.pwr.on .trk{background:#2fb872}
+.pwr.on .trk::after{transform:translateX(18px)}
+body button.sim-btn{width:44px;height:44px;padding:0;font-size:20px;line-height:1;border-radius:14px}
+.net{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:var(--muted);padding:6px 11px;border:1px solid var(--line);border-radius:999px;background:#151a1f;white-space:nowrap}
+.net::before{content:"";width:8px;height:8px;border-radius:50%;background:#6b7683}
+.net.ok::before{background:var(--green);box-shadow:0 0 0 3px #43c98233}
+.net.warn::before{background:#ffc56e}
+.net.err::before{background:var(--red)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:#6b7683}
+.dot.g{background:var(--green)}.dot.r{background:var(--red)}
+.off-banner{display:none;align-items:center;gap:12px;background:#2a1719;border:1px solid #7a3a40;color:#ffcaca;border-radius:14px;padding:12px 16px;margin-bottom:16px;font-size:13.5px}
+body.sys-off .off-banner{display:flex}
+body.sys-off .sim-btn{opacity:.4;filter:grayscale(1)}
+body.sys-off main>section{opacity:.3;filter:grayscale(.85);pointer-events:none;user-select:none}
+.nav button .nav-lock{display:inline-flex;color:#8a95a1}
+.nav button .nav-lock .ic{width:15px;height:15px;padding:0;background:none;border:0}
+.toast{align-items:center;gap:10px;max-width:min(440px,calc(100vw - 32px))}
+.toast .ic{flex:none;width:18px;height:18px}
+.toast.warn{background:#3a2d17;border-color:#7a5d21;color:#ffe2a3}
+.toast.err{background:#3a1f22;border-color:#7a3a40;color:#ffd0d0}
+.toast.info{background:#192a3d;border-color:#335170;color:#cfe5ff}
+.invalid{border-color:var(--red)!important;box-shadow:0 0 0 3px #ff6b6b22}
+.ferr{color:#ff9b9b;font-size:12px;font-weight:600;margin-top:5px}
+.pass-wrap{display:flex;gap:8px}.pass-wrap input{flex:1}
+.pass-wrap button{padding:0 12px}
+.lock-ic{width:46px;height:46px;border-radius:14px;background:#3a2819;border:1px solid #70451f;color:#ffbd7b;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.lock-ic .ic{width:22px;height:22px}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.shake{animation:shake .3s}
+.sound-list{display:grid;gap:8px}
+.snd{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:14px;padding:10px 12px;border:1px solid var(--line);border-radius:13px;background:var(--panel2);transition:border-color .15s,background .15s}
+.snd.sel{border-color:#70451f;background:#3a2819}
+.snd-pick{display:flex;align-items:center;gap:12px;margin:0;cursor:pointer;color:var(--text);font-size:14px;font-weight:700}
+.snd-pick input{width:auto;accent-color:var(--orange)}
+.snd-n{width:26px;height:26px;flex:none;border-radius:8px;background:#11161b;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(--muted)}
+.snd-pick small{color:var(--muted);font-weight:600;margin-left:2px}
+.snd-bar{display:flex;gap:3px}
+.snd-bar i{width:7px;height:16px;border-radius:2px;background:#303943}
+.snd-bar i.on{background:var(--c)}
+body button.snd-play{padding:7px 12px;font-size:12.5px}
+@media(max-width:600px){.snd{grid-template-columns:1fr auto}.snd-bar{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== V2.2: paneles retractiles, barra Pantallas plegable y selector de productos ===== */
+body main{padding-bottom:92px}
+.cwrap{display:grid;grid-template-rows:1fr;transition:grid-template-rows .25s ease}
+.cwrap>.cbody{min-height:0;overflow:hidden;padding-top:14px;transition:visibility 0s,padding .25s}
+.collapsed>.cwrap{grid-template-rows:0fr}
+.collapsed>.cwrap>.cbody{visibility:hidden;padding-top:0;transition:visibility 0s .25s,padding .25s}
+.ch{display:flex!important;align-items:center;gap:12px;cursor:pointer;margin-bottom:0!important}
+.ch>:nth-child(2){flex:1;min-width:0}
+body button.cbtn{width:32px;height:32px;padding:0;border-radius:10px;flex:none}
+.cbtn .ic{transition:transform .2s}
+.collapsed .cbtn .ic{transform:rotate(-90deg)}
+body #svLauncher .svl-t{padding:7px 10px;gap:6px}
+.svl-body{display:inline-flex;align-items:center;gap:8px}
+.svl-c .ic{width:14px;height:14px;transition:transform .2s;transform:rotate(90deg)}
+#svLauncher.min .svl-body{display:none}
+#svLauncher.min{padding:6px}
+#svLauncher.min .svl-c .ic{transform:rotate(-90deg)}
+body button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.pick{border:1px solid var(--line);border-radius:14px;background:#141a20;overflow:hidden;margin-bottom:4px}
+.pick-top{display:grid;gap:8px;padding:10px;border-bottom:1px solid var(--line)}
+.pick-cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+body .pick-cats button{padding:5px 12px;font-size:12px;border-radius:999px;background:#222a32;color:#cdd4db;border:1px solid var(--line);box-shadow:none;white-space:nowrap}
+body .pick-cats button.selected{background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604;border-color:#ffb261}
+.pick-list{max-height:210px;overflow:auto}
+.pick-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #222a32}
+.pick-row.off{opacity:.5}
+.nm{flex:1;min-width:0}
+.nm b{display:block;font-size:14px}
+.nm small{display:block;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lt{min-width:74px;text-align:right}
+.pr,.lt{font-weight:800;color:var(--orange2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.qty{display:inline-flex;align-items:center;gap:6px}
+.qty>span{min-width:22px;text-align:center;font-weight:800}
+body .qty button,body .cart-row>button{width:30px;height:30px;padding:0;border-radius:9px}
+.cart{padding:10px 12px;border-top:1px solid var(--line);background:#11161b}
+.cart-row{display:flex;align-items:center;gap:10px;padding:5px 0}
+.cart-tot{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding-top:4px}
 </style>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%23ff922b%22/><path d=%22M9 8v7a3 3 0 0 0 6 0V8M12 8v16M21 24V8c-3 1-4 4-4 8v2h4%22 fill=%22none%22 stroke=%22%23211407%22 stroke-width=%222.4%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
 </head>
 <body>
 
@@ -279,30 +367,30 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
         <strong>Menu<span>Chat</span></strong>
         <small id="subBrandTitle">Panel Mazatlán</small>
       </div>
-      <span class="pill">V 2.0 CLOUD</span>
+      <span class="pill">V 2.2 CLOUD</span>
     </div>
 
     <nav class="nav">
       <button class="active" data-page="tab-pending" id="navPendingBtn">
-        🕒 <span>Pendientes</span>
+        [[clock]] <span>Pendientes</span>
         <span id="navCountPending" class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-amber-950 text-amber-400 font-bold border border-amber-800">0</span>
       </button>
       <button data-page="tab-prep" id="navPrepBtn">
-        🔥 <span>En Preparación</span>
+        [[flame]] <span>En Preparación</span>
         <span id="navCountPrep" class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-amber-950 text-amber-400 font-bold border border-amber-800">0</span>
       </button>
       <button data-page="tab-done" id="navDoneBtn">
-        🏁 <span>Finalizadas</span>
+        [[flag]] <span>Finalizadas</span>
         <span id="navCountDone" class="ml-auto px-2 py-0.5 rounded-full text-[10px] bg-blue-950 text-blue-300 font-bold border border-blue-800">0</span>
       </button>
       <button data-page="menu">
-        📋 <span>Mi menú</span>
+        [[clipboard]] <span>Mi menú</span><span class="nav-lock ml-auto" id="navLock">[[lock]]</span>
       </button>
       <button data-page="tables">
-        🪑 <span>Mesas</span>
+        [[chair]] <span>Mesas</span>
       </button>
       <button data-page="settings">
-        ⚙️ <span>Ajustes</span>
+        [[sliders]] <span>Ajustes</span>
       </button>
     </nav>
   </aside>
@@ -311,16 +399,17 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
   <main>
     <div class="top">
       <div>
-        <h1 id="pageTitle">🕒 Pedidos Pendientes</h1>
+        <h1 id="pageTitle">[[clock]] Pedidos Pendientes</h1>
         <p id="pageSubtitle">Confirma y procesa los pedidos entrantes en tiempo real.</p>
       </div>
-      <div class="flex items-center gap-3">
-        <button onclick="simularPedidoWhatsApp()">
-          🔔 Simular Pedido (Sonido)
-        </button>
-        <span class="pill">🟢 NUBE ACTIVA</span>
+      <div class="flex items-center gap-3 flex-wrap justify-end">
+        <button type="button" class="sim-btn" id="simBtn" onclick="simularPedidoWhatsApp()" title="Simular pedido nuevo (prueba de aviso y sonido)" aria-label="Simular pedido nuevo">🔔</button>
+        <span class="net" id="netChip" role="status">Nube en línea</span>
+        <button type="button" class="pwr on" id="pwrMain" role="switch" aria-checked="true" onclick="togglePower()" title="Encender o apagar todo el sistema"><span class="trk"></span><span class="pwr-t">ENCENDIDO</span></button>
       </div>
     </div>
+
+    <div id="offBanner" class="off-banner" role="alert">[[power]]<div><b>Sistema apagado.</b> No se reciben pedidos ni se sincroniza con la nube. Enciende el interruptor para reanudar.</div></div>
 
     <!-- PESTAÑA 1: PENDIENTES -->
     <section id="page-tab-pending">
@@ -334,12 +423,12 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
       <div class="panel">
         <div class="section-head flex justify-between items-center mb-3">
           <h2>Bandeja de Pedidos Pendientes</h2>
-          <button onclick="openOrderModal()">➕ Nuevo pedido manual</button>
+          <button onclick="openOrderModal()">[[plus]] Nuevo pedido manual</button>
         </div>
         <div class="filters" id="pendingFilters">
-          <button class="selected" data-filter="Todos">🌐 Todos</button>
-          <button data-filter="WhatsApp">💬 WhatsApp</button>
-          <button data-filter="Mostrador">🏬 Mostrador</button>
+          <button class="selected" data-filter="Todos">[[globe]] Todos</button>
+          <button data-filter="WhatsApp">[[message]] WhatsApp</button>
+          <button data-filter="Mostrador">[[store]] Mostrador</button>
         </div>
         <div class="orders" id="pendingOrdersList"></div>
       </div>
@@ -356,14 +445,14 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
 
       <div class="panel">
         <div class="section-head">
-          <h2>🔥 Pantalla de Cocina / KDS (En Preparación)</h2>
+          <h2>[[flame]] Pantalla de Cocina / KDS (En Preparación)</h2>
           <span class="text-xs text-slate-400">Revisa el ticket de preparación detallado</span>
         </div>
         <div class="filters" id="prepFilters">
-          <button class="selected" data-filter="Todos">🌐 Todos</button>
-          <button data-filter="Comer en restaurante">🪑 Mesas</button>
-          <button data-filter="Recoger">🛍️ Para Recoger</button>
-          <button data-filter="Domicilio">🛵 A Domicilio</button>
+          <button class="selected" data-filter="Todos">[[globe]] Todos</button>
+          <button data-filter="Comer en restaurante">[[chair]] Mesas</button>
+          <button data-filter="Recoger">[[bag]] Para Recoger</button>
+          <button data-filter="Domicilio">[[bike]] A Domicilio</button>
         </div>
         <div class="orders" id="prepOrdersList"></div>
       </div>
@@ -373,15 +462,15 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
     <section id="page-tab-done" class="hidden">
       <div class="panel">
         <div class="section-head flex justify-between items-center mb-3">
-          <h2>🏁 Historial de Pedidos Concluidos</h2>
+          <h2>[[flag]] Historial de Pedidos Concluidos</h2>
           <div class="w-64">
-            <input type="text" id="doneSearchInput" oninput="renderOrders()" placeholder="🔍 Buscar cliente o comanda..." class="text-xs py-1.5">
+            <input type="text" id="doneSearchInput" oninput="renderOrders()" placeholder="Buscar cliente o comanda..." class="text-xs py-1.5">
           </div>
         </div>
         <div class="filters" id="doneFilters">
-          <button class="selected" data-filter="Todos">🌐 Todos</button>
-          <button data-filter="WhatsApp">💬 WhatsApp</button>
-          <button data-filter="Mostrador">🏬 Mostrador</button>
+          <button class="selected" data-filter="Todos">[[globe]] Todos</button>
+          <button data-filter="WhatsApp">[[message]] WhatsApp</button>
+          <button data-filter="Mostrador">[[store]] Mostrador</button>
         </div>
         <div class="orders" id="doneOrdersList"></div>
       </div>
@@ -400,8 +489,8 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
           <div class="section-head flex justify-between items-center mb-3">
             <h2>Plano de mesas de Salón</h2>
             <div class="flex gap-2">
-              <button class="secondary text-xs py-1 px-2" onclick="toggleTablesModule()"><span id="tableModuleToggleText">🔌 Apagar Módulo</span></button>
-              <button class="secondary text-xs py-1 px-2" onclick="addTable()">➕ Agregar mesa</button>
+              <button class="secondary text-xs py-1 px-2" onclick="toggleTablesModule()"><span id="tableModuleToggleText">[[power]] Apagar Módulo</span></button>
+              <button class="secondary text-xs py-1 px-2" onclick="addTable()">[[plus]] Agregar mesa</button>
             </div>
           </div>
           <div class="table-grid" id="tableGrid"></div>
@@ -423,19 +512,20 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
           </div>
           <div class="flex gap-2">
             <label class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs px-3 py-2 rounded-xl cursor-pointer flex items-center gap-1.5">
-              📁 Importar CSV / Sheets
+              [[upload]] Importar CSV / Sheets
               <input type="file" id="csv-input" accept=".csv" class="hidden" onchange="importarCSV(event)">
             </label>
-            <button onclick="openProductModal()">➕ Agregar producto</button>
+            <button class="secondary" onclick="lockMenu()">[[lock]] Bloquear</button>
+            <button onclick="openProductModal()">[[plus]] Agregar producto</button>
           </div>
         </div>
         <div class="filters" id="menuFilters">
-          <button class="selected" data-cat="Todos">🌐 Todos</button>
-          <button data-cat="Hamburguesas">🍔 Hamburguesas</button>
-          <button data-cat="Pizzas">🍕 Pizzas</button>
-          <button data-cat="Mariscos">🦐 Mariscos</button>
-          <button data-cat="Complementos">🍟 Complementos</button>
-          <button data-cat="Bebidas">🥤 Bebidas</button>
+          <button class="selected" data-cat="Todos">[[globe]] Todos</button>
+          <button data-cat="Hamburguesas">Hamburguesas</button>
+          <button data-cat="Pizzas">Pizzas</button>
+          <button data-cat="Mariscos">Mariscos</button>
+          <button data-cat="Complementos">Complementos</button>
+          <button data-cat="Bebidas">Bebidas</button>
         </div>
       </div>
       <div class="product-grid" id="productGrid"></div>
@@ -446,7 +536,7 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
       <div class="panel">
         <div class="section-head flex justify-between items-center mb-3">
           <h2>Información del restaurante</h2>
-          <button onclick="saveSettings()">💾 Guardar cambios</button>
+          <button onclick="saveSettings()">[[save]] Guardar cambios</button>
         </div>
         <div class="formgrid">
           <div><label>Nombre comercial</label><input id="restName" value="Mariscos & Tacos Demo Mazatlán"></div>
@@ -467,6 +557,14 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
         </div>
       </div>
       <div class="panel" style="margin-top:14px">
+        <div class="section-head flex justify-between items-center mb-3 gap-3 flex-wrap">
+          <div><h2>Sonido de alerta</h2><p class="muted" style="margin:2px 0 0;font-size:13px">Tono que suena con cada pedido nuevo, de menor a mayor intensidad.</p></div>
+          <label class="switch"><input type="checkbox" id="soundOn" onchange="setSoundEnabled(this.checked)"> Sonido activado</label>
+        </div>
+        <div id="soundList" class="sound-list"></div>
+        <p class="muted" style="font-size:12px;margin-top:10px">Los navegadores solo reproducen sonido después de que interactúas con la página al menos una vez.</p>
+      </div>
+      <div class="panel" style="margin-top:14px">
         <h2>Horarios de Atención</h2>
         <div id="hours"></div>
       </div>
@@ -478,7 +576,7 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
 <div id="toast" class="toast"></div>
 
 <!-- MODAL: VER COMANDA / ORDEN COMPLETA -->
-<div class="modal" id="orderDetailModal">
+<div class="modal" role="dialog" aria-modal="true" id="orderDetailModal">
   <div class="modalbox">
     <div class="flex justify-between items-start border-b border-slate-700 pb-3 mb-4">
       <div>
@@ -501,12 +599,12 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
       </div>
 
       <div id="modalDetailAddressBox" class="p-3 bg-slate-900 rounded-xl border border-slate-700">
-        <span class="text-amber-400 block text-[10px] uppercase font-bold mb-1">📍 Ubicación / Dirección</span>
+        <span class="text-amber-400 block text-[10px] uppercase font-bold mb-1">[[pin]] Ubicación / Dirección</span>
         <p id="modalDetailAddress" class="text-slate-200 font-medium text-xs"></p>
       </div>
 
       <div>
-        <span class="text-slate-400 block text-[10px] uppercase font-bold mb-1">🌮 Detalle Completo de la Comanda</span>
+        <span class="text-slate-400 block text-[10px] uppercase font-bold mb-1">[[receipt]] Detalle Completo de la Comanda</span>
         <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono text-sm leading-relaxed text-amber-200">
           <div id="modalDetailItems" class="whitespace-pre-wrap"></div>
         </div>
@@ -532,8 +630,8 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
 </div>
 
 <!-- MODAL: NUEVO / EDITAR PEDIDO -->
-<div class="modal" id="orderModal">
-  <div class="modalbox">
+<div class="modal" role="dialog" aria-modal="true" id="orderModal">
+  <div class="modalbox" style="width:min(680px,100%)">
     <h2 id="orderModalTitle">Crear pedido manual</h2>
     <input type="hidden" id="editOrderId">
     <div class="formgrid">
@@ -568,16 +666,24 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
       <label>Asignar Mesa Disponible</label>
       <select id="newTableSelect"></select>
     </div>
-    <label>Productos / Comanda explícita</label>
-    <textarea id="newItems" rows="2">1x Taco Gobernador ($48.00)</textarea>
+    <label>Productos (solo los de Mi menú)</label>
+    <div class="pick" id="cartBox">
+      <div class="pick-top">
+        <input id="pickSearch" type="search" placeholder="Buscar en Mi menú..." autocomplete="off" oninput="pickQ=this.value;renderPicker()">
+        <div class="pick-cats" id="pickCats"></div>
+      </div>
+      <div class="pick-list" id="pickList"></div>
+      <div class="cart" id="cartList"></div>
+    </div>
+    <textarea id="newItems" class="hidden" rows="1" readonly></textarea>
     <div class="formgrid">
       <div>
         <label>Método de Pago</label>
         <select id="newPayment"><option>Efectivo</option><option>Transferencia</option><option>Terminal</option></select>
       </div>
       <div>
-        <label>Total ($ MXN)</label>
-        <input id="newTotal" type="number" value="48" min="0">
+        <label>Total calculado ($ MXN)</label>
+        <input id="newTotal" type="number" value="0" min="0" step="0.01" readonly aria-readonly="true" style="opacity:.85">
       </div>
     </div>
     <div class="modal-actions">
@@ -588,7 +694,7 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
 </div>
 
 <!-- MODAL: ASIGNAR MESA MANUAL -->
-<div class="modal" id="assignTableModal">
+<div class="modal" role="dialog" aria-modal="true" id="assignTableModal">
   <div class="modalbox">
     <h2>Asignar Mesa Disponible</h2>
     <input type="hidden" id="assignTableOrderId">
@@ -602,7 +708,7 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
 </div>
 
 <!-- MODAL: AGREGAR / EDITAR PRODUCTO -->
-<div class="modal" id="productModal">
+<div class="modal" role="dialog" aria-modal="true" id="productModal">
   <div class="modalbox">
     <h2 id="prodModalTitle">Agregar producto al Menú</h2>
     <input type="hidden" id="editProdId">
@@ -627,26 +733,153 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
   </div>
 </div>
 
-<div id="svLauncher">🖥️ Pantallas:
-  <button onclick="location.hash='cocina'">🍳 Cocina</button>
-  <button onclick="location.hash='meseros'">🍽️ Meseros</button>
-  <button onclick="location.hash='caja'">💰 Caja</button>
+<!-- MODAL: CONTRASEÑA DE MI MENU -->
+<div class="modal" role="dialog" aria-modal="true" id="passModal">
+  <div class="modalbox" style="width:min(400px,100%)">
+    <div class="lock-ic">[[lock]]</div>
+    <h2>Mi menú protegido</h2>
+    <p class="muted" style="margin:0 0 4px;font-size:13px">Ingresa la contraseña para editar precios y platillos.</p>
+    <label for="passInput">Contraseña</label>
+    <div class="pass-wrap">
+      <input id="passInput" type="password" autocomplete="off" placeholder="Contraseña" onkeydown="if(event.key==='Enter')submitMenuPass()">
+      <button type="button" class="secondary" onclick="togglePassVis()" aria-label="Mostrar u ocultar contraseña">[[eye]]</button>
+    </div>
+    <div class="ferr hidden" id="passErr" role="alert"></div>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal('passModal')">Cancelar</button>
+      <button onclick="submitMenuPass()">Desbloquear</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRMACION -->
+<div class="modal" role="dialog" aria-modal="true" id="confirmModal">
+  <div class="modalbox" style="width:min(420px,100%)">
+    <h2 id="confirmTitle"></h2>
+    <p id="confirmMsg" class="muted" style="margin:0"></p>
+    <div class="modal-actions">
+      <button class="secondary" id="confirmNo">Cancelar</button>
+      <button class="danger" id="confirmYes">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="svLauncher">
+  <button type="button" class="secondary svl-t" id="svlToggle" onclick="toggleLauncher()" aria-expanded="true" aria-label="Mostrar u ocultar Pantallas" title="Pantallas">[[monitor]]<span class="svl-c">[[chevron]]</span></button>
+  <span class="svl-body">Pantallas:
+    <button onclick="location.hash='cocina'">[[flame]] Cocina</button>
+    <button onclick="location.hash='meseros'">[[utensils]] Meseros</button>
+    <button onclick="location.hash='caja'">[[cash]] Caja</button>
+  </span>
 </div>
 <div id="screenView">
-  <div class="sv-top"><h1 id="svTitle"></h1><span id="svNav"></span><span id="svClock"></span></div>
+  <div class="sv-top"><h1 id="svTitle"></h1><span id="svNav"></span><button type="button" class="pwr on" id="pwrScreen" role="switch" aria-checked="true" onclick="togglePower()" title="Encender o apagar todo el sistema"><span class="trk"></span><span class="pwr-t">ENCENDIDO</span></button><span id="svClock"></span></div>
   <div id="svBody"></div>
 </div>
 
+<script>window.MENUCHAT_CONFIG={cloud:false};</script>
 <script>
 const $=id=>document.getElementById(id);
 
-// --- CONFIGURACIÓN SUPABASE CON CREDENCIALES INTEGRADAS ---
-const SUPABASE_URL = 'https://dqrufnkqwkvalgakqkft.supabase.co'; 
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxcnVmbmtxd2t2YWxnYWtxa2Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQzMjU3MzEsImV4cCI6MjEwOTkwMTczMX0.fYJB9aCuO4R7kzJLfaT-DNftNNEWmJX3FiwGC9PWMmY';
+/* =====================================================================
+   MENUCHAT PRO 2.2 - MAPA DEL CODIGO (para mejorarlo o portarlo a otras plataformas)
+   1. CONFIG ..... credenciales y opciones. Se pueden sobrescribir con window.MENUCHAT_CONFIG
+   2. ICONS ...... iconos SVG propios. Escribe [[nombre]] en cualquier texto y se convierte solo
+   3. Nube ....... adaptador Supabase (cloudSave, cloudInsert, tiempo real)
+   4. Estado ..... localStorage + render (pedidos, mesas, menu, ajustes)
+   5. SOUNDS ..... sonidos de alerta definidos como datos (agrega uno y aparece en Ajustes)
+   6. Seguridad .. interruptor general, contrasena de Mi menu, validaciones y errores
+   Nota: la contrasena de Mi menu es un candado de interfaz. Para proteccion real
+   usa Supabase Auth + politicas RLS en la base de datos.
+   ===================================================================== */
 
+/* ---------------------------------------------------------------------
+   SUGERENCIAS (de mayor a menor prioridad)
+   1. SEGURIDAD: activa Supabase Auth + politicas RLS (la clave anon es publica) y usa roles
+      (encargado / cocina / mesero) en lugar de una contrasena en pantalla.
+   2. COMPARTIR DATOS: Mi menu, mesas y ajustes hoy viven solo en cada dispositivo. Pasarlos a
+      tablas de Supabase (products, tables, settings) los sincroniza entre tablets y celulares.
+   3. HORARIOS: la seccion Horarios de Ajustes todavia no se guarda ni se aplica. Guardarlos y
+      rechazar pedidos fuera de horario.
+   4. PEDIDOS COMO DATOS: orders.items es texto. Una tabla order_items (producto, cantidad,
+      precio) habilita reportes por producto, inventario y totales confiables.
+   5. NOTAS Y TIEMPOS: nota por producto (sin cebolla), cronometro en cocina y alerta si un
+      pedido pasa de X minutos en preparacion.
+   6. TICKET: boton Imprimir comanda (@media print) o impresora termica ESC/POS.
+   7. PWA: manifest + service worker para instalar la app en celular y trabajar sin internet con
+      cola de sincronizacion.
+   8. CAJA: corte por turno, descuentos, propina y pago dividido; el bot de WhatsApp tambien debe
+      aplicar pedido minimo y costo de envio (ya se aplican en el pedido manual).
+   9. MULTI-RESTAURANTE: filtrar pedidos por restaurantid en consultas y en tiempo real.
+  10. CALIDAD: separar CSS/JS en archivos, agregar pruebas y un build (Vite) cuando el proyecto
+      crezca; trampa de foco en modales para accesibilidad.
+   --------------------------------------------------------------------- */
+const CONFIG = Object.assign({
+  version: '2.2.0',
+  cloud: true,
+  supabaseUrl: 'https://dqrufnkqwkvalgakqkft.supabase.co',
+  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxcnVmbmtxd2t2YWxnYWtxa2Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQzMjU3MzEsImV4cCI6MjEwOTkwMTczMX0.fYJB9aCuO4R7kzJLfaT-DNftNNEWmJX3FiwGC9PWMmY',
+  restaurantId: 'menuchat-demo',
+  passSalt: 'menuchat:',
+  menuPassHash: '2a4626da38808bafb75f6a51b68ff114e52864bf97e7785a17c953c27407ff57'
+}, window.MENUCHAT_CONFIG || {});
+const SUPABASE_URL = CONFIG.supabaseUrl;
+const SUPABASE_KEY = CONFIG.supabaseKey;
 let _supabase = null;
 let useCloud = false;
-const RESTAURANT_ID = 'menuchat-demo';
+const RESTAURANT_ID = CONFIG.restaurantId;
+
+// --- ICONOS (estilo trazo, 24x24). Agrega aqui los que necesites ---
+const ICONS = {
+  clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  flame:'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+  clipboard:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M12 11h4M12 16h4M8 11h.01M8 16h.01"/>',
+  chair:'<path d="M7 11V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v6M5 11h14v4H5zM7 15v6M17 15v6"/>',
+  sliders:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  message:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  store:'<path d="M3 9l1-5h16l1 5M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0M5 12v9h14v-9"/>',
+  bag:'<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>',
+  bike:'<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M12 17.5V14l-3-3 4-3 2 3h2M15 6h.01"/>',
+  power:'<path d="M18.4 6.6a9 9 0 1 1-12.8 0M12 2v10"/>',
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+  save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-8H7v8M7 3v5h8"/>',
+  pin:'<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
+  receipt:'<path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2zM9 8h6M9 12h6"/>',
+  monitor:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  utensils:'<path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3zm0 0v7"/>',
+  cash:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  edit:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/>',
+  lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  unlock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+  undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+  alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/>',
+  'alert-circle':'<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
+  info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+  play:'<path d="m6 3 14 9-14 9z"/>',
+  minus:'<path d="M5 12h14"/>',
+  chevron:'<path d="m6 9 6 6 6-6"/>'
+};
+const ic = (n, c = '') => `<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+const ICON_RE = /\[\[([a-z0-9-]+)\]\]/g;
+function hydrateIcons(root){
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), hit = [];
+  while(w.nextNode()){
+    const n = w.currentNode;
+    if(n.nodeValue.includes('[[') && n.parentElement && !n.parentElement.closest('script,style,textarea,option,title')) hit.push(n);
+  }
+  hit.forEach(n => {
+    const t = document.createElement('template');
+    t.innerHTML = n.nodeValue.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(ICON_RE, (m, k) => ICONS[k] ? ic(k) : m);
+    n.replaceWith(t.content);
+  });
+}
 
 // Fila limpia para la tabla orders (nombres de columna exactos de Supabase)
 // Repara textos con precios mal formados guardados antes: $48.00.00 -> $48.00, $48.5.00 -> $48.50
@@ -663,7 +896,7 @@ const toRow = o => ({
 const fromRow = r => ({...r, items: cleanItems(r.items), paymentStatus: r.paymentstatus || r.payment_status || r.paymentStatus || 'Pendiente', table: r.table || ''});
 const nextOrderId = () => Math.max(105, ...orders.map(o => Number(o.id) || 0)) + 1;
 
-function cloudFail(msg, err){ console.error('Supabase:', err && (err.code + ' ' + err.message)); toast('⚠️ ' + msg + (err ? ': ' + err.message : '')); }
+function cloudFail(msg, err){ console.error('Supabase:', err); toast(msg + (err && err.message ? ': ' + err.message : ''), 'err'); }
 
 // Actualiza o crea (por id) un pedido existente
 async function cloudSave(o){
@@ -692,7 +925,7 @@ async function cloudInsert(o){
 }
 
 try {
-  if (window.supabase) {
+  if (CONFIG.cloud && window.supabase) {
     _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     useCloud = true;
   }
@@ -741,34 +974,69 @@ let defaultSettings = {
   dinein: true,
   minimum: 50,
   shipping: 30,
-  tablesActive: true
+  tablesActive: true,
+  power: true,
+  sound: 6,
+  soundOn: true
 };
 
 let orders = [], products = [], tables = [], settings = {};
 let pendingFilter="Todos", prepFilter="Todos", doneFilter="Todos", menuFilter="Todos", selectedTable="M1", nextId=106;
 
-// --- ALERTA SONORA RUIDOSA DE COCINA (WEB AUDIO API) ---
-function playNotificationSound() {
-  try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const ctx = new AudioContext();
-    setTimeout(() => ctx.close(), 1200);
-    [0, 0.18, 0.36].forEach((delay, idx) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(880 + (idx * 220), ctx.currentTime + delay);
-      gain.gain.setValueAtTime(0.5, ctx.currentTime + delay);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + delay + 0.15);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + delay);
-      osc.stop(ctx.currentTime + delay + 0.15);
-    });
-  } catch (e) {
-    console.log("Audio no habilitado.");
-  }
+// --- SONIDOS DE ALERTA (Web Audio). Cada sonido es un dato: n=nombre, w=ondas, g=volumen, r=repeticiones,
+//     gap=pausa entre repeticiones, notes=[[hz inicial, hz final, inicio s, duracion s]]. Orden: de menor a mayor intensidad.
+const SOUNDS = [
+  {n:'Gota',            t:'Suave',      w:['sine'],                g:.20, r:1, gap:0,   notes:[[1320,1320,0,.30]]},
+  {n:'Campanita',       t:'Suave',      w:['sine'],                g:.28, r:1, gap:0,   notes:[[1046,1046,0,.22],[1568,1568,.16,.34]]},
+  {n:'Timbre doble',    t:'Suave',      w:['triangle'],            g:.36, r:1, gap:0,   notes:[[988,988,0,.16],[988,988,.22,.16]]},
+  {n:'Aviso',           t:'Media',      w:['triangle'],            g:.45, r:1, gap:0,   notes:[[784,784,0,.14],[988,988,.14,.14],[1319,1319,.28,.26]]},
+  {n:'Campana de cocina',t:'Media',     w:['triangle','sine'],     g:.55, r:2, gap:.25, notes:[[1568,1568,0,.2],[1175,1175,.22,.2],[1568,1568,.44,.3]]},
+  {n:'Clásico',         t:'Media',      w:['sawtooth'],            g:.50, r:1, gap:0,   notes:[[880,880,0,.15],[1100,1100,.18,.15],[1320,1320,.36,.15]]},
+  {n:'Alerta doble',    t:'Fuerte',     w:['square'],              g:.50, r:3, gap:.10, notes:[[1200,1200,0,.14],[900,900,.18,.14]]},
+  {n:'Sirena',          t:'Fuerte',     w:['sawtooth'],            g:.62, r:2, gap:0,   notes:[[600,1400,0,.5],[1400,600,.5,.5]]},
+  {n:'Alarma de cocina',t:'Muy fuerte', w:['square'],              g:.72, r:6, gap:.08, notes:[[1500,1500,0,.09],[1500,1500,.15,.09]]},
+  {n:'Alarma máxima',   t:'Muy fuerte', w:['sawtooth','square'],   g:.90, r:5, gap:0,   notes:[[500,1800,0,.25],[1800,500,.25,.25]]}
+];
+let audioCtx = null;
+function getCtx(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if(!AC) return null;
+  if(!audioCtx) audioCtx = new AC();
+  if(audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+  return audioCtx;
 }
+['pointerdown','keydown'].forEach(ev => window.addEventListener(ev, () => { try{ getCtx(); }catch(e){} }, {once:true, passive:true}));
+function playSound(id){
+  try{
+    const s = SOUNDS[(Number(id) || settings.sound || 6) - 1] || SOUNDS[5];
+    const ctx = getCtx();
+    if(!ctx){ toast('Este navegador no permite reproducir sonido.', 'err'); return; }
+    const comp = ctx.createDynamicsCompressor(); comp.connect(ctx.destination);
+    const len = Math.max(...s.notes.map(n => n[2] + n[3])), t0 = ctx.currentTime + .02;
+    for(let r = 0; r < s.r; r++){
+      s.notes.forEach(([f0, f1, st, d]) => s.w.forEach(w => {
+        const o = ctx.createOscillator(), g = ctx.createGain(), t = t0 + r * (len + s.gap) + st;
+        o.type = w; o.frequency.setValueAtTime(f0, t);
+        if(f1 !== f0) o.frequency.linearRampToValueAtTime(f1, t + d);
+        g.gain.setValueAtTime(.0001, t);
+        g.gain.exponentialRampToValueAtTime(s.g / s.w.length, t + .01);
+        g.gain.exponentialRampToValueAtTime(.0001, t + d);
+        o.connect(g); g.connect(comp); o.start(t); o.stop(t + d + .02);
+      }));
+    }
+  }catch(e){ console.log('Audio no disponible.', e); }
+}
+function playNotificationSound(){ if(settings.soundOn !== false) playSound(); }
+function renderSounds(){
+  const cur = Number(settings.sound) || 6;
+  $('soundList').innerHTML = SOUNDS.map((s, i) => { const n = i + 1;
+    return `<div class="snd ${cur === n ? 'sel' : ''}">
+      <label class="snd-pick"><input type="radio" name="alertSound" value="${n}" ${cur === n ? 'checked' : ''} onchange="setSound(${n})"><span class="snd-n">${n}</span><span>${esc(s.n)} <small>${esc(s.t)}</small></span></label>
+      <span class="snd-bar" role="img" aria-label="Intensidad ${n} de 10">${Array.from({length:10}, (_, k) => `<i class="${k < n ? 'on' : ''}" style="--c:hsl(${125 - k * 13},70%,55%)"></i>`).join('')}</span>
+      <button type="button" class="secondary snd-play" onclick="playSound(${n})" aria-label="Probar sonido ${esc(s.n)}">[[play]] Probar</button></div>`; }).join('');
+}
+function setSound(n){ settings.sound = n; saveState(); renderSounds(); playSound(n); toast('Sonido de alerta: ' + SOUNDS[n - 1].n + '.'); }
+function setSoundEnabled(v){ settings.soundOn = v; saveState(); toast(v ? 'Sonido de alertas activado.' : 'Sonido de alertas silenciado.', v ? 'ok' : 'info'); }
 
 // CARGA Y PERSISTENCIA (SUPABASE O LOCALSTORAGE)
 async function loadState() {
@@ -778,33 +1046,43 @@ async function loadState() {
   tables = ls(TABLES_KEY, [...defaultTables]);
   settings = {...defaultSettings, ...ls(SETTINGS_KEY, {})};
 
-  if (useCloud && _supabase) {
+  if (useCloud && _supabase && sysOn()) {
     try {
       const {data, error} = await _supabase.from('orders').select('*').order('id', {ascending:false});
-      if (error) console.error('Supabase orders:', error.code, error.message);
+      if (error) { console.error('Supabase orders:', error.code, error.message); toast('No se pudieron cargar los pedidos de la nube. Se muestran los datos de este dispositivo.', 'err'); }
       else orders = data.length ? data.map(fromRow) : [...defaultOrders];
       const {data: cp, error: pe} = await _supabase.from('products').select('*');
       if (!pe && cp && cp.length) products = cp;
     } catch(err) {
       console.log("Usando respaldo local por red o tabla pendiente.");
+      toast("Sin conexión con la nube. Trabajando con datos locales.", "warn");
     }
   }
   orders.forEach(o => { o.items = cleanItems(o.items); });
 }
 
 async function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
-  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-  localStorage.setItem(TABLES_KEY, JSON.stringify(tables));
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+    localStorage.setItem(TABLES_KEY, JSON.stringify(tables));
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  }catch(e){
+    console.error('localStorage:', e);
+    toast('No se pudo guardar en este dispositivo (almacenamiento lleno o bloqueado).', 'err');
+  }
 }
 
 // TIEMPO REAL CON SUPABASE WEBSOCKETS
+let rtChannel = null, rtStatus = '';
+function stopRealtime(){
+  try{ if(rtChannel && _supabase) _supabase.removeChannel(rtChannel); }catch(e){}
+  rtChannel = null; rtStatus = ''; updateNet();
+}
 function initRealtimeSync() {
-  if (!useCloud || !_supabase) return;
-  
+  if (!useCloud || !_supabase || !sysOn() || rtChannel) return;
   try {
-    _supabase
+    rtChannel = _supabase
       .channel('menuchat-realtime')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, payload => {
         const newO = fromRow(payload.new);
@@ -812,7 +1090,7 @@ function initRealtimeSync() {
         orders.unshift(newO);
         playNotificationSound();
         renderAll();
-        toast("🔔 ¡Nuevo pedido en vivo desde " + (newO.channel || "WhatsApp") + "!");
+        toast("Nuevo pedido en vivo desde " + (newO.channel || "WhatsApp") + ".", "info");
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, payload => {
         const updO = fromRow(payload.new);
@@ -824,33 +1102,152 @@ function initRealtimeSync() {
         orders = orders.filter(o => Number(o.id) !== Number(payload.old.id));
         renderAll();
       })
-      .subscribe();
+      .subscribe(status => {
+        rtStatus = status; updateNet();
+        if(status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') toast('Se perdió la conexión en vivo con la nube. Reintentando...', 'err');
+      });
   } catch(e) {
     console.log("Realtime no disponible en este entorno.");
+    toast('La sincronización en vivo no está disponible.', 'warn');
   }
 }
 
+// AVISOS (toast) con tipo: ok | warn | err | info
 let toastTimer;
-function toast(msg){
-  $("toast").textContent = msg;
-  $("toast").style.display = "block";
+function toast(msg, type = 'ok'){
+  const t = $("toast");
+  t.className = 'toast ' + type;
+  t.setAttribute('role', type === 'err' ? 'alert' : 'status');
+  t.innerHTML = ic({ok:'check', warn:'alert', err:'alert-circle', info:'info'}[type] || 'check') + '<span></span>';
+  t.lastChild.textContent = msg;
+  t.style.display = 'flex';
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => $("toast").style.display = "none", 2600);
+  toastTimer = setTimeout(() => t.style.display = 'none', type === 'err' ? 5200 : 2800);
 }
+
+// VALIDACION DE FORMULARIOS: marca el campo en rojo con su mensaje
+function clearErrs(scope){
+  scope.querySelectorAll('.ferr').forEach(e => e.remove());
+  scope.querySelectorAll('.invalid').forEach(e => { e.classList.remove('invalid'); e.removeAttribute('aria-invalid'); });
+}
+function fieldErr(id, msg){
+  const el = $(id); if(!el) return false;
+  el.classList.add('invalid'); el.setAttribute('aria-invalid', 'true');
+  const m = document.createElement('div'); m.className = 'ferr'; m.setAttribute('role', 'alert'); m.textContent = msg;
+  el.insertAdjacentElement('afterend', m);
+  el.addEventListener('input', () => { el.classList.remove('invalid'); el.removeAttribute('aria-invalid'); m.remove(); }, {once:true});
+  return false;
+}
+
+// CONFIRMACION (reemplaza a confirm() del navegador, con el mismo diseño)
+function confirmDialog(title, msg, okLabel = 'Confirmar'){
+  return new Promise(res => {
+    $('confirmTitle').textContent = title; $('confirmMsg').textContent = msg; $('confirmYes').textContent = okLabel;
+    const m = $('confirmModal');
+    const done = v => { m.classList.remove('show'); $('confirmYes').onclick = $('confirmNo').onclick = null; res(v); };
+    $('confirmYes').onclick = () => done(true); $('confirmNo').onclick = () => done(false);
+    m.classList.add('show'); $('confirmNo').focus();
+  });
+}
+
+// INTERRUPTOR GENERAL (enciende o apaga toda la funcionalidad)
+const sysOn = () => settings.power !== false;
+function updateNet(){
+  const c = $('netChip'); if(!c) return;
+  let t = 'Nube en línea', k = 'ok';
+  if(!sysOn()){ t = 'Pausado'; k = 'off'; }
+  else if(!useCloud || !_supabase){ t = 'Modo local'; k = 'warn'; }
+  else if(!navigator.onLine){ t = 'Sin conexión'; k = 'err'; }
+  else if(rtStatus !== 'SUBSCRIBED'){ t = 'Conectando...'; k = 'warn'; }
+  c.textContent = t; c.className = 'net ' + k;
+}
+function syncPower(){
+  const on = sysOn();
+  document.body.classList.toggle('sys-off', !on);
+  document.querySelectorAll('.pwr').forEach(b => {
+    b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on));
+    b.querySelector('.pwr-t').textContent = on ? 'ENCENDIDO' : 'APAGADO';
+  });
+  updateNet();
+}
+async function togglePower(){
+  settings.power = !sysOn();
+  saveState(); syncPower();
+  if(sysOn()){
+    await loadState(); loadSettingsToUI(); renderAll(); initRealtimeSync();
+    toast('Sistema encendido. Recibiendo pedidos.');
+  } else {
+    stopRealtime(); renderAll();
+    toast('Sistema apagado. No se reciben pedidos ni se sincroniza con la nube.', 'warn');
+  }
+}
+function denied(){ toast('El sistema está apagado. Enciende el interruptor para continuar.', 'warn'); }
+window.addEventListener('offline', () => { updateNet(); toast('Sin conexión a internet. Los cambios se guardan en este dispositivo.', 'warn'); });
+window.addEventListener('online', async () => { updateNet(); if(sysOn()){ await loadState(); renderAll(); } toast('Conexión restablecida.'); });
+
+// CONTRASEÑA DE MI MENU (candado de interfaz; la contraseña no se guarda en texto, solo su hash SHA-256)
+let menuUnlocked = false;
+try{ menuUnlocked = sessionStorage.getItem('menuchat_menu_ok') === '1'; }catch(e){}
+let passFails = 0, passLockUntil = 0;
+async function sha256(txt){
+  if(!(window.crypto && crypto.subtle)) throw new Error('crypto-unavailable');
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+function syncMenuLock(){ const n = $('navLock'); if(n) n.innerHTML = menuUnlocked ? '[[unlock]]' : '[[lock]]'; }
+function openPassModal(){
+  $('passInput').value = ''; $('passInput').type = 'password'; $('passErr').classList.add('hidden');
+  $('passModal').classList.add('show'); setTimeout(() => $('passInput').focus(), 60);
+}
+function togglePassVis(){ const i = $('passInput'); i.type = i.type === 'password' ? 'text' : 'password'; i.focus(); }
+function passError(msg){ const e = $('passErr'); e.textContent = msg; e.classList.remove('hidden'); const b = $('passModal').firstElementChild; b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); }
+async function submitMenuPass(){
+  const now = Date.now();
+  if(now < passLockUntil) return passError('Demasiados intentos. Espera ' + Math.ceil((passLockUntil - now) / 1000) + ' s.');
+  if(!$('passInput').value) return passError('Escribe la contraseña.');
+  let h;
+  try{ h = await sha256(CONFIG.passSalt + $('passInput').value); }
+  catch(e){ return passError('Este navegador no puede validar la contraseña (requiere HTTPS).'); }
+  if(h === CONFIG.menuPassHash){
+    menuUnlocked = true; passFails = 0;
+    try{ sessionStorage.setItem('menuchat_menu_ok', '1'); }catch(e){}
+    closeModal('passModal'); syncMenuLock(); showPage('menu'); toast('Mi menú desbloqueado.');
+  } else {
+    passFails++; $('passInput').select();
+    if(passFails >= 5){ passFails = 0; passLockUntil = now + 30000; passError('Demasiados intentos. Bloqueado por 30 segundos.'); }
+    else passError('Contraseña incorrecta. Intentos restantes: ' + (5 - passFails) + '.');
+  }
+}
+function lockMenu(){
+  menuUnlocked = false;
+  try{ sessionStorage.removeItem('menuchat_menu_ok'); }catch(e){}
+  syncMenuLock(); showPage('tab-pending'); toast('Mi menú bloqueado.', 'info');
+}
+
+// ERRORES GLOBALES (ignora los que vienen de extensiones del navegador)
+const isExt = x => /extension:|No Listener|content\.js/i.test(String(x));
+window.addEventListener('error', e => { if(isExt(e.filename) || isExt(e.message)) return; console.error(e.error || e.message); toast('Ocurrió un error inesperado. Intenta de nuevo.', 'err'); });
+window.addEventListener('unhandledrejection', e => { const r = e.reason; if(isExt(r && (r.stack || r.message) || r)) return; console.error(r); toast('No se pudo completar la acción. Revisa tu conexión.', 'err'); });
+document.addEventListener('keydown', e => {
+  if(e.key !== 'Escape') return;
+  const m = document.querySelector('.modal.show'); if(!m) return;
+  if(m.id === 'confirmModal') $('confirmNo').click(); else m.classList.remove('show');
+});
 
 // CONTROL DE PESTAÑAS
 function showPage(page){
+  if(page === "menu" && !menuUnlocked){ openPassModal(); return; }
   document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
   $("page-"+page).classList.remove("hidden");
   document.querySelectorAll(".nav button").forEach(b => b.classList.toggle("active", b.dataset.page===page));
 
   let names={
-    "tab-pending":["🕒 Pedidos Pendientes","Confirma los pedidos entrantes."],
-    "tab-prep":["🔥 En Preparación (Cocina)","Comandas activas en cocina."],
-    "tab-done":["🏁 Finalizadas","Historial de órdenes concluidas."],
-    "tables":["🪑 Mesas","Disponibilidad de mesas de salón."],
-    "menu":["📋 Mi menú","Administra tus platillos y precios."],
-    "settings":["⚙️ Ajustes","Configura tu restaurante y modalidades."]
+    "tab-pending":["[[clock]] Pedidos Pendientes","Confirma los pedidos entrantes."],
+    "tab-prep":["[[flame]] En Preparación (Cocina)","Comandas activas en cocina."],
+    "tab-done":["[[flag]] Finalizadas","Historial de órdenes concluidas."],
+    "tables":["[[chair]] Mesas","Disponibilidad de mesas de salón."],
+    "menu":["[[clipboard]] Mi menú","Administra tus platillos y precios."],
+    "settings":["[[sliders]] Ajustes","Configura tu restaurante y modalidades."]
   };
   if(names[page]){
     $("pageTitle").textContent = names[page][0];
@@ -887,21 +1284,21 @@ function renderOrders(){
     <article class="order">
       <div class="order-top">
         <div>
-          <h3>Pedido #${o.id} · ${o.customer}</h3>
-          <p>💬 ${o.channel || 'WhatsApp'} · 🕒 ${o.time || '12:00'} · <b>${o.type}</b>${o.table?" · Mesa "+o.table:""}${o.address && o.type==='Domicilio'?' · 📍 '+o.address:''}</p>
+          <h3>Pedido #${o.id} · ${esc(o.customer)}</h3>
+          <p>[[message]] ${esc(o.channel || 'WhatsApp')} · [[clock]] ${esc(o.time || '12:00')} · <b>${esc(o.type)}</b>${o.table?" · Mesa "+esc(o.table):""}${o.address && o.type==='Domicilio'?' · [[pin]] '+esc(o.address):''}</p>
         </div>
         <span class="tag new">Nuevo</span>
       </div>
-      <p class="text-amber-200 font-mono my-2">🛒 ${o.items}</p>
+      <p class="text-amber-200 font-mono my-2">[[bag]] ${esc(o.items)}</p>
       ${tablePicker(o)}
       <div class="flex justify-between items-center mt-2">
         <b>Total: $${Number(o.total).toFixed(2)} MXN</b>
         <div class="actions">
-          <button onclick="changeOrder(${o.id},'Preparando')">✅ Aceptar</button>
-          <button class="secondary" onclick="openOrderDetail(${o.id})">👁️ Ver</button>
-          <button class="secondary" onclick="openEditOrderModal(${o.id})">✏️ Editar</button>
-          <button class="secondary" onclick="sendWhatsAppMessage(${o.id})">💬 Mensaje</button>
-          <button class="danger" onclick="cancelOrder(${o.id})">❌ Eliminar</button>
+          <button onclick="changeOrder(${o.id},'Preparando')">[[check]] Aceptar</button>
+          <button class="secondary" onclick="openOrderDetail(${o.id})">[[eye]] Ver</button>
+          <button class="secondary" onclick="openEditOrderModal(${o.id})">[[edit]] Editar</button>
+          <button class="secondary" onclick="sendWhatsAppMessage(${o.id})">[[message]] Mensaje</button>
+          <button class="danger" onclick="cancelOrder(${o.id})">[[trash]] Eliminar</button>
         </div>
       </div>
     </article>
@@ -912,23 +1309,23 @@ function renderOrders(){
     <article class="order" style="border-left: 4px solid var(--orange);">
       <div class="order-top">
         <div>
-          <h3>Comanda #${o.id} · ${o.customer}</h3>
-          <p>🕒 ${o.time || '12:00'} · <b>${o.type}</b> ${o.address ? "· 📍 "+o.address : ""}</p>
+          <h3>Comanda #${o.id} · ${esc(o.customer)}</h3>
+          <p>[[clock]] ${esc(o.time || '12:00')} · <b>${esc(o.type)}</b> ${o.address ? "· [[pin]] "+esc(o.address) : ""}</p>
         </div>
-        <span class="tag prep">🔥 Preparando</span>
+        <span class="tag prep">[[flame]] Preparando</span>
       </div>
       <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 my-2 font-mono text-sm text-amber-300">
-        ${o.items.replace(/,/g, '<br>')}
+        ${esc(o.items).replace(/,/g, '<br>')}
       </div>
       ${tablePicker(o)}
       <div class="flex justify-between items-center mt-2">
-        <span class="text-xs text-slate-400">Pago: <b>${o.payment || 'Efectivo'} (${o.paymentStatus || 'Pendiente'})</b></span>
+        <span class="text-xs text-slate-400">Pago: <b>${esc(o.payment || 'Efectivo')} (${esc(o.paymentStatus || 'Pendiente')})</b></span>
         <div class="actions">
-          <button onclick="changeOrder(${o.id},'Finalizado')">🏁 Finalizar</button>
-          <button class="secondary" onclick="openOrderDetail(${o.id})">👁️ Ver</button>
-          <button class="secondary" onclick="openEditOrderModal(${o.id})">✏️ Editar</button>
-          <button class="secondary" onclick="sendWhatsAppMessage(${o.id})">💬 Mensaje</button>
-          <button class="danger" onclick="cancelOrder(${o.id})">❌ Eliminar</button>
+          <button onclick="changeOrder(${o.id},'Finalizado')">[[flag]] Finalizar</button>
+          <button class="secondary" onclick="openOrderDetail(${o.id})">[[eye]] Ver</button>
+          <button class="secondary" onclick="openEditOrderModal(${o.id})">[[edit]] Editar</button>
+          <button class="secondary" onclick="sendWhatsAppMessage(${o.id})">[[message]] Mensaje</button>
+          <button class="danger" onclick="cancelOrder(${o.id})">[[trash]] Eliminar</button>
         </div>
       </div>
     </article>
@@ -940,19 +1337,19 @@ function renderOrders(){
     <article class="order">
       <div class="order-top">
         <div>
-          <h3>Pedido #${o.id} · ${o.customer}</h3>
-          <p>💬 ${o.channel || 'WhatsApp'} · 🕒 ${o.time || '12:00'} · <b>${o.type}</b>${o.address && o.type==='Domicilio'?' · 📍 '+o.address:''}</p>
+          <h3>Pedido #${o.id} · ${esc(o.customer)}</h3>
+          <p>[[message]] ${esc(o.channel || 'WhatsApp')} · [[clock]] ${esc(o.time || '12:00')} · <b>${esc(o.type)}</b>${o.address && o.type==='Domicilio'?' · [[pin]] '+esc(o.address):''}</p>
         </div>
-        <span class="tag done">🏁 Concluido</span>
+        <span class="tag done">[[flag]] Concluido</span>
       </div>
-      <p class="text-slate-300 text-xs my-1">${o.items}</p>
+      <p class="text-slate-300 text-xs my-1">${esc(o.items)}</p>
       <div class="flex justify-between items-center mt-2">
         <b class="text-emerald-400">$${Number(o.total).toFixed(2)} MXN</b>
         <div class="actions">
-          <button class="secondary" onclick="openOrderDetail(${o.id})">👁️ Ver</button>
-          <button class="secondary" onclick="openEditOrderModal(${o.id})">✏️ Editar</button>
-          <button class="secondary" onclick="sendWhatsAppMessage(${o.id})">💬 Mensaje</button>
-          <button class="danger" onclick="cancelOrder(${o.id})">❌ Eliminar</button>
+          <button class="secondary" onclick="openOrderDetail(${o.id})">[[eye]] Ver</button>
+          <button class="secondary" onclick="openEditOrderModal(${o.id})">[[edit]] Editar</button>
+          <button class="secondary" onclick="sendWhatsAppMessage(${o.id})">[[message]] Mensaje</button>
+          <button class="danger" onclick="cancelOrder(${o.id})">[[trash]] Eliminar</button>
         </div>
       </div>
     </article>
@@ -982,7 +1379,7 @@ function renderOrders(){
 // ACCIONES DE PEDIDOS
 async function changeOrder(id, status){
   let o = orders.find(x => x.id === id);
-  if(!o) return;
+  if(!o){ toast("El pedido ya no existe. Actualiza la pantalla.", "err"); return; }
 
   o.status = status;
   if(status === "Finalizado") o.paymentStatus = "Pagado";
@@ -1014,20 +1411,25 @@ async function changeOrder(id, status){
 }
 
 async function cancelOrder(id){
-  let o = orders.find(x => x.id === id);
+  const o = orders.find(x => x.id === id);
+  if(!o){ toast('El pedido ya no existe.', 'err'); return; }
+  const ok = await confirmDialog('Eliminar pedido #' + id, 'Se eliminará el pedido de ' + (o.customer || 'este cliente') + ' de forma permanente. Esta acción no se puede deshacer.', 'Eliminar');
+  if(ok) return deleteOrderNow(id);
+}
+
+async function deleteOrderNow(id){
+  const o = orders.find(x => x.id === id);
+  if(useCloud && _supabase){
+    try{
+      const {error} = await _supabase.from('orders').delete().eq('id', id);
+      if(error){ cloudFail('No se pudo eliminar el pedido en la nube', error); return; }
+    }catch(e){ cloudFail('Sin conexión con la nube', e); return; }
+  }
   if(o && o.table){
-    let t = tables.find(x => x.id === o.table);
-    if(t){ t.status="Libre"; t.order=""; t.minutes=0; }
+    const t = tables.find(x => x.id === o.table);
+    if(t){ t.status = "Libre"; t.order = ""; t.minutes = 0; }
   }
   orders = orders.filter(x => x.id !== id);
-
-  if (useCloud && _supabase) {
-    try {
-      const {error} = await _supabase.from('orders').delete().eq('id', id);
-      if(error) cloudFail('No se pudo eliminar en la nube', error);
-    } catch(e){}
-  }
-
   saveState();
   renderAll();
   toast("Pedido #" + id + " eliminado.");
@@ -1070,9 +1472,9 @@ function openOrderDetail(id){
   const actions = $("modalDetailActions");
   actions.innerHTML = "";
   if(o.status === "Nuevo"){
-    actions.innerHTML = `<button onclick="changeOrder(${o.id},'Preparando'); closeModal('orderDetailModal');">✅ Aceptar</button>`;
+    actions.innerHTML = `<button onclick="changeOrder(${o.id},'Preparando'); closeModal('orderDetailModal');">[[check]] Aceptar</button>`;
   } else if(o.status === "Preparando"){
-    actions.innerHTML = `<button onclick="changeOrder(${o.id},'Finalizado'); closeModal('orderDetailModal');">🏁 Finalizar</button>`;
+    actions.innerHTML = `<button onclick="changeOrder(${o.id},'Finalizado'); closeModal('orderDetailModal');">[[flag]] Finalizar</button>`;
   }
 
   $("orderDetailModal").classList.add("show");
@@ -1082,7 +1484,7 @@ function openOrderDetail(id){
 async function simularPedidoWhatsApp(){
   const activeProds = products.filter(p => p.active);
   if(activeProds.length === 0){
-    toast("No hay productos activos en el menú.");
+    toast("No hay productos activos en el menú.", "warn");
     return;
   }
 
@@ -1097,7 +1499,7 @@ async function simularPedidoWhatsApp(){
   if(settings.dinein) availableTypes.push("Comer en restaurante");
   
   if(availableTypes.length === 0){
-    toast("Todas las modalidades están apagadas en Ajustes.");
+    toast("Todas las modalidades están apagadas en Ajustes.", "warn");
     return;
   }
 
@@ -1127,17 +1529,17 @@ async function simularPedidoWhatsApp(){
   playNotificationSound();
   saveState();
   renderAll();
-  toast("🔔 ¡Nuevo pedido de WhatsApp recibido!");
+  toast("Nuevo pedido de WhatsApp recibido.", "info");
 }
 
 // CREAR PEDIDO MANUAL
 function openOrderModal(){
+  clearErrs($("orderModal"));
   $("editOrderId").value = "";
   $("orderModalTitle").textContent = "Crear pedido manual";
   $("newCustomer").value = "Cliente de mostrador";
   $("newPhone").value = "669 123 4567";
-  $("newItems").value = "1x Taco Gobernador ($48.00)";
-  $("newTotal").value = 48;
+  pickerInit("");
   
   let typeSelect = $("newType");
   typeSelect.innerHTML = "";
@@ -1160,13 +1562,12 @@ function openEditOrderModal(id){
   $("newChannel").value = o.channel || "WhatsApp";
   
   let typeSelect = $("newType");
-  typeSelect.innerHTML = `<option value="${o.type}">${o.type}</option>`;
+  typeSelect.innerHTML = `<option value="${esc(o.type)}">${esc(o.type)}</option>`;
   typeSelect.value = o.type;
 
   $("newAddress").value = o.address || "";
-  $("newItems").value = o.items;
+  pickerInit(o.items, o.total);
   $("newPayment").value = o.payment || "Efectivo";
-  $("newTotal").value = o.total;
 
   onModalTypeChange();
   $("orderModal").classList.add("show");
@@ -1183,13 +1584,16 @@ function onModalTypeChange(){
   } else if(type === "Comer en restaurante" && settings.tablesActive){
     addrCont.classList.add("hidden");
     tableCont.classList.remove("hidden");
-    let freeTables = tables.filter(t => t.status === "Libre");
+    const own = ($("editOrderId").value && (orders.find(o => o.id == $("editOrderId").value) || {}).table) || "";
+    let freeTables = tables.filter(t => t.status === "Libre" || t.id === own);
     let tSelect = $("newTableSelect");
     tSelect.innerHTML = freeTables.map(t => `<option value="${t.id}">${t.id}</option>`).join("") || '<option value="">Sin mesas libres</option>';
+    if(own) tSelect.value = own;
   } else {
     addrCont.classList.add("hidden");
     tableCont.classList.add("hidden");
   }
+  pickerSync();
 }
 
 async function saveOrderForm(){
@@ -1202,10 +1606,14 @@ async function saveOrderForm(){
   let items = $("newItems").value.trim();
   let total = Number($("newTotal").value) || 0;
 
-  if(!customer || !items){
-    toast("Completa el cliente y los productos.");
-    return;
-  }
+  const box = $("orderModal"); clearErrs(box); let ok = true;
+  if(!customer) ok = fieldErr('newCustomer', 'Escribe el nombre del cliente.');
+  if(phone && !/^[0-9 +()-]{7,20}$/.test(phone)) ok = fieldErr('newPhone', 'Teléfono no válido. Usa solo números (10 dígitos).');
+  if(type === "Domicilio" && !$("newAddress").value.trim()) ok = fieldErr('newAddress', 'La dirección es obligatoria para domicilio.');
+  if(type === "Comer en restaurante" && settings.tablesActive && !tableAssign && !editId) ok = fieldErr('newTableSelect', 'No hay mesas libres. Libera una o cambia la modalidad.');
+  if(!items || !(total > 0)) ok = fieldErr('cartBox', 'Agrega al menos un producto de Mi menú.');
+  else if(!editId && type === "Domicilio" && (Number(settings.minimum) || 0) > cartSub()) ok = fieldErr('cartBox', 'Pedido mínimo a domicilio: ' + money(settings.minimum) + ' (llevas ' + money(cartSub()) + ').');
+  if(!ok){ toast('Revisa los campos marcados en rojo.', 'warn'); return; }
 
   if(editId){
     let o = orders.find(x => x.id == editId);
@@ -1214,7 +1622,7 @@ async function saveOrderForm(){
       o.phone = phone;
       o.channel = $("newChannel").value;
       o.type = type;
-      o.address = address;
+      o.address = (type === "Comer en restaurante" && o.table) ? "Mesa " + o.table : address;
       o.items = items;
       o.total = total;
       o.payment = $("newPayment").value;
@@ -1290,11 +1698,11 @@ function renderTableDetail(){
   $("tableDetailTitle").textContent="Gestión de "+t.id;
   let html=`<p>Estado: <span class="tag">${t.status}</span></p><p class="muted">Pedido asignado: ${t.order||"Ninguno"}</p>`;
   if(t.status==="Libre"){
-    html+=`<div class="actions mt-3"><button onclick="openAssignTableModal('${t.id}')">➕ Asignar pedido existente</button></div>`
+    html+=`<div class="actions mt-3"><button onclick="openAssignTableModal('${t.id}')">[[plus]] Asignar pedido existente</button></div>`
   }else if(t.status==="Preparando" || t.status==="Ocupada"){
-    html+=`<div class="actions mt-3"><button onclick="tableReady('${t.id}')">✅ Marcar lista</button><button class="secondary" onclick="releaseTable('${t.id}')">🔓 Liberar</button></div>`
+    html+=`<div class="actions mt-3"><button onclick="tableReady('${t.id}')">[[check]] Marcar lista</button><button class="secondary" onclick="releaseTable('${t.id}')">[[unlock]] Liberar</button></div>`
   }else{
-    html+=`<div class="actions mt-3"><button onclick="releaseTable('${t.id}')">🔓 Liberar mesa</button></div>`
+    html+=`<div class="actions mt-3"><button onclick="releaseTable('${t.id}')">[[unlock]] Liberar mesa</button></div>`
   }
   $("tableDetail").innerHTML=html;
 }
@@ -1302,12 +1710,12 @@ function renderTableDetail(){
 function openAssignTableModal(tableId){
   let pendingOrPrep = orders.filter(o => o.status !== "Finalizado" && (!o.table || o.table === ""));
   if(pendingOrPrep.length === 0){
-    toast("No hay pedidos activos sin mesa asignada.");
+    toast("No hay pedidos activos sin mesa asignada.", "warn");
     return;
   }
   $("assignTableOrderId").value = tableId;
   let select = $("freeTableSelect");
-  select.innerHTML = pendingOrPrep.map(o => `<option value="${o.id}">Pedido #${o.id} - ${o.customer}</option>`).join("");
+  select.innerHTML = pendingOrPrep.map(o => `<option value="${o.id}">Pedido #${o.id} - ${esc(o.customer)}</option>`).join("");
   $("assignTableModal").classList.add("show");
 }
 
@@ -1355,7 +1763,7 @@ function toggleTablesModule(){
   settings.tablesActive = !settings.tablesActive;
   saveState();
   renderTables();
-  $("tableModuleToggleText").textContent = settings.tablesActive ? "🔌 Apagar Módulo" : "🔌 Encender Módulo";
+  $("tableModuleToggleText").textContent = settings.tablesActive ? "[[power]] Apagar Módulo" : "[[power]] Encender Módulo";
   toast(settings.tablesActive ? "Módulo de mesas encendido" : "Módulo de mesas apagado");
 }
 
@@ -1371,16 +1779,16 @@ function renderProducts(){
   $("productGrid").innerHTML = list.map(p => `
     <article class="product">
       <div>
-        <h3>${p.name}</h3>
-        <small>${p.cat} · ${p.desc}</small>
+        <h3>${esc(p.name)}</h3>
+        <small>${esc(p.cat)} · ${esc(p.desc)}</small>
         <p class="price">$${Number(p.price).toFixed(2)} MXN</p>
       </div>
       <div class="actions">
         <label class="switch">
           <input type="checkbox" ${p.active?"checked":""} onchange="toggleProduct(${p.id},this.checked)">
-          ${p.active?"🟢 Activo":"🔴 Agotado"}
+          ${p.active?'<span class="dot g"></span>Activo':'<span class="dot r"></span>Agotado'}
         </label>
-        <button class="secondary" onclick="openEditProduct(${p.id})">✏️ Editar</button>
+        <button class="secondary" onclick="openEditProduct(${p.id})">[[edit]] Editar</button>
       </div>
     </article>
   `).join("") || '<div class="empty">No hay productos en esta categoría.</div>';
@@ -1391,10 +1799,11 @@ function toggleProduct(id, active){
   if(p) p.active = active;
   saveState();
   renderProducts();
-  toast(active ? "Platillo activado" : "Platillo agotado/apagado");
+  toast(active ? "Platillo activado" : "Platillo agotado/apagado", active ? "ok" : "info");
 }
 
 function openProductModal(){
+  clearErrs($("productModal"));
   $("prodModalTitle").textContent = "Agregar producto al Menú";
   $("editProdId").value = "";
   $("prodName").value = "";
@@ -1420,10 +1829,10 @@ async function saveProduct(){
   let name = $("prodName").value.trim();
   let price = Number($("prodPrice").value);
 
-  if(!name || isNaN(price) || price < 0){
-    toast("Ingresa un nombre y precio válido.");
-    return;
-  }
+  const pbox = $("productModal"); clearErrs(pbox); let ok = true;
+  if(!name) ok = fieldErr('prodName', 'Escribe el nombre del platillo.');
+  if($("prodPrice").value.trim() === "" || isNaN(price) || price < 0) ok = fieldErr('prodPrice', 'Ingresa un precio válido (0 o mayor).');
+  if(!ok){ toast('Revisa los campos marcados en rojo.', 'warn'); return; }
 
   if(editId){
     let p = products.find(x => x.id == editId);
@@ -1451,28 +1860,28 @@ async function saveProduct(){
 }
 
 function importarCSV(event) {
-  const file = event.target.files[0];
+  const input = event.target, file = input.files[0];
   if (!file) return;
-
+  if (!/\.csv$/i.test(file.name)) { toast('El archivo debe ser .csv', 'err'); input.value = ''; return; }
+  if (!window.Papa) { toast('No se cargó la librería de CSV. Revisa tu conexión y recarga la página.', 'err'); input.value = ''; return; }
   Papa.parse(file, {
     header: true,
     skipEmptyLines: true,
+    error: err => { toast('No se pudo leer el archivo: ' + err.message, 'err'); input.value = ''; },
     complete: function(results) {
+      let added = 0, skipped = 0;
       results.data.forEach((row, index) => {
-        if(row.Platillo && row.Precio) {
-          products.push({
-            id: Date.now() + index,
-            cat: row.Categoria || 'General',
-            name: row.Platillo,
-            desc: row.Descripcion || '',
-            price: parseFloat(row.Precio) || 0,
-            active: true
-          });
-        }
+        const price = parseFloat(String(row.Precio ?? '').replace(/[^0-9.]/g, ''));
+        if (row.Platillo && String(row.Platillo).trim() && !isNaN(price)) {
+          products.push({ id: Date.now() + index, cat: row.Categoria || 'General', name: String(row.Platillo).trim(), desc: row.Descripcion || '', price: price, active: true });
+          added++;
+        } else skipped++;
       });
+      input.value = '';
+      if (!added) { toast('El CSV no tiene filas válidas. Columnas requeridas: Platillo y Precio.', 'err'); return; }
       saveState();
       renderProducts();
-      toast("¡Menú cargado desde CSV con éxito!");
+      toast(added + ' producto(s) importados' + (skipped ? ' · ' + skipped + ' fila(s) omitidas por datos incompletos' : '') + '.', skipped ? 'warn' : 'ok');
     }
   });
 }
@@ -1491,6 +1900,11 @@ function renderHours(){
 }
 
 function saveSettings(){
+  const sbox = $("page-settings"); clearErrs(sbox); let ok = true;
+  if(!$("restName").value.trim()) ok = fieldErr('restName', 'El nombre comercial es obligatorio.');
+  ['minimum','shipping'].forEach(id => { const v = $(id).value; if(v === '' || isNaN(Number(v)) || Number(v) < 0) ok = fieldErr(id, 'Ingresa un monto igual o mayor a 0.'); });
+  if(!$("settingDelivery").checked && !$("settingPickup").checked && !$("settingDinein").checked){ toast('Activa al menos una modalidad de pedido.', 'warn'); ok = false; }
+  if(!ok){ if($("page-settings").querySelector('.invalid')) toast('Revisa los campos marcados en rojo.', 'warn'); return; }
   settings.restName = $("restName").value;
   settings.restPhone = $("restPhone").value;
   settings.restAddress = $("restAddress").value;
@@ -1515,7 +1929,9 @@ function loadSettingsToUI(){
   $("settingDinein").checked = settings.dinein;
   $("minimum").value = settings.minimum;
   $("shipping").value = settings.shipping;
-  $("tableModuleToggleText").textContent = settings.tablesActive ? "🔌 Apagar Módulo" : "🔌 Encender Módulo";
+  $("tableModuleToggleText").textContent = settings.tablesActive ? "[[power]] Apagar Módulo" : "[[power]] Encender Módulo";
+  $("soundOn").checked = settings.soundOn !== false;
+  renderSounds();
 }
 
 function renderAll(){
@@ -1525,17 +1941,17 @@ function renderAll(){
 }
 
 // ===== VISTAS DE PANTALLA (Cocina / Meseros / Caja): solo presentación, usan las mismas funciones y datos =====
-const SCREEN_VIEWS = {cocina:'🍳 Cocina', meseros:'🍽️ Meseros', caja:'💰 Caja'};
+const SCREEN_VIEWS = {cocina:'[[flame]] Cocina', meseros:'[[utensils]] Meseros', caja:'[[cash]] Caja'};
 const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => '$' + Number(n || 0).toFixed(2);
-const TYPE_EMOJI = {"Domicilio":"🛵","Recoger":"🛍️","Comer en restaurante":"🍽️"};
+const TYPE_EMOJI = {"Domicilio":"[[bike]]","Recoger":"[[bag]]","Comer en restaurante":"[[utensils]]"};
 const screenMode = () => { const h = location.hash.replace('#',''); return SCREEN_VIEWS[h] ? h : ''; };
 const sum = l => l.reduce((a,o) => a + (Number(o.total) || 0), 0);
 
 function svCard(o, cls, extra){
   const items = String(o.items || '').split(/,\s*(?=\d+\s*x\s)/).map(i => `<li>${esc(i)}</li>`).join('');
-  return `<div class="sv-card ${cls}"><div class="sv-h"><b>#${esc(o.id)}</b><span class="sv-pill">${TYPE_EMOJI[o.type] || '🧾'} ${esc(o.type)}</span></div>
-    <div class="sv-sub">${esc(o.customer)} · ${esc(o.time)}${o.table ? ' · 🪑 ' + esc(o.table) : ''}</div><ul>${items}</ul>${extra || ''}</div>`;
+  return `<div class="sv-card ${cls}"><div class="sv-h"><b>#${esc(o.id)}</b><span class="sv-pill">${TYPE_EMOJI[o.type] || '[[receipt]]'} ${esc(o.type)}</span></div>
+    <div class="sv-sub">${esc(o.customer)} · ${esc(o.time)}${o.table ? ' · [[chair]] ' + esc(o.table) : ''}</div><ul>${items}</ul>${extra || ''}</div>`;
 }
 const svCol = (title, list, fn) => `<div class="sv-col"><h2>${title} (${list.length})</h2><div class="sv-list">${list.length ? list.map(fn).join('') : '<div class="sv-empty">Sin pedidos</div>'}</div></div>`;
 
@@ -1544,24 +1960,25 @@ function renderScreen(){
   root.classList.toggle('on', !!m);
   if(!m) return;
   $('svTitle').textContent = SCREEN_VIEWS[m] + ' · ' + (settings.restName || '');
-  $('svNav').innerHTML = Object.keys(SCREEN_VIEWS).map(k => `<button class="${k===m?'cur':'secondary'}" onclick="location.hash='${k}'">${SCREEN_VIEWS[k]}</button>`).join(' ') + ' <button class="secondary" onclick="location.hash=\'panel\'">↩️ Panel</button>';
+  $('svNav').innerHTML = Object.keys(SCREEN_VIEWS).map(k => `<button class="${k===m?'cur':'secondary'}" onclick="location.hash='${k}'">${SCREEN_VIEWS[k]}</button>`).join(' ') + ' <button class="secondary" onclick="location.hash=\'panel\'">[[undo]] Panel</button>';
+  if(!sysOn()){ $('svBody').innerHTML = '<div class="sv-empty">[[power]] Sistema apagado. Enciende el interruptor para reanudar la operación.</div>'; return; }
   const nuevos = orders.filter(o => o.status === 'Nuevo'), prep = orders.filter(o => o.status === 'Preparando'), fin = orders.filter(o => o.status === 'Finalizado');
   let h = '';
   if(m === 'cocina'){
     h = '<div class="sv-cols">'
-      + svCol('🆕 Nuevos por aceptar', nuevos, o => svCard(o, 'new', `<button onclick="changeOrder(${o.id},'Preparando')">✅ Aceptar</button>`))
-      + svCol('🔥 En preparación', prep, o => svCard(o, 'prep', `<button onclick="changeOrder(${o.id},'Finalizado')">🏁 Finalizar</button>`)) + '</div>';
+      + svCol('🆕 Nuevos por aceptar', nuevos, o => svCard(o, 'new', `<button onclick="changeOrder(${o.id},'Preparando')">[[check]] Aceptar</button>`))
+      + svCol('[[flame]] En preparación', prep, o => svCard(o, 'prep', `<button onclick="changeOrder(${o.id},'Finalizado')">[[flag]] Finalizar</button>`)) + '</div>';
   } else if(m === 'meseros'){
     const sala = orders.filter(o => o.type === 'Comer en restaurante' && o.status !== 'Finalizado');
     const tcls = t => t.status === 'Libre' ? 'free' : t.status === 'Preparando' ? 'prep' : 'busy';
-    h = '<div class="sv-cols"><div class="sv-col"><h2>🪑 Mesas</h2>' + (settings.tablesActive
+    h = '<div class="sv-cols"><div class="sv-col"><h2>[[chair]] Mesas</h2>' + (settings.tablesActive
       ? '<div class="sv-tables">' + tables.map(t => `<div class="sv-table ${tcls(t)}"><b>${esc(t.id)}</b><small>${esc(t.status)}</small>${t.order ? `<small>${esc(t.order)}${t.minutes ? ' · ' + t.minutes + ' min' : ''}</small>` : ''}</div>`).join('') + '</div>'
       : '<div class="sv-empty">Módulo de mesas apagado</div>') + '</div>'
-      + svCol('🍽️ Pedidos en sala', sala, o => svCard(o, o.status === 'Nuevo' ? 'new' : 'prep', `<div class="sv-sub">${o.status === 'Nuevo' ? '⏳ Por confirmar' : '🔥 En cocina'}</div>` + tablePicker(o))) + '</div>';
+      + svCol('[[utensils]] Pedidos en sala', sala, o => svCard(o, o.status === 'Nuevo' ? 'new' : 'prep', `<div class="sv-sub">${o.status === 'Nuevo' ? '[[clock]] Por confirmar' : '[[flame]] En cocina'}</div>` + tablePicker(o))) + '</div>';
   } else {
     const cobrar = orders.filter(o => o.status !== 'Finalizado');
-    h = `<div class="sv-stats"><div><small>💰 Ventas (finalizadas)</small><b>${money(sum(fin))}</b></div><div><small>🧾 Por cobrar</small><b>${money(sum(cobrar))}</b></div><div><small>🏁 Pedidos finalizados</small><b>${fin.length}</b></div><div><small>📊 Todos los datos de las comandas</small><button onclick="exportOrders()">📥 Exportar a Excel</button></div></div>`
-      + cajaSection('por', '🧾 Por cobrar', cobrar) + cajaSection('cob', '✅ Cobrados', fin);
+    h = `<div class="sv-stats"><div><small>[[cash]] Ventas (finalizadas)</small><b>${money(sum(fin))}</b></div><div><small>[[receipt]] Por cobrar</small><b>${money(sum(cobrar))}</b></div><div><small>[[flag]] Pedidos finalizados</small><b>${fin.length}</b></div><div><small>Todos los datos de las comandas</small><button onclick="exportOrders()">[[download]] Exportar a Excel</button></div></div>`
+      + cajaSection('por', '[[receipt]] Por cobrar', cobrar) + cajaSection('cob', '[[check]] Cobrados', fin);
   }
   $('svBody').innerHTML = h;
 }
@@ -1574,8 +1991,8 @@ setInterval(() => { const c = $('svClock'); if(c) c.textContent = new Date().toL
 function tablePicker(o){
   if(o.type !== 'Comer en restaurante' || o.status === 'Finalizado' || !settings.tablesActive) return '';
   const opts = tables.filter(t => t.status === 'Libre' || t.id === o.table);
-  const chips = opts.map(t => `<button class="tp-chip ${t.id === o.table ? 'sel' : 'free'}" title="${t.id === o.table ? 'Quitar mesa' : 'Asignar mesa'}" onclick="assignTable(${o.id},'${esc(t.id)}')">${t.id === o.table ? '✅ ' : ''}${esc(t.id)}</button>`).join('');
-  return `<div class="tp"><span class="tp-l">🪑 ${o.table ? 'Mesa asignada:' : 'Asignar mesa:'}</span>${chips || '<span class="tp-none">Sin mesas libres</span>'}</div>`;
+  const chips = opts.map(t => `<button class="tp-chip ${t.id === o.table ? 'sel' : 'free'}" title="${t.id === o.table ? 'Quitar mesa' : 'Asignar mesa'}" onclick="assignTable(${o.id},'${esc(t.id)}')">${t.id === o.table ? '[[check]] ' : ''}${esc(t.id)}</button>`).join('');
+  return `<div class="tp"><span class="tp-l">[[chair]] ${o.table ? 'Mesa asignada:' : 'Asignar mesa:'}</span>${chips || '<span class="tp-none">Sin mesas libres</span>'}</div>`;
 }
 async function assignTable(id, tableId){
   const o = orders.find(x => Number(x.id) === Number(id));
@@ -1583,17 +2000,17 @@ async function assignTable(id, tableId){
   const prevId = o.table;
   if(tableId && tableId !== prevId){
     const t = tables.find(x => x.id === tableId);
-    if(!t || t.status !== 'Libre'){ toast('Esa mesa ya no está libre.'); renderAll(); return; }
+    if(!t || t.status !== 'Libre'){ toast('Esa mesa ya no está libre.', 'warn'); renderAll(); return; }
   }
   if(prevId){ const p = tables.find(x => x.id === prevId); if(p){ p.status = 'Libre'; p.order = ''; p.minutes = 0; } }
   if(tableId && tableId !== prevId){
     const t = tables.find(x => x.id === tableId), prep = o.status === 'Preparando';
     t.status = prep ? 'Preparando' : 'Ocupada'; t.order = '#' + o.id; t.minutes = prep ? 15 : 0;
     o.table = tableId; o.address = 'Mesa ' + tableId;
-    toast('🪑 Pedido #' + o.id + ' asignado a la mesa ' + tableId + '.');
+    toast('Pedido #' + o.id + ' asignado a la mesa ' + tableId + '.');
   } else {
     o.table = ''; o.address = 'Sin mesa asignada';
-    toast('Mesa liberada del pedido #' + o.id + '.');
+    toast('Mesa liberada del pedido #' + o.id + '.', 'info');
   }
   saveState(); renderAll();
   await cloudSave(o);
@@ -1612,7 +2029,7 @@ const CAJA_COLS = [
   {k:'cliente', l:'Cliente',         g:o => o.customer || '',        v:o => esc(o.customer)},
   {k:'tel',     l:'Teléfono / Usuario', g:o => o.phone || '',        v:o => esc(o.phone)},
   {k:'canal',   l:'Canal',           g:o => o.channel || '',         v:o => esc(o.channel)},
-  {k:'tipo',    l:'Tipo de pedido',  g:o => o.type || '',            v:o => (TYPE_EMOJI[o.type] || '🧾') + ' ' + esc(o.type)},
+  {k:'tipo',    l:'Tipo de pedido',  g:o => o.type || '',            v:o => (TYPE_EMOJI[o.type] || '[[receipt]]') + ' ' + esc(o.type)},
   {k:'mesa',    l:'Mesa',            g:o => o.table || '',           v:o => esc(o.table || '—')},
   {k:'dir',     l:'Dirección / Detalle', g:o => o.address || '',     v:o => esc(o.address)},
   {k:'items',   l:'Productos',       g:o => String(o.items || ''),   v:o => '<ul>' + itemsList(o).map(i => '<li>' + esc(i) + '</li>').join('') + '</ul>', x:o => itemsList(o).join(' | ')},
@@ -1633,13 +2050,13 @@ function cajaSortBy(k){ cajaSort = {key:k, dir: cajaSort.key === k ? -cajaSort.d
 function cajaSection(key, title, list){
   const head = CAJA_COLS.map(c => `<th class="${c.c || ''}" onclick="cajaSortBy('${c.k}')">${c.l}${cajaSort.key === c.k ? (cajaSort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('') + '<th>Acción</th>';
   const rows = sortOrders(list).map(o => '<tr>' + CAJA_COLS.map(c => `<td class="${c.c || ''}">${c.v(o)}</td>`).join('')
-    + `<td>${o.status === 'Preparando' ? `<button onclick="changeOrder(${o.id},'Finalizado')">💰 Cobrar</button>` : (o.status === 'Nuevo' ? '⏳ Por confirmar' : '✅')}</td></tr>`).join('');
+    + `<td>${o.status === 'Preparando' ? `<button onclick="changeOrder(${o.id},'Finalizado')">[[cash]] Cobrar</button>` : (o.status === 'Nuevo' ? '[[clock]] Por confirmar' : '[[check]]')}</td></tr>`).join('');
   return `<details class="sv-det" ${cajaOpen[key] ? 'open' : ''} ontoggle="cajaOpen['${key}']=this.open"><summary>${title} (${list.length}) · ${money(sum(list))}</summary>`
     + (list.length ? `<div class="sv-tw"><table class="sv-t"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="sv-empty">Sin pedidos</div>') + '</details>';
 }
 function exportOrders(){
   const list = sortOrders(orders);
-  if(!list.length){ toast('No hay pedidos para exportar.'); return; }
+  if(!list.length){ toast('No hay pedidos para exportar.', 'warn'); return; }
   const rows = list.map(o => { const r = {}; CAJA_COLS.forEach(c => { r[c.l] = (c.x || c.g)(o); }); return r; });
   const name = 'pedidos_menuchat_' + new Date().toISOString().slice(0, 10);
   if(window.XLSX){
@@ -1653,39 +2070,126 @@ function exportOrders(){
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'})); a.download = name + '.csv'; a.click();
   }
-  toast('📥 Exportados ' + rows.length + ' pedidos.');
+  toast('Exportados ' + rows.length + ' pedidos.');
 }
 
-// ===== EMOJIS UNIFORMES: cada emoji va en una caja del mismo tamaño y con la misma fuente =====
-const EMOJI_TEST = /\p{Extended_Pictographic}/u;
-const EMOJI_RE = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}])*/gu;
-function wrapEmoji(root){
-  const found = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  while(w.nextNode()){
-    const n = w.currentNode, p = n.parentElement;
-    if(p && EMOJI_TEST.test(n.nodeValue) && !p.closest('.em,script,style,textarea,option,title')) found.push(n);
-  }
-  found.forEach(n => {
-    const t = n.nodeValue, f = document.createDocumentFragment(); let last = 0;
-    t.replace(EMOJI_RE, (m, i) => {
-      if(i > last) f.append(t.slice(last, i));
-      const sp = document.createElement('span'); sp.className = 'em'; sp.textContent = m; f.append(sp);
-      last = i + m.length; return m;
-    });
-    if(last < t.length) f.append(t.slice(last));
-    n.replaceWith(f);
+// ===== ICONOS: convierte [[nombre]] en SVG en cualquier texto nuevo que aparezca en la pagina =====
+new MutationObserver(muts => muts.forEach(m => m.addedNodes.forEach(n => {
+  if(n.nodeType === 1) hydrateIcons(n); else if(n.nodeType === 3 && n.parentElement) hydrateIcons(n.parentElement);
+}))).observe(document.body, {childList:true, subtree:true});
+hydrateIcons(document.body);
+
+// ===== INTERRUPTOR: con el sistema apagado, ninguna accion que modifique datos se ejecuta =====
+['changeOrder','cancelOrder','saveOrderForm','assignTable','simularPedidoWhatsApp','confirmManualTableAssignment','tableReady','releaseTable','addTable','toggleTablesModule',
+ 'saveProduct','toggleProduct','importarCSV','openOrderModal','openEditOrderModal','openProductModal','openEditProduct','openAssignTableModal','sendWhatsAppMessage','saveSettings'
+].forEach(name => {
+  const fn = window[name];
+  if(typeof fn !== 'function') return;
+  window[name] = function(...args){ if(!sysOn()){ denied(); return; } return fn.apply(this, args); };
+});
+
+// ===== SELECTOR DE PRODUCTOS: el pedido manual solo usa productos de Mi menú =====
+let cart = {}, cartExtra = [], cartFee = 0, pickCat = 'Todos', pickQ = '';
+const r2 = n => Math.round(n * 100) / 100;
+const prodById = id => products.find(p => String(p.id) === String(id));
+const cartSub = () => r2(Object.entries(cart).reduce((a, [id, q]) => { const p = prodById(id); return a + (p ? q * Number(p.price) : 0); }, 0) + cartExtra.reduce((a, e) => a + e.amt, 0));
+const cartText = () => products.filter(p => cart[p.id]).map(p => `${cart[p.id]}x ${p.name} ($${(cart[p.id] * Number(p.price)).toFixed(2)})`).concat(cartExtra.map(e => e.text)).join(', ');
+// Al editar: lo que coincide con Mi menú se vuelve seleccionable; lo demás se conserva como línea "fuera de Mi menú"
+function pickerInit(items, total){
+  cart = {}; cartExtra = []; cartFee = 0; pickCat = 'Todos'; pickQ = ''; $('pickSearch').value = '';
+  String(items || '').split(/,\s*(?=\d+\s*x\s)/).forEach(part => {
+    if(!part.trim()) return;
+    const m = part.match(/^\s*(\d+)\s*x\s+(.+?)\s*\(\$\s*([\d.,]+)\)\s*$/i);
+    const qty = m ? +m[1] : 0, amt = m ? parseFloat(m[3].replace(/,/g, '')) : 0;
+    const p = m && products.find(x => String(x.name).trim().toLowerCase() === m[2].trim().toLowerCase());
+    if(p && Math.abs(qty * Number(p.price) - amt) < .01) cart[p.id] = (cart[p.id] || 0) + qty;
+    else cartExtra.push({text: part.trim(), amt: amt || 0});
+  });
+  if(items) cartFee = Math.max(0, r2(Number(total) - cartSub()));
+  renderPicker();
+}
+function cartAdd(id, d){
+  const p = prodById(id); if(!p) return;
+  if(d > 0 && !p.active){ toast('"' + p.name + '" está agotado en Mi menú.', 'warn'); return; }
+  const q = Math.max(0, (cart[p.id] || 0) + d);
+  if(q) cart[p.id] = q; else delete cart[p.id];
+  renderPicker();
+}
+const stepper = (id, n) => `<span class="qty"><button type="button" class="secondary" data-id="${esc(id)}" data-d="-1" aria-label="Quitar uno" ${n ? '' : 'disabled'}>${ic('minus')}</button><span>${n}</span><button type="button" data-id="${esc(id)}" data-d="1" aria-label="Agregar uno">${ic('plus')}</button></span>`;
+function renderPicker(){
+  const cats = ['Todos', ...new Set(products.map(p => p.cat).filter(Boolean))], q = pickQ.trim().toLowerCase();
+  $('pickCats').innerHTML = cats.map(c => `<button type="button" data-c="${esc(c)}" class="${c === pickCat ? 'selected' : ''}">${esc(c)}</button>`).join('');
+  const list = products.filter(p => (pickCat === 'Todos' || p.cat === pickCat) && (!q || (p.name + ' ' + (p.desc || '')).toLowerCase().includes(q)));
+  const box = $('pickList'), st = box.scrollTop;
+  box.innerHTML = !products.length ? '<div class="empty" style="border:0">Mi menú no tiene productos. Agrégalos en Mi menú para poder tomar pedidos.</div>'
+    : list.map(p => `<div class="pick-row ${p.active ? '' : 'off'}"><div class="nm"><b>${esc(p.name)}</b><small>${esc(p.cat)}${p.desc ? ' · ' + esc(p.desc) : ''}</small></div><span class="pr">${money(p.price)}</span>${p.active ? stepper(p.id, cart[p.id] || 0) : '<span class="tag">Agotado</span>'}</div>`).join('')
+      || '<div class="empty" style="border:0">Sin resultados para esa búsqueda.</div>';
+  box.scrollTop = st;
+  pickerSync();
+}
+function pickerSync(){
+  const editing = !!$('editOrderId').value, sub = cartSub();
+  const fee = editing ? cartFee : ($('newType').value === 'Domicilio' ? r2(Number(settings.shipping) || 0) : 0);
+  $('newItems').value = cartText(); $('newTotal').value = r2(sub + fee).toFixed(2);
+  const rows = Object.entries(cart).map(([id, q]) => { const p = prodById(id); return p ? `<div class="cart-row"><div class="nm">${esc(p.name)}</div>${stepper(p.id, q)}<b class="lt">${money(q * Number(p.price))}</b></div>` : ''; }).join('')
+    + cartExtra.map((e, i) => `<div class="cart-row"><div class="nm">${esc(e.text)} <small class="muted">(fuera de Mi menú)</small></div><button type="button" class="danger" data-x="${i}" aria-label="Quitar línea">${ic('trash')}</button></div>`).join('');
+  $('cartList').innerHTML = (rows || '<div class="muted" style="font-size:13px">Aún no agregas productos.</div>')
+    + `<div class="cart-tot"><span>Subtotal</span><span>${money(sub)}</span></div>` + (fee ? `<div class="cart-tot"><span>${editing ? 'Envío y otros cargos' : 'Envío a domicilio'}</span><span>${money(fee)}</span></div>` : '');
+  const cb = $('cartBox'), nx = cb.nextElementSibling; cb.classList.remove('invalid');
+  if(nx && nx.classList.contains('ferr')) nx.remove();
+}
+$('cartBox').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b || b.disabled) return;
+  if(b.dataset.id) cartAdd(b.dataset.id, +b.dataset.d);
+  else if(b.dataset.x !== undefined){ cartExtra.splice(+b.dataset.x, 1); renderPicker(); }
+  else if(b.dataset.c){ pickCat = b.dataset.c; renderPicker(); }
+});
+
+// ===== PANELES RETRACTILES (Ajustes) y barra Pantallas: el estado se recuerda en este dispositivo =====
+const UI_KEY = 'menuchat_ui_v1';
+let ui = {collapsed: {}, launcherMin: false};
+try{ ui = Object.assign(ui, JSON.parse(localStorage.getItem(UI_KEY) || '{}')); }catch(e){}
+const saveUI = () => { try{ localStorage.setItem(UI_KEY, JSON.stringify(ui)); }catch(e){} };
+function setCollapsed(p, v, persist = true){
+  p.classList.toggle('collapsed', v);
+  const b = p.querySelector('.cbtn'); b.setAttribute('aria-expanded', String(!v)); b.setAttribute('aria-label', v ? 'Desplegar sección' : 'Contraer sección');
+  if(persist){ ui.collapsed[p.dataset.collapse] = v; saveUI(); }
+}
+function initCollapsibles(){
+  document.querySelectorAll('#page-settings > .panel').forEach((p, i) => {
+    const head = p.querySelector(':scope > .section-head, :scope > h2');
+    if(!head || p.querySelector(':scope > .cwrap')) return;
+    p.dataset.collapse = 'settings-' + i;
+    const wrap = document.createElement('div'), body = document.createElement('div');
+    wrap.className = 'cwrap'; body.className = 'cbody';
+    [...p.children].filter(c => c !== head).forEach(c => body.append(c)); wrap.append(body); p.append(wrap);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'cbtn secondary'; b.innerHTML = ic('chevron');
+    head.classList.add('ch'); head.prepend(b);
+    head.addEventListener('click', e => { if(e.target.closest('button,input,label,a,select') && !e.target.closest('.cbtn')) return; setCollapsed(p, !p.classList.contains('collapsed')); });
+    setCollapsed(p, !!ui.collapsed[p.dataset.collapse], false);
   });
 }
-new MutationObserver(muts => muts.forEach(m => m.addedNodes.forEach(n => {
-  if(n.nodeType === 1) wrapEmoji(n); else if(n.nodeType === 3 && n.parentElement) wrapEmoji(n.parentElement);
-}))).observe(document.body, {childList:true, subtree:true});
-wrapEmoji(document.body);
+function applyLauncher(){ $('svLauncher').classList.toggle('min', !!ui.launcherMin); $('svlToggle').setAttribute('aria-expanded', String(!ui.launcherMin)); }
+function toggleLauncher(){ ui.launcherMin = !ui.launcherMin; applyLauncher(); saveUI(); }
+
+// ===== API PUBLICA: para integrar MenuChat con otras plataformas (iframe, Capacitor, Electron, etc.) =====
+window.MenuChat = {
+  version: CONFIG.version,
+  config: CONFIG,
+  getState: () => ({orders, products, tables, settings}),
+  toast, playSound, togglePower, showPage,
+  hashPassword: p => sha256(CONFIG.passSalt + p)   // MenuChat.hashPassword('nueva').then(console.log) -> pegar en CONFIG.menuPassHash
+};
 
 // INICIALIZADOR CLOUD ASÍNCRONO
 async function initApp() {
   await loadState();
   loadSettingsToUI();
   renderHours();
+  syncPower();
+  syncMenuLock();
+  initCollapsibles();
+  applyLauncher();
   renderAll();
   initRealtimeSync();
 }
