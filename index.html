@@ -516,15 +516,15 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
 const $=id=>document.getElementById(id);
 
 // --- CONFIGURACIÓN SUPABASE CON CREDENCIALES INTEGRADAS ---
-const SUPABASE_URL = 'https://' + 'sb_publishable_L57TW66Wtveq5TvMVKyJzQ_dwEsb-Kj'.split('_')[1] + '.supabase.co'; 
-const SUPABASE_KEY = 'sb_publishable_L57TW66Wtveq5TvMVKyJzQ_dwEsb-Kj';
+const SUPABASE_URL = 'https://dqrufnkqwkvalgakqkft.supabase.co'; 
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxcnVmbmtxd2t2YWxnYWtxa2Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQzMjU3MzEsImV4cCI6MjEwOTkwMTczMX0.fYJB9aCuO4R7kzJLfaT-DNftNNEWmJX3FiwGC9PWMmY';
 
 let _supabase = null;
 let useCloud = false;
 
 try {
   if (window.supabase) {
-    _supabase = window.supabase.createClient('https://api.supabase.com', SUPABASE_KEY);
+    _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     useCloud = true;
   }
 } catch(e) {
