@@ -148,6 +148,7 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
   .stats{grid-template-columns:repeat(2,1fr)}
 }
 </style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
 </head>
 <body>
 
@@ -521,6 +522,48 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 let _supabase = null;
 let useCloud = false;
+const RESTAURANT_ID = 'menuchat-demo';
+
+// Fila limpia para la tabla orders (nombres de columna exactos de Supabase)
+const toRow = o => ({
+  id: Math.trunc(Number(o.id)), restaurantid: RESTAURANT_ID,
+  customer: o.customer ?? '', phone: String(o.phone ?? ''), channel: o.channel ?? '',
+  type: o.type ?? '', address: o.address ?? '', items: String(o.items ?? ''),
+  total: Number(String(o.total).replace(/[^0-9.]/g,'')) || 0,
+  status: o.status ?? '', payment: o.payment ?? '',
+  paymentstatus: o.paymentStatus ?? o.paymentstatus ?? 'Pendiente',
+  time: o.time ?? '', table: o.table ?? ''
+});
+const fromRow = r => ({...r, paymentStatus: r.paymentstatus || r.payment_status || r.paymentStatus || 'Pendiente', table: r.table || ''});
+const nextOrderId = () => Math.max(105, ...orders.map(o => Number(o.id) || 0)) + 1;
+
+function cloudFail(msg, err){ console.error('Supabase:', err && (err.code + ' ' + err.message)); toast('⚠️ ' + msg + (err ? ': ' + err.message : '')); }
+
+// Actualiza o crea (por id) un pedido existente
+async function cloudSave(o){
+  if(!(useCloud && _supabase)) return;
+  try{
+    const {error} = await _supabase.from('orders').upsert(toRow(o), {onConflict:'id'});
+    if(error) cloudFail('No se pudo sincronizar el pedido', error);
+  }catch(e){ cloudFail('Sin conexión con la nube', e); }
+}
+
+// Inserta un pedido nuevo; si el id ya existe en la nube, toma el siguiente libre
+async function cloudInsert(o){
+  if(!(useCloud && _supabase)) return;
+  for(let i=0;i<4;i++){
+    try{
+      const {error} = await _supabase.from('orders').insert([toRow(o)]);
+      if(!error) return;
+      if(error.code === '23505'){
+        const old = o.id; o.id = nextOrderId();
+        tables.forEach(t => { if(t.order === '#'+old) t.order = '#'+o.id; });
+        continue;
+      }
+      return cloudFail('No se pudo guardar el pedido en la nube', error);
+    }catch(e){ return cloudFail('Sin conexión con la nube', e); }
+  }
+}
 
 try {
   if (window.supabase) {
@@ -583,6 +626,7 @@ function playNotificationSound() {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const ctx = new AudioContext();
+    setTimeout(() => ctx.close(), 1200);
     [0, 0.18, 0.36].forEach((delay, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -602,29 +646,23 @@ function playNotificationSound() {
 
 // CARGA Y PERSISTENCIA (SUPABASE O LOCALSTORAGE)
 async function loadState() {
+  const ls = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } };
+  orders = ls(STORAGE_KEY, [...defaultOrders]);
+  products = ls(PRODUCTS_KEY, [...defaultProducts]);
+  tables = ls(TABLES_KEY, [...defaultTables]);
+  settings = {...defaultSettings, ...ls(SETTINGS_KEY, {})};
+
   if (useCloud && _supabase) {
     try {
-      let { data: cloudOrders } = await _supabase.from('orders').select('*');
-      let { data: cloudProducts } = await _supabase.from('products').select('*');
-      
-      orders = cloudOrders && cloudOrders.length ? cloudOrders.map(o => ({...o, paymentStatus: o.payment_status || o.paymentStatus || 'Pendiente'})) : [...defaultOrders];
-      products = cloudProducts && cloudProducts.length ? cloudProducts : [...defaultProducts];
-      tables = [...defaultTables];
-      settings = {...defaultSettings};
-      return;
+      const {data, error} = await _supabase.from('orders').select('*').order('id', {ascending:false});
+      if (error) console.error('Supabase orders:', error.code, error.message);
+      else orders = data.length ? data.map(fromRow) : [...defaultOrders];
+      const {data: cp, error: pe} = await _supabase.from('products').select('*');
+      if (!pe && cp && cp.length) products = cp;
     } catch(err) {
       console.log("Usando respaldo local por red o tabla pendiente.");
     }
   }
-
-  const o = localStorage.getItem(STORAGE_KEY);
-  orders = o ? JSON.parse(o) : [...defaultOrders];
-  const p = localStorage.getItem(PRODUCTS_KEY);
-  products = p ? JSON.parse(p) : [...defaultProducts];
-  const t = localStorage.getItem(TABLES_KEY);
-  tables = t ? JSON.parse(t) : [...defaultTables];
-  const s = localStorage.getItem(SETTINGS_KEY);
-  settings = s ? JSON.parse(s) : {...defaultSettings};
 }
 
 async function saveState() {
@@ -642,17 +680,21 @@ function initRealtimeSync() {
     _supabase
       .channel('menuchat-realtime')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, payload => {
-        let newO = {...payload.new, paymentStatus: payload.new.payment_status || 'Pendiente'};
+        const newO = fromRow(payload.new);
+        if (orders.some(o => Number(o.id) === Number(newO.id))) return; // ya existe (lo creó esta misma pantalla)
         orders.unshift(newO);
         playNotificationSound();
         renderAll();
-        toast("🔔 ¡Nuevo pedido en vivo desde WhatsApp!");
+        toast("🔔 ¡Nuevo pedido en vivo desde " + (newO.channel || "WhatsApp") + "!");
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, payload => {
-        let updO = {...payload.new, paymentStatus: payload.new.payment_status || 'Pendiente'};
-        let idx = orders.findIndex(o => o.id === updO.id);
-        if(idx !== -1) orders[idx] = updO;
-        else orders.unshift(updO);
+        const updO = fromRow(payload.new);
+        const idx = orders.findIndex(o => Number(o.id) === Number(updO.id));
+        if(idx !== -1) orders[idx] = updO; else orders.unshift(updO);
+        renderAll();
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'orders' }, payload => {
+        orders = orders.filter(o => Number(o.id) !== Number(payload.old.id));
         renderAll();
       })
       .subscribe();
@@ -661,10 +703,12 @@ function initRealtimeSync() {
   }
 }
 
+let toastTimer;
 function toast(msg){
   $("toast").textContent = msg;
   $("toast").style.display = "block";
-  setTimeout(() => $("toast").style.display = "none", 2600);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $("toast").style.display = "none", 2600);
 }
 
 // CONTROL DE PESTAÑAS
@@ -833,15 +877,7 @@ async function changeOrder(id, status){
     }
   }
 
-  if (useCloud && _supabase) {
-    try {
-      await _supabase.from('orders').update({ 
-        status: o.status, 
-        payment_status: o.paymentStatus, 
-        table: o.table 
-      }).eq('id', id);
-    } catch(e){}
-  }
+  await cloudSave(o);
 
   saveState();
   renderAll();
@@ -858,7 +894,8 @@ async function cancelOrder(id){
 
   if (useCloud && _supabase) {
     try {
-      await _supabase.from('orders').delete().eq('id', id);
+      const {error} = await _supabase.from('orders').delete().eq('id', id);
+      if(error) cloudFail('No se pudo eliminar en la nube', error);
     } catch(e){}
   }
 
@@ -921,7 +958,7 @@ async function simularPedidoWhatsApp(){
   }
 
   const p1 = activeProds[Math.floor(Math.random() * activeProds.length)];
-  const randomId = Math.floor(Math.random() * 900) + 100;
+  const randomId = nextOrderId();
   const names = ["María Fernanda", "José Luis Osuna", "Ana Sofía", "Alejandro Valenzuela", "Guadalupe Lizárraga"];
   const customer = names[Math.floor(Math.random() * names.length)];
   
@@ -955,25 +992,7 @@ async function simularPedidoWhatsApp(){
 
   orders.unshift(newOrder);
 
-  if (useCloud && _supabase) {
-    try {
-      await _supabase.from('orders').insert([{
-        id: newOrder.id,
-        customer: newOrder.customer,
-        phone: String(newOrder.phone),
-        channel: newOrder.channel,
-        type: newOrder.type,
-        address: newOrder.address,
-        items: newOrder.items,
-        total: newOrder.total,
-        status: newOrder.status,
-        payment: newOrder.payment,
-        paymentstatus: newOrder.paymentStatus,
-        time: newOrder.time,
-        table: newOrder.table
-      }]);
-    } catch(e){}
-  }
+  await cloudInsert(newOrder);
 
   playNotificationSound();
   saveState();
@@ -1069,9 +1088,10 @@ async function saveOrderForm(){
       o.items = items;
       o.total = total;
       o.payment = $("newPayment").value;
+      await cloudSave(o);
     }
   } else {
-    let newId = nextId++;
+    let newId = nextOrderId();
     let assignedTable = "";
     if(type === "Comer en restaurante" && settings.tablesActive){
       assignedTable = $("newTableSelect").value;
@@ -1097,25 +1117,7 @@ async function saveOrderForm(){
     };
 
     orders.unshift(newOrder);
-    if (useCloud && _supabase) {
-      try {
-        await _supabase.from('orders').insert([{
-          id: newOrder.id,
-          customer: newOrder.customer,
-          phone: String(newOrder.phone),
-          channel: newOrder.channel,
-          type: newOrder.type,
-          address: newOrder.address,
-          items: newOrder.items,
-          total: newOrder.total,
-          status: newOrder.status,
-          payment: newOrder.payment,
-          payment_status: newOrder.paymentStatus,
-          time: newOrder.time,
-          table: newOrder.table
-        }]);
-      } catch(e){}
-    }
+    await cloudInsert(newOrder);
   }
 
   closeModal("orderModal");
