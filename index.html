@@ -353,8 +353,6 @@ body .qty button,body .cart-row>button{width:30px;height:30px;padding:0;border-r
 body .auth-tabs button{background:transparent;color:var(--muted);border:0;box-shadow:none;padding:8px;font-size:13px;border-radius:9px}
 body .auth-tabs button:hover{transform:none;box-shadow:none;color:var(--text)}
 body .auth-tabs button.active{background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604}
-.auth-demo-box{margin-top:16px;padding:12px;background:#141a20;border:1px dashed #4a3722;border-radius:12px;font-size:12px;color:var(--muted)}
-.auth-demo-box b{color:#ffbd7b}
 
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%23ff922b%22/><path d=%22M9 8v7a3 3 0 0 0 6 0V8M12 8v16M21 24V8c-3 1-4 4-4 8v2h4%22 fill=%22none%22 stroke=%22%23211407%22 stroke-width=%222.4%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
@@ -393,16 +391,6 @@ body .auth-tabs button.active{background:linear-gradient(180deg,#ffa347,#ff8a1f)
 
     <button type="button" id="authSubmitBtn" style="width:100%;margin-top:16px;padding:12px" onclick="submitAuthForm()">Entrar al panel</button>
 
-    <div class="auth-demo-box">
-      <div class="flex justify-between items-center gap-2">
-        <span>¿Cuenta <b>Demo Exclusiva</b>?</span>
-        <button type="button" class="secondary" style="padding:5px 10px;font-size:11px" onclick="fillDemoCredentials()">Rellenar Demo</button>
-      </div>
-      <div style="margin-top:6px;line-height:1.4">
-        Usuario: <b>demo@menuchat.pro</b><br>
-        Contraseña: <b>Demo2026!</b>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -2276,13 +2264,6 @@ function toggleAuthPassVis(){
   const i = $('authPass');
   i.type = i.type === 'password' ? 'text' : 'password';
   i.focus();
-}
-
-function fillDemoCredentials(){
-  switchAuthTab('login');
-  $('authEmail').value = 'demo@menuchat.pro';
-  $('authPass').value = 'Demo2026!';
-  $('authErr').classList.add('hidden');
 }
 
 function showAuthError(msg){
