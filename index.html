@@ -1047,7 +1047,7 @@ async function loadState() {
       } else if (data) {
         orders = data.length ? data.map(fromRow) : [];
       }
-      const {data: cp, error: pe} = await _supabase.from('productos').select('*');
+      const {data: cp, error: pe} = await _supabase.from('productos').select('*').order('id', {ascending:true});
       if (!pe && cp && cp.length) {
         products = cp.map(p => ({
           id: p.id,
@@ -1058,12 +1058,32 @@ async function loadState() {
           active: p.activo
         }));
       }
+      const {data: cr, error: re} = await _supabase.from('restaurantes').select('*').eq('id', RESTAURANT_ID).maybeSingle();
+      if (!re && cr) {
+        if (cr.nombre) settings.restName = cr.nombre;
+        if (cr.telefono) settings.restPhone = cr.telefono;
+        if (cr.direccion) settings.restAddress = cr.direccion;
+        if (cr.descripcion) settings.restDesc = cr.descripcion;
+      }
     } catch(err) {
       console.error("❌ Error de carga en la nube:", err);
       toast("Sin conexión con la nube. Usando respaldo local.", "warn");
     }
   }
   orders.forEach(o => { o.items = cleanItems(o.items); });
+  if (useCloud && _supabase && sysOn()) {
+    tables.forEach(t => {
+      const act = orders.find(o => o.table === t.id && o.status !== 'Finalizado');
+      if (act) {
+        t.status = act.status === 'Preparando' ? 'Preparando' : 'Ocupada';
+        t.order = '#' + act.id;
+      } else if (t.order && orders.some(o => '#' + o.id === t.order && o.status === 'Finalizado')) {
+        t.status = 'Libre';
+        t.order = '';
+        t.minutes = 0;
+      }
+    });
+  }
 }
 
 async function saveState() {
@@ -1087,21 +1107,29 @@ function initRealtimeSync() {
   if (!useCloud || !_supabase || !sysOn() || rtChannel) return;
   try {
     rtChannel = _supabase
-      .channel('public:ordenes')
+      .channel('menuchat-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'ordenes' }, payload => {
-        console.log("⚡ [Realtime] Cambio detectado en ordenes:", payload);
+        console.log("⚡ [Realtime Ordenes]:", payload.eventType);
         if(payload.eventType === 'INSERT'){
             playNotificationSound();
             toast("Nuevo pedido en vivo desde la nube.", "info");
         }
         loadState().then(() => renderAll());
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'productos' }, payload => {
+        console.log("⚡ [Realtime Productos]:", payload.eventType);
+        loadState().then(() => { renderAll(); if(!$('orderModal').classList.contains('hidden')) renderPicker(); });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'restaurantes' }, payload => {
+        console.log("⚡ [Realtime Restaurantes]:", payload.eventType);
+        loadState().then(() => { loadSettingsToUI(); renderAll(); });
+      })
       .subscribe(status => {
         rtStatus = status; updateNet();
         console.log("📡 [Realtime Status]:", status);
       });
   } catch(e) {
-    console.log("Realtime no disponible.");
+    console.error("❌ Realtime Error:", e);
   }
 }
 
@@ -1703,6 +1731,7 @@ function confirmManualTableAssignment(){
     renderAll();
     closeModal("assignTableModal");
     toast("Mesa " + t.id + " asignada.");
+    cloudSave(o);
   }
 }
 
@@ -1766,15 +1795,16 @@ async function toggleProduct(id, active){
   if(p) {
     p.active = active;
     if(useCloud && _supabase){
-      await _supabase.from('productos').upsert({
-        id: Number(p.id),
+      const {error} = await _supabase.from('productos').upsert({
+        id: Math.trunc(Number(p.id)),
         restaurante_id: RESTAURANT_ID,
         nombre: p.name,
         categoria: p.cat,
         descripcion: p.desc,
         precio: Number(p.price),
         activo: Boolean(p.active)
-      });
+      }, {onConflict: 'id'});
+      if(error) cloudFail('No se pudo actualizar el platillo en la nube', error);
     }
   }
   saveState();
@@ -1837,15 +1867,16 @@ async function saveProduct(){
   }
 
   if(useCloud && _supabase && prodPayload){
-    await _supabase.from('productos').upsert({
-      id: Number(prodPayload.id),
+    const {error} = await _supabase.from('productos').upsert({
+      id: Math.trunc(Number(prodPayload.id)),
       restaurante_id: RESTAURANT_ID,
       nombre: prodPayload.name,
       categoria: prodPayload.cat,
       descripcion: prodPayload.desc,
       precio: Number(prodPayload.price),
       activo: Boolean(prodPayload.active)
-    });
+    }, {onConflict: 'id'});
+    if(error) cloudFail('No se pudo guardar el producto en la nube', error);
   }
 
   closeModal("productModal");
@@ -1910,13 +1941,14 @@ async function saveSettings(){
   settings.shipping = Number($("shipping").value);
 
   if(useCloud && _supabase){
-    await _supabase.from('restaurantes').upsert({
+    const {error} = await _supabase.from('restaurantes').upsert({
       id: RESTAURANT_ID,
       nombre: settings.restName,
       telefono: settings.restPhone,
       direccion: settings.restAddress,
       descripcion: settings.restDesc
-    });
+    }, {onConflict: 'id'});
+    if(error) cloudFail('No se pudo guardar la configuración en la nube', error);
   }
 
   saveState();
