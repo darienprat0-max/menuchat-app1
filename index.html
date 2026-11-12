@@ -343,10 +343,68 @@ body .qty button,body .cart-row>button{width:30px;height:30px;padding:0;border-r
 .cart{padding:10px 12px;border-top:1px solid var(--line);background:#11161b}
 .cart-row{display:flex;align-items:center;gap:10px;padding:5px 0}
 .cart-tot{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding-top:4px}
+
+#authOverlay{position:fixed;inset:0;z-index:250;background:radial-gradient(circle at top,#1c232b,#0d1014);display:flex;align-items:center;justify-content:center;padding:20px}
+#authOverlay.hidden{display:none!important}
+.auth-card{width:min(420px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 24px 60px #000a}
+.auth-logo{font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:4px}
+.auth-logo span{color:var(--orange)}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#11161b;padding:5px;border-radius:12px;border:1px solid var(--line);margin:16px 0}
+body .auth-tabs button{background:transparent;color:var(--muted);border:0;box-shadow:none;padding:8px;font-size:13px;border-radius:9px}
+body .auth-tabs button:hover{transform:none;box-shadow:none;color:var(--text)}
+body .auth-tabs button.active{background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604}
+.auth-demo-box{margin-top:16px;padding:12px;background:#141a20;border:1px dashed #4a3722;border-radius:12px;font-size:12px;color:var(--muted)}
+.auth-demo-box b{color:#ffbd7b}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%23ff922b%22/><path d=%22M9 8v7a3 3 0 0 0 6 0V8M12 8v16M21 24V8c-3 1-4 4-4 8v2h4%22 fill=%22none%22 stroke=%22%23211407%22 stroke-width=%222.4%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
 </head>
 <body>
+
+<!-- PANTALLA DE INICIO DE SESION MULTI-RESTAURANTE -->
+<div id="authOverlay">
+  <div class="auth-card">
+    <div class="flex justify-between items-center">
+      <div class="auth-logo">Menu<span>Chat</span></div>
+      <span class="pill">SAAS CLOUD</span>
+    </div>
+    <p class="muted" style="margin:0;font-size:13px">Acceso exclusivo por restaurante. Inicia sesión o activa tu cuenta.</p>
+
+    <div class="auth-tabs">
+      <button type="button" id="tabLoginBtn" class="active" onclick="switchAuthTab('login')">Iniciar sesión</button>
+      <button type="button" id="tabSignupBtn" onclick="switchAuthTab('signup')">Crear cuenta</button>
+    </div>
+
+    <div id="authRestNameWrap" class="hidden">
+      <label for="authRestName">Nombre de tu restaurante</label>
+      <input id="authRestName" type="text" placeholder="Ej. Mariscos & Tacos Demo Mazatlán">
+    </div>
+
+    <label for="authEmail">Correo electrónico</label>
+    <input id="authEmail" type="email" autocomplete="email" placeholder="correo@restaurante.com">
+
+    <label for="authPass">Contraseña</label>
+    <div class="pass-wrap">
+      <input id="authPass" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuthForm()">
+      <button type="button" class="secondary" onclick="toggleAuthPassVis()" aria-label="Mostrar contraseña">[[eye]]</button>
+    </div>
+
+    <div class="ferr hidden" id="authErr" role="alert" style="margin-top:10px"></div>
+
+    <button type="button" id="authSubmitBtn" style="width:100%;margin-top:16px;padding:12px" onclick="submitAuthForm()">Entrar al panel</button>
+
+    <div class="auth-demo-box">
+      <div class="flex justify-between items-center gap-2">
+        <span>¿Cuenta <b>Demo Exclusiva</b>?</span>
+        <button type="button" class="secondary" style="padding:5px 10px;font-size:11px" onclick="fillDemoCredentials()">Rellenar Demo</button>
+      </div>
+      <div style="margin-top:6px;line-height:1.4">
+        Usuario: <b>demo@menuchat.pro</b><br>
+        Contraseña: <b>Demo2026!</b>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="app">
   <!-- Navegación Lateral -->
@@ -382,6 +440,10 @@ body .qty button,body .cart-row>button{width:30px;height:30px;padding:0;border-r
         [[sliders]] <span>Ajustes</span>
       </button>
     </nav>
+    <div class="side-note" style="margin-top:10px">
+      <div id="activeUserEmail" style="font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:8px">Sin sesión</div>
+      <button type="button" class="secondary" style="width:100%;padding:8px;font-size:12px" onclick="logoutUser()">[[unlock]] Cerrar sesión</button>
+    </div>
   </aside>
 
   <!-- Área Principal -->
@@ -783,7 +845,9 @@ const SUPABASE_URL = CONFIG.supabaseUrl;
 const SUPABASE_KEY = CONFIG.supabaseKey;
 let _supabase = null;
 let useCloud = false;
-const RESTAURANT_ID = CONFIG.restaurantId;
+let RESTAURANT_ID = CONFIG.restaurantId;
+let currentUser = null;
+let authMode = 'login';
 
 // --- ICONOS ---
 const ICONS = {
@@ -927,6 +991,7 @@ try {
 }
 
 // DATOS BASE INICIALES
+const storageKey = base => `${base}_${RESTAURANT_ID}`;
 const STORAGE_KEY = 'menuchat_orders_db_v5';
 const PRODUCTS_KEY = 'menuchat_products_db_v5';
 const TABLES_KEY = 'menuchat_tables_db_v5';
@@ -1031,24 +1096,25 @@ function setSoundEnabled(v){ settings.soundOn = v; saveState(); toast(v ? 'Sonid
 
 // CARGA Y PERSISTENCIA (SUPABASE Y LOCALSTORAGE)
 async function loadState() {
-  const ls = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } };
-  orders = ls(STORAGE_KEY, [...defaultOrders]);
-  products = ls(PRODUCTS_KEY, [...defaultProducts]);
+  const ls = (k, d) => { try { const v = localStorage.getItem(storageKey(k)); return v ? JSON.parse(v) : d; } catch(e){ return d; } };
+  const isDemo = RESTAURANT_ID.startsWith('demo-');
+  orders = ls(STORAGE_KEY, isDemo ? [...defaultOrders] : []);
+  products = ls(PRODUCTS_KEY, isDemo ? [...defaultProducts] : []);
   tables = ls(TABLES_KEY, [...defaultTables]);
   settings = {...defaultSettings, ...ls(SETTINGS_KEY, {})};
 
-  if (useCloud && _supabase && sysOn()) {
+  if (useCloud && _supabase && sysOn() && currentUser) {
     try {
-      console.log("📡 [Supabase] Leyendo tablas ordenes y productos...");
-      const {data, error} = await _supabase.from('ordenes').select('*').order('id', {ascending:false});
+      console.log("📡 [Supabase] Leyendo datos del restaurante:", RESTAURANT_ID);
+      const {data, error} = await _supabase.from('ordenes').select('*').eq('restaurante_id', RESTAURANT_ID).order('id', {ascending:false});
       if (error) {
         console.error('❌ [Supabase orders error]:', error.code, error.message);
         toast('No se pudieron cargar los pedidos de la nube.', 'err');
       } else if (data) {
         orders = data.length ? data.map(fromRow) : [];
       }
-      const {data: cp, error: pe} = await _supabase.from('productos').select('*').order('id', {ascending:true});
-      if (!pe && cp && cp.length) {
+      const {data: cp, error: pe} = await _supabase.from('productos').select('*').eq('restaurante_id', RESTAURANT_ID).order('id', {ascending:true});
+      if (!pe && cp) {
         products = cp.map(p => ({
           id: p.id,
           name: p.nombre,
@@ -1088,10 +1154,10 @@ async function loadState() {
 
 async function saveState() {
   try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-    localStorage.setItem(TABLES_KEY, JSON.stringify(tables));
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    localStorage.setItem(storageKey(STORAGE_KEY), JSON.stringify(orders));
+    localStorage.setItem(storageKey(PRODUCTS_KEY), JSON.stringify(products));
+    localStorage.setItem(storageKey(TABLES_KEY), JSON.stringify(tables));
+    localStorage.setItem(storageKey(SETTINGS_KEY), JSON.stringify(settings));
   }catch(e){
     console.error('localStorage:', e);
   }
@@ -1104,11 +1170,12 @@ function stopRealtime(){
   rtChannel = null; rtStatus = ''; updateNet();
 }
 function initRealtimeSync() {
-  if (!useCloud || !_supabase || !sysOn() || rtChannel) return;
+  if (!useCloud || !_supabase || !sysOn() || !currentUser || rtChannel) return;
   try {
+    const f = `restaurante_id=eq.${RESTAURANT_ID}`;
     rtChannel = _supabase
-      .channel('menuchat-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'ordenes' }, payload => {
+      .channel('menuchat-realtime-' + RESTAURANT_ID)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'ordenes', filter: f }, payload => {
         console.log("⚡ [Realtime Ordenes]:", payload.eventType);
         if(payload.eventType === 'INSERT'){
             playNotificationSound();
@@ -1116,11 +1183,11 @@ function initRealtimeSync() {
         }
         loadState().then(() => renderAll());
       })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'productos' }, payload => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'productos', filter: f }, payload => {
         console.log("⚡ [Realtime Productos]:", payload.eventType);
         loadState().then(() => { renderAll(); if(!$('orderModal').classList.contains('hidden')) renderPicker(); });
       })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'restaurantes' }, payload => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'restaurantes', filter: `id=eq.${RESTAURANT_ID}` }, payload => {
         console.log("⚡ [Realtime Restaurantes]:", payload.eventType);
         loadState().then(() => { loadSettingsToUI(); renderAll(); });
       })
@@ -2196,7 +2263,163 @@ window.MenuChat = {
   toast, playSound, togglePower, showPage
 };
 
-async function initApp() {
+function switchAuthTab(mode){
+  authMode = mode;
+  $('tabLoginBtn').classList.toggle('active', mode === 'login');
+  $('tabSignupBtn').classList.toggle('active', mode === 'signup');
+  $('authRestNameWrap').classList.toggle('hidden', mode !== 'signup');
+  $('authSubmitBtn').textContent = mode === 'login' ? 'Entrar al panel' : 'Crear restaurante y entrar';
+  $('authErr').classList.add('hidden');
+}
+
+function toggleAuthPassVis(){
+  const i = $('authPass');
+  i.type = i.type === 'password' ? 'text' : 'password';
+  i.focus();
+}
+
+function fillDemoCredentials(){
+  switchAuthTab('login');
+  $('authEmail').value = 'demo@menuchat.pro';
+  $('authPass').value = 'Demo2026!';
+  $('authErr').classList.add('hidden');
+}
+
+function showAuthError(msg){
+  const e = $('authErr');
+  e.textContent = msg;
+  e.classList.remove('hidden');
+}
+
+async function provisionRestaurantForUser(user, customName){
+  // 1. Buscar si el usuario ya tiene un restaurante vinculado por owner_id
+  const {data: existing, error: findErr} = await _supabase
+    .from('restaurantes')
+    .select('*')
+    .eq('owner_id', user.id)
+    .maybeSingle();
+
+  if (existing && existing.id) {
+    RESTAURANT_ID = existing.id;
+    return existing;
+  }
+
+  // 2. Si no existe, crear su restaurante exclusivo automaticamente
+  const isDemoUser = (user.email || '').toLowerCase() === 'demo@menuchat.pro';
+  const newRestId = isDemoUser ? 'demo-exclusiva-' + user.id.slice(0, 8) : 'rest-' + user.id.slice(0, 12);
+  const restName = customName || (isDemoUser ? 'Mariscos & Tacos Demo Mazatlán' : 'Mi Restaurante');
+
+  const payload = {
+    id: newRestId,
+    owner_id: user.id,
+    nombre: restName,
+    telefono: isDemoUser ? '669 912 3456' : '',
+    direccion: isDemoUser ? 'Av. Del Mar #500, Mazatlán, Sin.' : '',
+    descripcion: isDemoUser ? 'Cuenta Demo Exclusiva — MenuChat Pro' : 'Pedidos en línea'
+  };
+
+  const {data: created, error: insErr} = await _supabase
+    .from('restaurantes')
+    .insert([payload])
+    .select()
+    .single();
+
+  if (insErr) {
+    console.error('❌ Error creando restaurante:', insErr);
+    throw new Error(insErr.message || 'No se pudo crear el perfil del restaurante.');
+  }
+
+  RESTAURANT_ID = created.id;
+
+  // 3. Si es la cuenta Demo Exclusiva, sembrar menu y pedidos de muestra en la nube
+  if (isDemoUser) {
+    const baseId = Date.now();
+    const demoProds = defaultProducts.map((p, idx) => ({
+      id: baseId + idx + 1,
+      restaurante_id: RESTAURANT_ID,
+      nombre: p.name,
+      categoria: p.cat,
+      descripcion: p.desc,
+      precio: p.price,
+      activo: p.active
+    }));
+    await _supabase.from('productos').insert(demoProds);
+
+    const demoOrds = defaultOrders.map((o, idx) => ({
+      id: baseId + 100 + idx,
+      restaurante_id: RESTAURANT_ID,
+      cliente: o.customer,
+      telefono: o.phone,
+      canal: o.channel,
+      tipo: o.type,
+      direccion: o.address,
+      items: o.items,
+      total: o.total,
+      estado: o.status,
+      pago: o.payment,
+      estado_pago: o.payment_status,
+      hora: o.time,
+      mesa: o.table
+    }));
+    await _supabase.from('ordenes').insert(demoOrds);
+  }
+
+  return created;
+}
+
+async function submitAuthForm(){
+  if (!useCloud || !_supabase) {
+    return showAuthError('No hay conexión con Supabase.');
+  }
+  const email = $('authEmail').value.trim();
+  const password = $('authPass').value;
+  const restName = $('authRestName').value.trim();
+  const btn = $('authSubmitBtn');
+
+  if (!email || !password) return showAuthError('Ingresa correo y contraseña.');
+  if (password.length < 6) return showAuthError('La contraseña debe tener al menos 6 caracteres.');
+
+  btn.disabled = true;
+  btn.textContent = 'Conectando...';
+  $('authErr').classList.add('hidden');
+
+  try {
+    let user = null;
+    if (authMode === 'signup') {
+      const {data, error} = await _supabase.auth.signUp({ email, password });
+      if (error) throw error;
+      if (!data.session) {
+        btn.disabled = false;
+        btn.textContent = 'Crear restaurante y entrar';
+        return showAuthError('Cuenta creada. Revisa tu correo para confirmar o desactiva "Confirm email" en Supabase Auth.');
+      }
+      user = data.user;
+    } else {
+      const {data, error} = await _supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      user = data.user;
+    }
+
+    await startAuthenticatedSession(user, restName);
+  } catch (err) {
+    console.error('Auth error:', err);
+    const msg = err.message === 'Invalid login credentials'
+      ? 'Correo o contraseña incorrectos.'
+      : (err.message || 'Error al iniciar sesión.');
+    showAuthError(msg);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = authMode === 'login' ? 'Entrar al panel' : 'Crear restaurante y entrar';
+  }
+}
+
+async function startAuthenticatedSession(user, customName = ''){
+  currentUser = user;
+  await provisionRestaurantForUser(user, customName);
+  $('activeUserEmail').textContent = user.email;
+  $('subBrandTitle').textContent = RESTAURANT_ID;
+  $('authOverlay').classList.add('hidden');
+
   await loadState();
   loadSettingsToUI();
   renderHours();
@@ -2205,7 +2428,44 @@ async function initApp() {
   initCollapsibles();
   applyLauncher();
   renderAll();
+  stopRealtime();
   initRealtimeSync();
+  toast('Sesión iniciada: ' + (settings.restName || user.email));
+}
+
+async function logoutUser(){
+  if (_supabase) {
+    try { await _supabase.auth.signOut(); } catch(e) {}
+  }
+  stopRealtime();
+  currentUser = null;
+  menuUnlocked = false;
+  try { sessionStorage.removeItem('menuchat_menu_ok'); } catch(e) {}
+  syncMenuLock();
+  $('authPass').value = '';
+  $('authOverlay').classList.remove('hidden');
+  toast('Sesión cerrada.', 'info');
+}
+
+async function initApp() {
+  renderHours();
+  syncPower();
+  syncMenuLock();
+  initCollapsibles();
+  applyLauncher();
+
+  if (useCloud && _supabase) {
+    const {data: {session}} = await _supabase.auth.getSession();
+    if (session && session.user) {
+      try {
+        await startAuthenticatedSession(session.user);
+        return;
+      } catch(e) {
+        console.error(e);
+      }
+    }
+  }
+  $('authOverlay').classList.remove('hidden');
 }
 
 initApp();
