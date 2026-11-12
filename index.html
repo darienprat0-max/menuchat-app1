@@ -151,7 +151,6 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
   .stats{grid-template-columns:repeat(2,1fr)}
 }
 
-/* ===== VISTAS DE PANTALLA: Cocina / Meseros / Caja (solo presentación) ===== */
 #toast{z-index:200}
 #svLauncher{position:fixed;left:14px;bottom:14px;z-index:20;display:flex;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 8px;font-size:12px;color:var(--muted)}
 #svLauncher button{padding:6px 10px;font-size:12px}
@@ -184,7 +183,6 @@ label{display:block;color:#c7cdd3;font-size:13px;margin:10px 0 5px;font-weight:6
 .sv-table.busy{border-color:#c9951f}.sv-table.prep{border-color:var(--orange)}.sv-table.prep small{color:#ffc56e}
 .sv-empty{color:var(--muted);padding:26px;text-align:center;border:2px dashed var(--line);border-radius:14px}
 
-/* ===== MEJORAS VISUALES: tipografía, botones y emojis ===== */
 body{font-family:Inter,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;letter-spacing:-.005em}
 .ic{display:inline-block;width:1.15em;height:1.15em;flex:none;vertical-align:-.2em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .top h1{font-size:27px;font-weight:800;letter-spacing:-.025em}
@@ -197,7 +195,6 @@ body{font-family:Inter,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:an
 .order p.font-mono{font-family:Inter,system-ui,sans-serif!important;font-size:14px;font-weight:600;color:#ffdcb0!important;background:#2a2119;border:1px solid #4a3722;border-radius:11px;padding:9px 12px;margin:10px 0;line-height:1.5}
 .tag{letter-spacing:.03em}
 
-/* Botones (body button supera el reset de Tailwind) */
 body button{display:inline-flex;align-items:center;justify-content:center;text-align:center;gap:8px;border-radius:12px;padding:10px 16px;font-weight:700;letter-spacing:-.005em;background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604;border:1px solid #ffb261;box-shadow:inset 0 1px 0 #ffffff55,0 4px 14px #ff922b30;transition:transform .12s,box-shadow .15s,background .15s,border-color .15s;filter:none}
 body button:hover{filter:none;transform:translateY(-1px);box-shadow:inset 0 1px 0 #ffffff55,0 7px 18px #ff922b45}
 body button:active{transform:translateY(0) scale(.98)}
@@ -210,25 +207,21 @@ body button.danger:hover{background:linear-gradient(180deg,#5a3035,#46282c)}
 body .actions button{font-size:13px;padding:9px 14px}
 body button .ic{width:1.15em;height:1.15em}
 
-/* Menú lateral */
 body .nav button{justify-content:flex-start;text-align:left;background:transparent;box-shadow:none;border:1px solid transparent;color:#c9d0d7;font-size:14.5px;font-weight:600;padding:9px 12px;border-radius:14px;gap:12px}
 body .nav button:hover{background:#1c242c;transform:none;box-shadow:none}
 body .nav button.active{background:linear-gradient(90deg,#3d2a17,#2a2018);border-color:#70451f;color:#ffbd7b}
 .nav button .ic{width:36px;height:36px;padding:9px;border-radius:11px;background:#222a32;border:1px solid #303b46}
 .nav button.active .ic{background:#4a3219;border-color:#8a5a28}
 
-/* Menú lateral: Mi menú, Mesas y Ajustes al fondo (Ajustes hasta abajo) */
 @media(min-width:901px){
   .nav{display:flex;flex-direction:column;flex:1;min-height:0}
   .nav button[data-page="menu"]{margin-top:auto}
 }
 
-/* Filtros */
 body .filters button{background:#222a32;color:#cdd4db;border:1px solid var(--line);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:600;box-shadow:none}
 body .filters button:hover{background:#2a343e;transform:none}
 body .filters button.selected{background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604;border-color:#ffb261;box-shadow:0 4px 14px #ff922b38}
 
-/* Barra Pantallas y vistas */
 body #svLauncher{left:260px;border-radius:16px;padding:8px 12px;gap:8px;font-weight:700;box-shadow:0 8px 24px #0007;background:#171d23}
 body #svLauncher button{background:linear-gradient(180deg,#38424d,#2d363f);color:#eef1f4;border:1px solid #475565;padding:7px 12px;font-size:12.5px;box-shadow:none;border-radius:10px}
 body .sv-top button.cur{background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604}
@@ -242,7 +235,6 @@ body .sv-top button.cur{background:linear-gradient(180deg,#ffa347,#ff8a1f);color
 .sv-total{letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .sv-card button{border-radius:14px}
 
-/* Selector de mesas en el pedido */
 .tp{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 4px}
 .tp-l{font-size:13px;font-weight:800;color:#cdd4db}
 body .tp-chip{padding:6px 14px;font-size:13px;border-radius:999px;font-weight:800;box-shadow:none;background:#1d2a25;color:#8be0b3;border:1px solid #2f8f5f}
@@ -250,7 +242,6 @@ body .tp-chip:hover{background:#244034}
 body .tp-chip.sel{background:linear-gradient(180deg,#ffa347,#ff8a1f);color:#2a1604;border-color:#ffb261}
 .tp-none{font-size:13px;color:#ffb4b4;font-weight:700}
 
-/* Caja: secciones desplegables y tabla */
 .sv-stats button{width:100%;margin-top:6px;padding:10px}
 .sv-det{border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
 .sv-det>summary{cursor:pointer;padding:14px 18px;font-weight:900;font-size:1.2em;display:flex;align-items:center;gap:10px;list-style:none;user-select:none}
@@ -267,7 +258,6 @@ table.sv-t{width:100%;border-collapse:collapse;font-size:.88em}
 .sv-t ul{list-style:none;padding:0;margin:0;min-width:200px;font-weight:600}
 .sv-t td button{width:auto;margin:0;padding:7px 12px;font-size:.95em;white-space:nowrap}
 
-/* ===== V2.1: interruptor general, estados, sonidos y validaciones ===== */
 body button.pwr{background:#2a1719;color:#ff9b9b;border:1px solid #7a3a40;box-shadow:none;padding:5px 14px 5px 6px;border-radius:999px;font-size:11.5px;letter-spacing:.07em;gap:10px}
 body button.pwr:hover{transform:none;box-shadow:none;background:#331c1f}
 body button.pwr.on{background:#12261b;color:#7ee2ab;border-color:#2f8f5f}
@@ -317,7 +307,6 @@ body button.snd-play{padding:7px 12px;font-size:12.5px}
 @media(max-width:600px){.snd{grid-template-columns:1fr auto}.snd-bar{display:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
-/* ===== V2.2: paneles retractiles, barra Pantallas plegable y selector de productos ===== */
 body main{padding-bottom:92px}
 .cwrap{display:grid;grid-template-rows:1fr;transition:grid-template-rows .25s ease}
 .cwrap>.cbody{min-height:0;overflow:hidden;padding-top:14px;transition:visibility 0s,padding .25s}
@@ -777,21 +766,9 @@ body .qty button,body .cart-row>button{width:30px;height:30px;padding:0;border-r
   <div id="svBody"></div>
 </div>
 
-<script>window.MENUCHAT_CONFIG={cloud:false};</script>
+<script>window.MENUCHAT_CONFIG={cloud:true};</script>
 <script>
 const $=id=>document.getElementById(id);
-
-/* =====================================================================
-   MENUCHAT PRO 2.2 - MAPA DEL CODIGO (para mejorarlo o portarlo a otras plataformas)
-   1. CONFIG ..... credenciales y opciones. Se pueden sobrescribir con window.MENUCHAT_CONFIG
-   2. ICONS ...... iconos SVG propios. Escribe [[nombre]] en cualquier texto y se convierte solo
-   3. Nube ....... adaptador Supabase (cloudSave, cloudInsert, tiempo real)
-   4. Estado ..... localStorage + render (pedidos, mesas, menu, ajustes)
-   5. SOUNDS ..... sonidos de alerta definidos como datos (agrega uno y aparece en Ajustes)
-   6. Seguridad .. interruptor general, contrasena de Mi menu, validaciones y errores
-   Nota: la contrasena de Mi menu es un candado de interfaz. Para proteccion real
-   usa Supabase Auth + politicas RLS en la base de datos.
-   ===================================================================== */
 
 const CONFIG = Object.assign({
   version: '2.2.0',
@@ -808,7 +785,7 @@ let _supabase = null;
 let useCloud = false;
 const RESTAURANT_ID = CONFIG.restaurantId;
 
-// --- ICONOS (estilo trazo, 24x24). Agrega aqui los que necesites ---
+// --- ICONOS ---
 const ICONS = {
   clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
   flame:'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
@@ -860,41 +837,72 @@ function hydrateIcons(root){
   });
 }
 
-// Fila limpia para la tabla orders (nombres de columna exactos de Supabase)
-// Repara textos con precios mal formados guardados antes: $48.00.00 -> $48.00, $48.5.00 -> $48.50
+// Adaptadores de filas hacia las tablas en español de Supabase (ordenes, restaurantes, productos)
 const cleanItems = t => String(t ?? '').replace(/(\d+)\.(\d)\.00/g, (m,a,b) => a+'.'+b+'0').replace(/(\d+\.\d{2})(\.\d{2})+/g, (m,a) => a);
+
 const toRow = o => ({
-  id: Math.trunc(Number(o.id)), restaurantid: RESTAURANT_ID,
-  customer: String(o.customer ?? ''), phone: String(o.phone ?? ''), channel: String(o.channel ?? ''),
-  type: String(o.type ?? ''), address: String(o.address ?? ''), items: cleanItems(o.items),
+  id: Math.trunc(Number(o.id)), 
+  restaurante_id: RESTAURANT_ID,
+  cliente: String(o.customer ?? ''), 
+  telefono: String(o.phone ?? ''), 
+  canal: String(o.channel ?? ''),
+  tipo: String(o.type ?? ''), 
+  direccion: String(o.address ?? ''), 
+  items: cleanItems(o.items),
   total: Number(String(o.total).replace(/[^0-9.]/g,'')) || 0,
-  status: String(o.status ?? ''), payment: String(o.payment ?? ''),
-  paymentstatus: String(o.paymentStatus ?? o.paymentstatus ?? 'Pendiente'),
-  time: String(o.time ?? ''), table: String(o.table ?? '')
+  estado: String(o.status ?? 'Nuevo'), 
+  pago: String(o.payment ?? 'Efectivo'),
+  estado_pago: String(o.paymentStatus ?? o.payment_status ?? 'Pendiente'),
+  hora: String(o.time ?? ''), 
+  mesa: String(o.table ?? '')
 });
-const fromRow = r => ({...r, items: cleanItems(r.items), paymentStatus: r.paymentstatus || r.payment_status || r.paymentStatus || 'Pendiente', table: r.table || ''});
+
+const fromRow = r => ({
+  id: r.id,
+  customer: r.cliente,
+  phone: r.telefono,
+  channel: r.canal,
+  type: r.tipo,
+  address: r.direccion,
+  items: cleanItems(r.items),
+  total: r.total,
+  status: r.estado,
+  payment: r.pago,
+  paymentStatus: r.estado_pago || 'Pendiente',
+  time: r.hora,
+  table: r.mesa || ''
+});
+
 const nextOrderId = () => Math.max(105, ...orders.map(o => Number(o.id) || 0)) + 1;
 
-function cloudFail(msg, err){ console.error('Supabase:', err); toast(msg + (err && err.message ? ': ' + err.message : ''), 'err'); }
+function cloudFail(msg, err){ 
+  console.error('❌ [Supabase Error] ' + msg, err); 
+  toast(msg + (err && err.message ? ': ' + err.message : ''), 'err'); 
+}
 
-// Actualiza o crea (por id) un pedido existente
+// Sincronización en la nube para ORDENES (tabla 'ordenes')
 async function cloudSave(o){
   if(!(useCloud && _supabase)) return;
   try{
     const payload = toRow(o);
-    const {error} = await _supabase.from('orders').upsert(payload, {onConflict:'id'});
+    console.log("📡 [Supabase] Upserting orden #", o.id);
+    const {data, error} = await _supabase.from('ordenes').upsert(payload, {onConflict:'id'}).select();
     if(error) cloudFail('No se pudo sincronizar el pedido', error);
+    else console.log("✅ [Supabase] Orden guardada:", data);
   }catch(e){ cloudFail('Sin conexión con la nube', e); }
 }
 
-// Inserta un pedido nuevo; si el id ya existe en la nube, toma el siguiente libre
 async function cloudInsert(o){
   if(!(useCloud && _supabase)) return;
   for(let i=0;i<4;i++){
     try{
       const payload = toRow(o);
-      const {error} = await _supabase.from('orders').insert([payload]);
-      if(!error) return;
+      console.log("📡 [Supabase] Inserting nueva orden #", o.id);
+      const {data, error} = await _supabase.from('ordenes').insert([payload]).select();
+      if(!error) {
+        console.log("✅ [Supabase] Orden insertada:", data);
+        return;
+      }
       if(error.code === '23505'){
         const old = o.id; o.id = nextOrderId();
         tables.forEach(t => { if(t.order === '#'+old) t.order = '#'+o.id; });
@@ -905,13 +913,17 @@ async function cloudInsert(o){
   }
 }
 
+// Inicialización estricta de Supabase conectada
 try {
   if (CONFIG.cloud && window.supabase) {
     _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     useCloud = true;
+    console.log("✅ [MenuChat] Cliente Supabase conectado exitosamente.");
+  } else {
+    console.warn("⚠️ [MenuChat] Cloud está desactivado.");
   }
 } catch(e) {
-  console.log("Modo local de respaldo activado.");
+  console.error("❌ [MenuChat] Error al instanciar Supabase:", e);
 }
 
 // DATOS BASE INICIALES
@@ -964,8 +976,6 @@ let defaultSettings = {
 let orders = [], products = [], tables = [], settings = {};
 let pendingFilter="Todos", prepFilter="Todos", doneFilter="Todos", menuFilter="Todos", selectedTable="M1", nextId=106;
 
-// --- SONIDOS DE ALERTA (Web Audio). Cada sonido es un dato: n=nombre, w=ondas, g=volumen, r=repeticiones,
-//     gap=pausa entre repeticiones, notes=[[hz inicial, hz final, inicio s, duracion s]]. Orden: de menor a mayor intensidad.
 const SOUNDS = [
   {n:'Gota',            t:'Suave',      w:['sine'],                g:.20, r:1, gap:0,   notes:[[1320,1320,0,.30]]},
   {n:'Campanita',       t:'Suave',      w:['sine'],                g:.28, r:1, gap:0,   notes:[[1046,1046,0,.22],[1568,1568,.16,.34]]},
@@ -1019,7 +1029,7 @@ function renderSounds(){
 function setSound(n){ settings.sound = n; saveState(); renderSounds(); playSound(n); toast('Sonido de alerta: ' + SOUNDS[n - 1].n + '.'); }
 function setSoundEnabled(v){ settings.soundOn = v; saveState(); toast(v ? 'Sonido de alertas activado.' : 'Sonido de alertas silenciado.', v ? 'ok' : 'info'); }
 
-// CARGA Y PERSISTENCIA (SUPABASE O LOCALSTORAGE)
+// CARGA Y PERSISTENCIA (SUPABASE Y LOCALSTORAGE)
 async function loadState() {
   const ls = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } };
   orders = ls(STORAGE_KEY, [...defaultOrders]);
@@ -1029,18 +1039,28 @@ async function loadState() {
 
   if (useCloud && _supabase && sysOn()) {
     try {
-      const {data, error} = await _supabase.from('orders').select('*').order('id', {ascending:false});
+      console.log("📡 [Supabase] Leyendo tablas ordenes y productos...");
+      const {data, error} = await _supabase.from('ordenes').select('*').order('id', {ascending:false});
       if (error) {
-        console.error('Supabase orders:', error.code, error.message);
-        toast('No se pudieron cargar los pedidos de la nube. Se muestran los datos locales.', 'err');
+        console.error('❌ [Supabase orders error]:', error.code, error.message);
+        toast('No se pudieron cargar los pedidos de la nube.', 'err');
       } else if (data) {
         orders = data.length ? data.map(fromRow) : [];
       }
-      const {data: cp, error: pe} = await _supabase.from('products').select('*');
-      if (!pe && cp && cp.length) products = cp;
+      const {data: cp, error: pe} = await _supabase.from('productos').select('*');
+      if (!pe && cp && cp.length) {
+        products = cp.map(p => ({
+          id: p.id,
+          name: p.nombre,
+          cat: p.categoria,
+          desc: p.descripcion,
+          price: p.precio,
+          active: p.activo
+        }));
+      }
     } catch(err) {
-      console.log("Error cargando desde la nube, usando respaldo local.", err);
-      toast("Sin conexión con la nube. Trabajando con datos locales.", "warn");
+      console.error("❌ Error de carga en la nube:", err);
+      toast("Sin conexión con la nube. Usando respaldo local.", "warn");
     }
   }
   orders.forEach(o => { o.items = cleanItems(o.items); });
@@ -1054,11 +1074,10 @@ async function saveState() {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   }catch(e){
     console.error('localStorage:', e);
-    toast('No se pudo guardar en este dispositivo (almacenamiento lleno o bloqueado).', 'err');
   }
 }
 
-// TIEMPO REAL CON SUPABASE WEBSOCKETS
+// TIEMPO REAL CON SUPABASE
 let rtChannel = null, rtStatus = '';
 function stopRealtime(){
   try{ if(rtChannel && _supabase) _supabase.removeChannel(rtChannel); }catch(e){}
@@ -1068,9 +1087,9 @@ function initRealtimeSync() {
   if (!useCloud || !_supabase || !sysOn() || rtChannel) return;
   try {
     rtChannel = _supabase
-      .channel('public:orders')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => {
-        console.log("Cambio detectado en tiempo real:", payload);
+      .channel('public:ordenes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'ordenes' }, payload => {
+        console.log("⚡ [Realtime] Cambio detectado en ordenes:", payload);
         if(payload.eventType === 'INSERT'){
             playNotificationSound();
             toast("Nuevo pedido en vivo desde la nube.", "info");
@@ -1079,16 +1098,13 @@ function initRealtimeSync() {
       })
       .subscribe(status => {
         rtStatus = status; updateNet();
-        console.log("Estado de suscripción Realtime:", status);
-        if(status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') toast('Se perdió la conexión en vivo con la nube. Reintentando...', 'err');
+        console.log("📡 [Realtime Status]:", status);
       });
   } catch(e) {
-    console.log("Realtime no disponible en este entorno.");
-    toast('La sincronización en vivo no está disponible.', 'warn');
+    console.log("Realtime no disponible.");
   }
 }
 
-// AVISOS (toast) con tipo: ok | warn | err | info
 let toastTimer;
 function toast(msg, type = 'ok'){
   const t = $("toast");
@@ -1101,7 +1117,6 @@ function toast(msg, type = 'ok'){
   toastTimer = setTimeout(() => t.style.display = 'none', type === 'err' ? 5200 : 2800);
 }
 
-// VALIDACION DE FORMULARIOS: marca el campo en rojo con su mensaje
 function clearErrs(scope){
   scope.querySelectorAll('.ferr').forEach(e => e.remove());
   scope.querySelectorAll('.invalid').forEach(e => { e.classList.remove('invalid'); e.removeAttribute('aria-invalid'); });
@@ -1115,7 +1130,6 @@ function fieldErr(id, msg){
   return false;
 }
 
-// CONFIRMACION (reemplaza a confirm() del navegador, con el mismo diseño)
 function confirmDialog(title, msg, okLabel = 'Confirmar'){
   return new Promise(res => {
     $('confirmTitle').textContent = title; $('confirmMsg').textContent = msg; $('confirmYes').textContent = okLabel;
@@ -1126,7 +1140,6 @@ function confirmDialog(title, msg, okLabel = 'Confirmar'){
   });
 }
 
-// INTERRUPTOR GENERAL (enciende o apaga toda la funcionalidad)
 const sysOn = () => settings.power !== false;
 function updateNet(){
   const c = $('netChip'); if(!c) return;
@@ -1154,14 +1167,11 @@ async function togglePower(){
     toast('Sistema encendido. Recibiendo pedidos.');
   } else {
     stopRealtime(); renderAll();
-    toast('Sistema apagado. No se reciben pedidos ni se sincroniza con la nube.', 'warn');
+    toast('Sistema apagado. No se reciben pedidos.', 'warn');
   }
 }
 function denied(){ toast('El sistema está apagado. Enciende el interruptor para continuar.', 'warn'); }
-window.addEventListener('offline', () => { updateNet(); toast('Sin conexión a internet. Los cambios se guardan en este dispositivo.', 'warn'); });
-window.addEventListener('online', async () => { updateNet(); if(sysOn()){ await loadState(); renderAll(); } toast('Conexión restablecida.'); });
 
-// CONTRASEÑA DE MI MENU (candado de interfaz; la contraseña no se guarda en texto, solo su hash SHA-256)
 let menuUnlocked = false;
 try{ menuUnlocked = sessionStorage.getItem('menuchat_menu_ok') === '1'; }catch(e){}
 let passFails = 0, passLockUntil = 0;
@@ -1183,14 +1193,14 @@ async function submitMenuPass(){
   if(!$('passInput').value) return passError('Escribe la contraseña.');
   let h;
   try{ h = await sha256(CONFIG.passSalt + $('passInput').value); }
-  catch(e){ return passError('Este navegador no puede validar la contraseña (requiere HTTPS).'); }
+  catch(e){ return passError('Este navegador no puede validar la contraseña.'); }
   if(h === CONFIG.menuPassHash){
     menuUnlocked = true; passFails = 0;
     try{ sessionStorage.setItem('menuchat_menu_ok', '1'); }catch(e){}
     closeModal('passModal'); syncMenuLock(); showPage('menu'); toast('Mi menú desbloqueado.');
   } else {
     passFails++; $('passInput').select();
-    if(passFails >= 5){ passFails = 0; passLockUntil = now + 30000; passError('Demasiados intentos. Bloqueado por 30 segundos.'); }
+    if(passFails >= 5){ passFails = 0; passLockUntil = now + 30000; passError('Bloqueado por 30 segundos.'); }
     else passError('Contraseña incorrecta. Intentos restantes: ' + (5 - passFails) + '.');
   }
 }
@@ -1200,17 +1210,10 @@ function lockMenu(){
   syncMenuLock(); showPage('tab-pending'); toast('Mi menú bloqueado.', 'info');
 }
 
-// ERRORES GLOBALES (ignora los que vienen de extensiones del navegador)
 const isExt = x => /extension:|No Listener|content\.js/i.test(String(x));
-window.addEventListener('error', e => { if(isExt(e.filename) || isExt(e.message)) return; console.error(e.error || e.message); toast('Ocurrió un error inesperado. Intenta de nuevo.', 'err'); });
-window.addEventListener('unhandledrejection', e => { const r = e.reason; if(isExt(r && (r.stack || r.message) || r)) return; console.error(r); toast('No se pudo completar la acción. Revisa tu conexión.', 'err'); });
-document.addEventListener('keydown', e => {
-  if(e.key !== 'Escape') return;
-  const m = document.querySelector('.modal.show'); if(!m) return;
-  if(m.id === 'confirmModal') $('confirmNo').click(); else m.classList.remove('show');
-});
+window.addEventListener('error', e => { if(isExt(e.filename) || isExt(e.message)) return; console.error(e.error || e.message); });
+window.addEventListener('unhandledrejection', e => { const r = e.reason; if(isExt(r && (r.stack || r.message) || r)) return; console.error(r); });
 
-// CONTROL DE PESTAÑAS
 function showPage(page){
   if(page === "menu" && !menuUnlocked){ openPassModal(); return; }
   document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
@@ -1234,7 +1237,6 @@ function showPage(page){
 
 document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click", () => showPage(b.dataset.page)));
 
-// FILTROS
 document.querySelectorAll("#pendingFilters button").forEach(b => b.onclick = () => {
   pendingFilter = b.dataset.filter;
   document.querySelectorAll("#pendingFilters button").forEach(x => x.classList.toggle("selected", x===b));
@@ -1253,7 +1255,6 @@ document.querySelectorAll("#doneFilters button").forEach(b => b.onclick = () => 
   renderOrders();
 });
 
-// RENDERIZADO DE PEDIDOS
 function renderOrders(){
   let pendingList = orders.filter(o => o.status === "Nuevo" && (pendingFilter === "Todos" || o.channel === pendingFilter));
   $("pendingOrdersList").innerHTML = pendingList.map(o => `
@@ -1352,10 +1353,9 @@ function renderOrders(){
   $("statSales").textContent = `$${totalSalesSum.toFixed(2)}`;
 }
 
-// ACCIONES DE PEDIDOS
 async function changeOrder(id, status){
   let o = orders.find(x => x.id === id);
-  if(!o){ toast("El pedido ya no existe. Actualiza la pantalla.", "err"); return; }
+  if(!o){ toast("El pedido ya no existe.", "err"); return; }
 
   o.status = status;
   if(status === "Finalizado") o.paymentStatus = "Pagado";
@@ -1380,7 +1380,6 @@ async function changeOrder(id, status){
   }
 
   await cloudSave(o);
-
   saveState();
   renderAll();
   toast("Pedido #" + id + " actualizado: " + status);
@@ -1389,7 +1388,7 @@ async function changeOrder(id, status){
 async function cancelOrder(id){
   const o = orders.find(x => x.id === id);
   if(!o){ toast('El pedido ya no existe.', 'err'); return; }
-  const ok = await confirmDialog('Eliminar pedido #' + id, 'Se eliminará el pedido de ' + (o.customer || 'este cliente') + ' de forma permanente. Esta acción no se puede deshacer.', 'Eliminar');
+  const ok = await confirmDialog('Eliminar pedido #' + id, 'Se eliminará el pedido de forma permanente.', 'Eliminar');
   if(ok) return deleteOrderNow(id);
 }
 
@@ -1397,8 +1396,8 @@ async function deleteOrderNow(id){
   const o = orders.find(x => x.id === id);
   if(useCloud && _supabase){
     try{
-      const {error} = await _supabase.from('orders').delete().eq('id', id);
-      if(error){ cloudFail('No se pudo eliminar el pedido en la nube', error); return; }
+      const {error} = await _supabase.from('ordenes').delete().eq('id', id);
+      if(error){ cloudFail('No se pudo eliminar en la nube', error); return; }
     }catch(e){ cloudFail('Sin conexión con la nube', e); return; }
   }
   if(o && o.table){
@@ -1415,11 +1414,10 @@ function sendWhatsAppMessage(id){
   let o = orders.find(x => x.id === id);
   if(!o) return;
   let phone = o.phone || "526690000000";
-  let text = `Hola ${o.customer}, tu pedido #${o.id} (${o.items}) por un total de $${Number(o.total).toFixed(2)} MXN se encuentra en estado: ${o.status}. ¡Gracias por preferirnos!`;
+  let text = `Hola ${o.customer}, tu pedido #${o.id} (${o.items}) por un total de $${Number(o.total).toFixed(2)} MXN se encuentra en estado: ${o.status}. ¡Gracias!`;
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
 }
 
-// MODAL COMANDA
 function openOrderDetail(id){
   let o = orders.find(x => x.id === id);
   if(!o) return;
@@ -1456,7 +1454,6 @@ function openOrderDetail(id){
   $("orderDetailModal").classList.add("show");
 }
 
-// SIMULAR WHATSAPP CON SONIDO ALTO
 async function simularPedidoWhatsApp(){
   const activeProds = products.filter(p => p.active);
   if(activeProds.length === 0){
@@ -1499,16 +1496,14 @@ async function simularPedidoWhatsApp(){
   };
 
   orders.unshift(newOrder);
-
   await cloudInsert(newOrder);
 
   playNotificationSound();
   saveState();
   renderAll();
-  toast("Nuevo pedido de WhatsApp recibido.", "info");
+  toast("Nuevo pedido simulado de WhatsApp recibido.", "info");
 }
 
-// CREAR PEDIDO MANUAL
 function openOrderModal(){
   clearErrs($("orderModal"));
   $("editOrderId").value = "";
@@ -1584,12 +1579,11 @@ async function saveOrderForm(){
 
   const box = $("orderModal"); clearErrs(box); let ok = true;
   if(!customer) ok = fieldErr('newCustomer', 'Escribe el nombre del cliente.');
-  if(phone && !/^[0-9 +()-]{7,20}$/.test(phone)) ok = fieldErr('newPhone', 'Teléfono no válido. Usa solo números (10 dígitos).');
-  if(type === "Domicilio" && !$("newAddress").value.trim()) ok = fieldErr('newAddress', 'La dirección es obligatoria para domicilio.');
-  if(type === "Comer en restaurante" && settings.tablesActive && !tableAssign && !editId) ok = fieldErr('newTableSelect', 'No hay mesas libres. Libera una o cambia la modalidad.');
-  if(!items || !(total > 0)) ok = fieldErr('cartBox', 'Agrega al menos un producto de Mi menú.');
-  else if(!editId && type === "Domicilio" && (Number(settings.minimum) || 0) > cartSub()) ok = fieldErr('cartBox', 'Pedido mínimo a domicilio: ' + money(settings.minimum) + ' (llevas ' + money(cartSub()) + ').');
-  if(!ok){ toast('Revisa los campos marcados en rojo.', 'warn'); return; }
+  if(phone && !/^[0-9 +()-]{7,20}$/.test(phone)) ok = fieldErr('newPhone', 'Teléfono no válido.');
+  if(type === "Domicilio" && !$("newAddress").value.trim()) ok = fieldErr('newAddress', 'La dirección es obligatoria.');
+  if(type === "Comer en restaurante" && settings.tablesActive && !tableAssign && !editId) ok = fieldErr('newTableSelect', 'Selecciona una mesa.');
+  if(!items || !(total > 0)) ok = fieldErr('cartBox', 'Agrega al menos un producto.');
+  if(!ok){ toast('Revisa los campos en rojo.', 'warn'); return; }
 
   if(editId){
     let o = orders.find(x => x.id == editId);
@@ -1643,11 +1637,10 @@ async function saveOrderForm(){
 
 function closeModal(id){$(id).classList.remove("show")}
 
-// MESAS
 function renderTables(){
   if(!settings.tablesActive){
-    $("tableGrid").innerHTML = '<div class="empty md:col-span-3">El módulo de mesas se encuentra apagado en Ajustes.</div>';
-    $("tableDetail").innerHTML = "Módulo de salón desactivado.";
+    $("tableGrid").innerHTML = '<div class="empty md:col-span-3">Módulo de mesas apagado.</div>';
+    $("tableDetail").innerHTML = "Módulo desactivado.";
     return;
   }
 
@@ -1662,7 +1655,7 @@ function renderTables(){
       <small>${t.status}</small>
       <small>${t.order||"Disponible"} ${t.minutes? "· "+t.minutes+" min":""}</small>
     </button>
-  `).join("") || '<div class="empty">No hay mesas configuradas.</div>';
+  `).join("") || '<div class="empty">No hay mesas.</div>';
   renderTableDetail();
 }
 
@@ -1672,9 +1665,9 @@ function renderTableDetail(){
   let t = tables.find(x=>x.id===selectedTable);
   if(!t){$("tableDetail").textContent="Selecciona una mesa.";return}
   $("tableDetailTitle").textContent="Gestión de "+t.id;
-  let html=`<p>Estado: <span class="tag">${t.status}</span></p><p class="muted">Pedido asignado: ${t.order||"Ninguno"}</p>`;
+  let html=`<p>Estado: <span class="tag">${t.status}</span></p><p class="muted">Pedido: ${t.order||"Ninguno"}</p>`;
   if(t.status==="Libre"){
-    html+=`<div class="actions mt-3"><button onclick="openAssignTableModal('${t.id}')">[[plus]] Asignar pedido existente</button></div>`
+    html+=`<div class="actions mt-3"><button onclick="openAssignTableModal('${t.id}')">[[plus]] Asignar pedido</button></div>`
   }else if(t.status==="Preparando" || t.status==="Ocupada"){
     html+=`<div class="actions mt-3"><button onclick="tableReady('${t.id}')">[[check]] Marcar lista</button><button class="secondary" onclick="releaseTable('${t.id}')">[[unlock]] Liberar</button></div>`
   }else{
@@ -1686,7 +1679,7 @@ function renderTableDetail(){
 function openAssignTableModal(tableId){
   let pendingOrPrep = orders.filter(o => o.status !== "Finalizado" && (!o.table || o.table === ""));
   if(pendingOrPrep.length === 0){
-    toast("No hay pedidos activos sin mesa asignada.", "warn");
+    toast("No hay pedidos sin mesa.", "warn");
     return;
   }
   $("assignTableOrderId").value = tableId;
@@ -1709,7 +1702,7 @@ function confirmManualTableAssignment(){
     saveState();
     renderAll();
     closeModal("assignTableModal");
-    toast("Mesa " + t.id + " asignada al pedido #" + o.id);
+    toast("Mesa " + t.id + " asignada.");
   }
 }
 
@@ -1740,10 +1733,8 @@ function toggleTablesModule(){
   saveState();
   renderTables();
   $("tableModuleToggleText").textContent = settings.tablesActive ? "[[power]] Apagar Módulo" : "[[power]] Encender Módulo";
-  toast(settings.tablesActive ? "Módulo de mesas encendido" : "Módulo de mesas apagado");
 }
 
-// MENÚ
 document.querySelectorAll("#menuFilters button").forEach(b => b.onclick = () => {
   menuFilter = b.dataset.cat;
   document.querySelectorAll("#menuFilters button").forEach(x => x.classList.toggle("selected", x===b));
@@ -1767,15 +1758,28 @@ function renderProducts(){
         <button class="secondary" onclick="openEditProduct(${p.id})">[[edit]] Editar</button>
       </div>
     </article>
-  `).join("") || '<div class="empty">No hay productos en esta categoría.</div>';
+  `).join("") || '<div class="empty">No hay productos.</div>';
 }
 
-function toggleProduct(id, active){
+async function toggleProduct(id, active){
   let p = products.find(x => x.id === id);
-  if(p) p.active = active;
+  if(p) {
+    p.active = active;
+    if(useCloud && _supabase){
+      await _supabase.from('productos').upsert({
+        id: Number(p.id),
+        restaurante_id: RESTAURANT_ID,
+        nombre: p.name,
+        categoria: p.cat,
+        descripcion: p.desc,
+        precio: Number(p.price),
+        activo: Boolean(p.active)
+      });
+    }
+  }
   saveState();
   renderProducts();
-  toast(active ? "Platillo activado" : "Platillo agotado/apagado", active ? "ok" : "info");
+  toast(active ? "Platillo activado" : "Platillo agotado", active ? "ok" : "info");
 }
 
 function openProductModal(){
@@ -1806,10 +1810,11 @@ async function saveProduct(){
   let price = Number($("prodPrice").value);
 
   const pbox = $("productModal"); clearErrs(pbox); let ok = true;
-  if(!name) ok = fieldErr('prodName', 'Escribe el nombre del platillo.');
-  if($("prodPrice").value.trim() === "" || isNaN(price) || price < 0) ok = fieldErr('prodPrice', 'Ingresa un precio válido (0 o mayor).');
-  if(!ok){ toast('Revisa los campos marcados en rojo.', 'warn'); return; }
+  if(!name) ok = fieldErr('prodName', 'Escribe el nombre.');
+  if($("prodPrice").value.trim() === "" || isNaN(price) || price < 0) ok = fieldErr('prodPrice', 'Precio inválido.');
+  if(!ok) return;
 
+  let prodPayload;
   if(editId){
     let p = products.find(x => x.id == editId);
     if(p){
@@ -1817,15 +1822,29 @@ async function saveProduct(){
       p.cat = $("prodCat").value;
       p.desc = $("prodDesc").value;
       p.price = price;
+      prodPayload = p;
     }
   } else {
-    products.push({
+    prodPayload = {
       id: Date.now(),
       name: name,
       cat: $("prodCat").value,
       desc: $("prodDesc").value,
       price: price,
       active: true
+    };
+    products.push(prodPayload);
+  }
+
+  if(useCloud && _supabase && prodPayload){
+    await _supabase.from('productos').upsert({
+      id: Number(prodPayload.id),
+      restaurante_id: RESTAURANT_ID,
+      nombre: prodPayload.name,
+      categoria: prodPayload.cat,
+      descripcion: prodPayload.desc,
+      precio: Number(prodPayload.price),
+      activo: Boolean(prodPayload.active)
     });
   }
 
@@ -1838,31 +1857,32 @@ async function saveProduct(){
 function importarCSV(event) {
   const input = event.target, file = input.files[0];
   if (!file) return;
-  if (!/\.csv$/i.test(file.name)) { toast('El archivo debe ser .csv', 'err'); input.value = ''; return; }
-  if (!window.Papa) { toast('No se cargó la librería de CSV. Revisa tu conexión y recarga la página.', 'err'); input.value = ''; return; }
   Papa.parse(file, {
     header: true,
     skipEmptyLines: true,
-    error: err => { toast('No se pudo leer el archivo: ' + err.message, 'err'); input.value = ''; },
-    complete: function(results) {
-      let added = 0, skipped = 0;
-      results.data.forEach((row, index) => {
+    complete: async function(results) {
+      let added = 0;
+      for(let [index, row] of results.data.entries()) {
         const price = parseFloat(String(row.Precio ?? '').replace(/[^0-9.]/g, ''));
         if (row.Platillo && String(row.Platillo).trim() && !isNaN(price)) {
-          products.push({ id: Date.now() + index, cat: row.Categoria || 'General', name: String(row.Platillo).trim(), desc: row.Descripcion || '', price: price, active: true });
+          const newP = { id: Date.now() + index, cat: row.Categoria || 'General', name: String(row.Platillo).trim(), desc: row.Descripcion || '', price: price, active: true };
+          products.push(newP);
+          if(useCloud && _supabase){
+            await _supabase.from('productos').upsert({
+              id: Number(newP.id), restaurante_id: RESTAURANT_ID, nombre: newP.name, categoria: newP.cat, descripcion: newP.desc, precio: newP.price, activo: true
+            });
+          }
           added++;
-        } else skipped++;
-      });
+        }
+      }
       input.value = '';
-      if (!added) { toast('El CSV no tiene filas válidas. Columnas requeridas: Platillo y Precio.', 'err'); return; }
       saveState();
       renderProducts();
-      toast(added + ' producto(s) importados' + (skipped ? ' · ' + skipped + ' fila(s) omitidas por datos incompletos' : '') + '.', skipped ? 'warn' : 'ok');
+      toast(added + ' productos importados.');
     }
   });
 }
 
-// HORARIOS Y AJUSTES
 const days = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
 function renderHours(){
   $("hours").innerHTML = days.map((d,i)=>`
@@ -1875,12 +1895,10 @@ function renderHours(){
   `).join("");
 }
 
-function saveSettings(){
+async function saveSettings(){
   const sbox = $("page-settings"); clearErrs(sbox); let ok = true;
-  if(!$("restName").value.trim()) ok = fieldErr('restName', 'El nombre comercial es obligatorio.');
-  ['minimum','shipping'].forEach(id => { const v = $(id).value; if(v === '' || isNaN(Number(v)) || Number(v) < 0) ok = fieldErr(id, 'Ingresa un monto igual o mayor a 0.'); });
-  if(!$("settingDelivery").checked && !$("settingPickup").checked && !$("settingDinein").checked){ toast('Activa al menos una modalidad de pedido.', 'warn'); ok = false; }
-  if(!ok){ if($("page-settings").querySelector('.invalid')) toast('Revisa los campos marcados en rojo.', 'warn'); return; }
+  if(!$("restName").value.trim()) ok = fieldErr('restName', 'Obligatorio.');
+  if(!ok) return;
   settings.restName = $("restName").value;
   settings.restPhone = $("restPhone").value;
   settings.restAddress = $("restAddress").value;
@@ -1891,8 +1909,18 @@ function saveSettings(){
   settings.minimum = Number($("minimum").value);
   settings.shipping = Number($("shipping").value);
 
+  if(useCloud && _supabase){
+    await _supabase.from('restaurantes').upsert({
+      id: RESTAURANT_ID,
+      nombre: settings.restName,
+      telefono: settings.restPhone,
+      direccion: settings.restAddress,
+      descripcion: settings.restDesc
+    });
+  }
+
   saveState();
-  toast("Configuración guardada correctamente.");
+  toast("Configuración guardada.");
 }
 
 function loadSettingsToUI(){
@@ -1916,7 +1944,6 @@ function renderAll(){
   renderProducts();
 }
 
-// ===== VISTAS DE PANTALLA (Cocina / Meseros / Caja): solo presentación, usan las mismas funciones y datos =====
 const SCREEN_VIEWS = {cocina:'[[flame]] Cocina', meseros:'[[utensils]] Meseros', caja:'[[cash]] Caja'};
 const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => '$' + Number(n || 0).toFixed(2);
@@ -1937,24 +1964,24 @@ function renderScreen(){
   if(!m) return;
   $('svTitle').textContent = SCREEN_VIEWS[m] + ' · ' + (settings.restName || '');
   $('svNav').innerHTML = Object.keys(SCREEN_VIEWS).map(k => `<button class="${k===m?'cur':'secondary'}" onclick="location.hash='${k}'">${SCREEN_VIEWS[k]}</button>`).join(' ') + ' <button class="secondary" onclick="location.hash=\'panel\'">[[undo]] Panel</button>';
-  if(!sysOn()){ $('svBody').innerHTML = '<div class="sv-empty">[[power]] Sistema apagado. Enciende el interruptor para reanudar la operación.</div>'; return; }
+  if(!sysOn()){ $('svBody').innerHTML = '<div class="sv-empty">[[power]] Sistema apagado.</div>'; return; }
   const nuevos = orders.filter(o => o.status === 'Nuevo'), prep = orders.filter(o => o.status === 'Preparando'), fin = orders.filter(o => o.status === 'Finalizado');
   let h = '';
   if(m === 'cocina'){
     h = '<div class="sv-cols">'
-      + svCol('🆕 Nuevos por aceptar', nuevos, o => svCard(o, 'new', `<button onclick="changeOrder(${o.id},'Preparando')">[[check]] Aceptar</button>`))
+      + svCol('🆕 Nuevos', nuevos, o => svCard(o, 'new', `<button onclick="changeOrder(${o.id},'Preparando')">[[check]] Aceptar</button>`))
       + svCol('[[flame]] En preparación', prep, o => svCard(o, 'prep', `<button onclick="changeOrder(${o.id},'Finalizado')">[[flag]] Finalizar</button>`)) + '</div>';
   } else if(m === 'meseros'){
     const sala = orders.filter(o => o.type === 'Comer en restaurante' && o.status !== 'Finalizado');
     const tcls = t => t.status === 'Libre' ? 'free' : t.status === 'Preparando' ? 'prep' : 'busy';
     h = '<div class="sv-cols"><div class="sv-col"><h2>[[chair]] Mesas</h2>' + (settings.tablesActive
-      ? '<div class="sv-tables">' + tables.map(t => `<div class="sv-table ${tcls(t)}"><b>${esc(t.id)}</b><small>${esc(t.status)}</small>${t.order ? `<small>${esc(t.order)}${t.minutes ? ' · ' + t.minutes + ' min' : ''}</small>` : ''}</div>`).join('') + '</div>'
-      : '<div class="sv-empty">Módulo de mesas apagado</div>') + '</div>'
-      + svCol('[[utensils]] Pedidos en sala', sala, o => svCard(o, o.status === 'Nuevo' ? 'new' : 'prep', `<div class="sv-sub">${o.status === 'Nuevo' ? '[[clock]] Por confirmar' : '[[flame]] En cocina'}</div>` + tablePicker(o))) + '</div>';
+      ? '<div class="sv-tables">' + tables.map(t => `<div class="sv-table ${tcls(t)}"><b>${esc(t.id)}</b><small>${esc(t.status)}</small></div>`).join('') + '</div>'
+      : '<div class="sv-empty">Mesas apagadas</div>') + '</div>'
+      + svCol('[[utensils]] Pedidos sala', sala, o => svCard(o, o.status === 'Nuevo' ? 'new' : 'prep', `<div class="sv-sub">${o.status === 'Nuevo' ? 'Por confirmar' : 'En cocina'}</div>` + tablePicker(o))) + '</div>';
   } else {
     const cobrar = orders.filter(o => o.status !== 'Finalizado');
-    h = `<div class="sv-stats"><div><small>[[cash]] Ventas (finalizadas)</small><b>${money(sum(fin))}</b></div><div><small>[[receipt]] Por cobrar</small><b>${money(sum(cobrar))}</b></div><div><small>[[flag]] Pedidos finalizados</small><b>${fin.length}</b></div><div><small>Todos los datos de las comandas</small><button onclick="exportOrders()">[[download]] Exportar a Excel</button></div></div>`
-      + cajaSection('por', '[[receipt]] Por cobrar', cobrar) + cajaSection('cob', '[[check]] Cobrados', fin);
+    h = `<div class="sv-stats"><div><small>Ventas</small><b>${money(sum(fin))}</b></div><div><small>Por cobrar</small><b>${money(sum(cobrar))}</b></div><div><small>Finalizados</small><b>${fin.length}</b></div><div><small>Exportar</small><button onclick="exportOrders()">[[download]] Excel</button></div></div>`
+      + cajaSection('por', 'Por cobrar', cobrar) + cajaSection('cob', 'Cobrados', fin);
   }
   $('svBody').innerHTML = h;
 }
@@ -1963,12 +1990,11 @@ renderAll = function(){ _renderAllBase(); renderScreen(); };
 window.addEventListener('hashchange', renderScreen);
 setInterval(() => { const c = $('svClock'); if(c) c.textContent = new Date().toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}); }, 1000);
 
-// ===== ASIGNACIÓN DE MESAS DESDE EL PEDIDO =====
 function tablePicker(o){
   if(o.type !== 'Comer en restaurante' || o.status === 'Finalizado' || !settings.tablesActive) return '';
   const opts = tables.filter(t => t.status === 'Libre' || t.id === o.table);
-  const chips = opts.map(t => `<button class="tp-chip ${t.id === o.table ? 'sel' : 'free'}" title="${t.id === o.table ? 'Quitar mesa' : 'Asignar mesa'}" onclick="assignTable(${o.id},'${esc(t.id)}')">${t.id === o.table ? '[[check]] ' : ''}${esc(t.id)}</button>`).join('');
-  return `<div class="tp"><span class="tp-l">[[chair]] ${o.table ? 'Mesa asignada:' : 'Asignar mesa:'}</span>${chips || '<span class="tp-none">Sin mesas libres</span>'}</div>`;
+  const chips = opts.map(t => `<button class="tp-chip ${t.id === o.table ? 'sel' : 'free'}" onclick="assignTable(${o.id},'${esc(t.id)}')">${t.id === o.table ? '[[check]] ' : ''}${esc(t.id)}</button>`).join('');
+  return `<div class="tp"><span class="tp-l">[[chair]] Mesa:</span>${chips || '<span class="tp-none">Sin mesas</span>'}</div>`;
 }
 async function assignTable(id, tableId){
   const o = orders.find(x => Number(x.id) === Number(id));
@@ -1976,23 +2002,20 @@ async function assignTable(id, tableId){
   const prevId = o.table;
   if(tableId && tableId !== prevId){
     const t = tables.find(x => x.id === tableId);
-    if(!t || t.status !== 'Libre'){ toast('Esa mesa ya no está libre.', 'warn'); renderAll(); return; }
+    if(!t || t.status !== 'Libre'){ toast('Mesa ocupada.', 'warn'); renderAll(); return; }
   }
   if(prevId){ const p = tables.find(x => x.id === prevId); if(p){ p.status = 'Libre'; p.order = ''; p.minutes = 0; } }
   if(tableId && tableId !== prevId){
     const t = tables.find(x => x.id === tableId), prep = o.status === 'Preparando';
-    t.status = prep ? 'Preparando' : 'Ocupada'; t.order = '#' + o.id; t.minutes = prep ? 15 : 0;
+    t.status = prep ? 'Preparando' : 'Ocupada'; t.order = '#' + o.id;
     o.table = tableId; o.address = 'Mesa ' + tableId;
-    toast('Pedido #' + o.id + ' asignado a la mesa ' + tableId + '.');
   } else {
-    o.table = ''; o.address = 'Sin mesa asignada';
-    toast('Mesa liberada del pedido #' + o.id + '.', 'info');
+    o.table = ''; o.address = 'Sin mesa';
   }
   saveState(); renderAll();
   await cloudSave(o);
 }
 
-// ===== CAJA: tabla ordenable, secciones desplegables y exportación a Excel =====
 const cajaOpen = {por:true, cob:true};
 let cajaSort = {key:'fecha', dir:-1};
 const orderKey = o => { const t = Date.parse(o.created_at || o.created || ''); return isNaN(t) ? 0 : t; };
@@ -2003,16 +2026,16 @@ const CAJA_COLS = [
   {k:'fecha',   l:'Fecha',           g:orderKey,                     v:o => esc(fmtDate(o) || '—'), x:fmtDate},
   {k:'hora',    l:'Hora',            g:o => o.time || '',            v:o => esc(o.time)},
   {k:'cliente', l:'Cliente',         g:o => o.customer || '',        v:o => esc(o.customer)},
-  {k:'tel',     l:'Teléfono / Usuario', g:o => o.phone || '',        v:o => esc(o.phone)},
+  {k:'tel',     l:'Teléfono',        g:o => o.phone || '',           v:o => esc(o.phone)},
   {k:'canal',   l:'Canal',           g:o => o.channel || '',         v:o => esc(o.channel)},
-  {k:'tipo',    l:'Tipo de pedido',  g:o => o.type || '',            v:o => (TYPE_EMOJI[o.type] || '[[receipt]]') + ' ' + esc(o.type)},
+  {k:'tipo',    l:'Tipo',            g:o => o.type || '',            v:o => esc(o.type)},
   {k:'mesa',    l:'Mesa',            g:o => o.table || '',           v:o => esc(o.table || '—')},
-  {k:'dir',     l:'Dirección / Detalle', g:o => o.address || '',     v:o => esc(o.address)},
+  {k:'dir',     l:'Dirección',       g:o => o.address || '',         v:o => esc(o.address)},
   {k:'items',   l:'Productos',       g:o => String(o.items || ''),   v:o => '<ul>' + itemsList(o).map(i => '<li>' + esc(i) + '</li>').join('') + '</ul>', x:o => itemsList(o).join(' | ')},
   {k:'total',   l:'Total (MXN)',     g:o => Number(o.total) || 0,    v:o => money(o.total), c:'num', x:o => Number(o.total) || 0},
-  {k:'pago',    l:'Método de pago',  g:o => o.payment || '',         v:o => esc(o.payment || 'Efectivo'), x:o => o.payment || 'Efectivo'},
-  {k:'epago',   l:'Estado de pago',  g:o => o.paymentStatus || '',   v:o => esc(o.paymentStatus || 'Pendiente'), x:o => o.paymentStatus || 'Pendiente'},
-  {k:'estado',  l:'Estado del pedido', g:o => o.status || '',        v:o => esc(o.status)}
+  {k:'pago',    l:'Pago',            g:o => o.payment || '',         v:o => esc(o.payment || 'Efectivo'), x:o => o.payment || 'Efectivo'},
+  {k:'epago',   l:'Estado pago',     g:o => o.paymentStatus || '',   v:o => esc(o.paymentStatus || 'Pendiente'), x:o => o.paymentStatus || 'Pendiente'},
+  {k:'estado',  l:'Estado',          g:o => o.status || '',          v:o => esc(o.status)}
 ];
 function sortOrders(list){
   const col = CAJA_COLS.find(c => c.k === cajaSort.key) || CAJA_COLS[1], d = cajaSort.dir;
@@ -2022,40 +2045,29 @@ function sortOrders(list){
     return (r || (Number(a.id) - Number(b.id))) * d;
   });
 }
-function cajaSortBy(k){ cajaSort = {key:k, dir: cajaSort.key === k ? -cajaSort.dir : (k === 'fecha' ? -1 : 1)}; renderScreen(); }
+function cajaSortBy(k){ cajaSort = {key:k, dir: cajaSort.key === k ? -cajaSort.dir : 1}; renderScreen(); }
 function cajaSection(key, title, list){
-  const head = CAJA_COLS.map(c => `<th class="${c.c || ''}" onclick="cajaSortBy('${c.k}')">${c.l}${cajaSort.key === c.k ? (cajaSort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('') + '<th>Acción</th>';
+  const head = CAJA_COLS.map(c => `<th class="${c.c || ''}" onclick="cajaSortBy('${c.k}')">${c.l}</th>`).join('') + '<th>Acción</th>';
   const rows = sortOrders(list).map(o => '<tr>' + CAJA_COLS.map(c => `<td class="${c.c || ''}">${c.v(o)}</td>`).join('')
-    + `<td>${o.status === 'Preparando' ? `<button onclick="changeOrder(${o.id},'Finalizado')">[[cash]] Cobrar</button>` : (o.status === 'Nuevo' ? '[[clock]] Por confirmar' : '[[check]]')}</td></tr>`).join('');
+    + `<td>${o.status === 'Preparando' ? `<button onclick="changeOrder(${o.id},'Finalizado')">[[cash]] Cobrar</button>` : ''}</td></tr>`).join('');
   return `<details class="sv-det" ${cajaOpen[key] ? 'open' : ''} ontoggle="cajaOpen['${key}']=this.open"><summary>${title} (${list.length}) · ${money(sum(list))}</summary>`
     + (list.length ? `<div class="sv-tw"><table class="sv-t"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="sv-empty">Sin pedidos</div>') + '</details>';
 }
 function exportOrders(){
   const list = sortOrders(orders);
-  if(!list.length){ toast('No hay pedidos para exportar.', 'warn'); return; }
+  if(!list.length){ toast('Sin datos.', 'warn'); return; }
   const rows = list.map(o => { const r = {}; CAJA_COLS.forEach(c => { r[c.l] = (c.x || c.g)(o); }); return r; });
-  const name = 'pedidos_menuchat_' + new Date().toISOString().slice(0, 10);
-  if(window.XLSX){
-    const ws = XLSX.utils.json_to_sheet(rows);
-    ws['!cols'] = CAJA_COLS.map(c => ({wch: c.k === 'items' ? 60 : c.k === 'dir' ? 32 : Math.max(12, c.l.length + 2)}));
-    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Pedidos');
-    XLSX.writeFile(wb, name + '.xlsx');
-  } else {
-    const q = v => '"' + String(v).replace(/"/g, '""') + '"';
-    const csv = '\ufeff' + [CAJA_COLS.map(c => q(c.l)).join(',')].concat(rows.map(r => CAJA_COLS.map(c => q(r[c.l])).join(','))).join('\r\n');
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'})); a.download = name + '.csv'; a.click();
-  }
-  toast('Exportados ' + rows.length + ' pedidos.');
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Pedidos');
+  XLSX.writeFile(wb, 'pedidos.xlsx');
+  toast('Exportado con éxito.');
 }
 
-// ===== ICONOS: convierte [[nombre]] en SVG en cualquier texto nuevo que aparezca en la pagina =====
 new MutationObserver(muts => muts.forEach(m => m.addedNodes.forEach(n => {
   if(n.nodeType === 1) hydrateIcons(n); else if(n.nodeType === 3 && n.parentElement) hydrateIcons(n.parentElement);
 }))).observe(document.body, {childList:true, subtree:true});
 hydrateIcons(document.body);
 
-// ===== INTERRUPTOR: con el sistema apagado, ninguna accion que modifique datos se ejecuta =====
 ['changeOrder','cancelOrder','saveOrderForm','assignTable','simularPedidoWhatsApp','confirmManualTableAssignment','tableReady','releaseTable','addTable','toggleTablesModule',
  'saveProduct','toggleProduct','importarCSV','openOrderModal','openEditOrderModal','openProductModal','openEditProduct','openAssignTableModal','sendWhatsAppMessage','saveSettings'
 ].forEach(name => {
@@ -2064,13 +2076,12 @@ hydrateIcons(document.body);
   window[name] = function(...args){ if(!sysOn()){ denied(); return; } return fn.apply(this, args); };
 });
 
-// ===== SELECTOR DE PRODUCTOS: el pedido manual solo usa productos de Mi menú =====
 let cart = {}, cartExtra = [], cartFee = 0, pickCat = 'Todos', pickQ = '';
 const r2 = n => Math.round(n * 100) / 100;
 const prodById = id => products.find(p => String(p.id) === String(id));
 const cartSub = () => r2(Object.entries(cart).reduce((a, [id, q]) => { const p = prodById(id); return a + (p ? q * Number(p.price) : 0); }, 0) + cartExtra.reduce((a, e) => a + e.amt, 0));
 const cartText = () => products.filter(p => cart[p.id]).map(p => `${cart[p.id]}x ${p.name} ($${(cart[p.id] * Number(p.price)).toFixed(2)})`).concat(cartExtra.map(e => e.text)).join(', ');
-// Al editar: lo que coincide con Mi menú se vuelve seleccionable; lo demás se conserva como línea "fuera de Mi menú"
+
 function pickerInit(items, total){
   cart = {}; cartExtra = []; cartFee = 0; pickCat = 'Todos'; pickQ = ''; $('pickSearch').value = '';
   String(items || '').split(/,\s*(?=\d+\s*x\s)/).forEach(part => {
@@ -2086,20 +2097,21 @@ function pickerInit(items, total){
 }
 function cartAdd(id, d){
   const p = prodById(id); if(!p) return;
-  if(d > 0 && !p.active){ toast('"' + p.name + '" está agotado en Mi menú.', 'warn'); return; }
+  if(d > 0 && !p.active){ toast('Platillo agotado.', 'warn'); return; }
   const q = Math.max(0, (cart[p.id] || 0) + d);
   if(q) cart[p.id] = q; else delete cart[p.id];
   renderPicker();
 }
-const stepper = (id, n) => `<span class="qty"><button type="button" class="secondary" data-id="${esc(id)}" data-d="-1" aria-label="Quitar uno" ${n ? '' : 'disabled'}>${ic('minus')}</button><span>${n}</span><button type="button" data-id="${esc(id)}" data-d="1" aria-label="Agregar uno">${ic('plus')}</button></span>`;
+const stepper = (id, n) => `<span class="qty"><button type="button" class="secondary" data-id="${esc(id)}" data-d="-1" ${n ? '' : 'disabled'}>${ic('minus')}</button><span>${n}</span><button type="button" data-id="${esc(id)}" data-d="1">${ic('plus')}</button></span>`;
+
 function renderPicker(){
   const cats = ['Todos', ...new Set(products.map(p => p.cat).filter(Boolean))], q = pickQ.trim().toLowerCase();
   $('pickCats').innerHTML = cats.map(c => `<button type="button" data-c="${esc(c)}" class="${c === pickCat ? 'selected' : ''}">${esc(c)}</button>`).join('');
   const list = products.filter(p => (pickCat === 'Todos' || p.cat === pickCat) && (!q || (p.name + ' ' + (p.desc || '')).toLowerCase().includes(q)));
   const box = $('pickList'), st = box.scrollTop;
-  box.innerHTML = !products.length ? '<div class="empty" style="border:0">Mi menú no tiene productos. Agrégalos en Mi menú para poder tomar pedidos.</div>'
-    : list.map(p => `<div class="pick-row ${p.active ? '' : 'off'}"><div class="nm"><b>${esc(p.name)}</b><small>${esc(p.cat)}${p.desc ? ' · ' + esc(p.desc) : ''}</small></div><span class="pr">${money(p.price)}</span>${p.active ? stepper(p.id, cart[p.id] || 0) : '<span class="tag">Agotado</span>'}</div>`).join('')
-      || '<div class="empty" style="border:0">Sin resultados para esa búsqueda.</div>';
+  box.innerHTML = !products.length ? '<div class="empty">Sin productos en Mi menú.</div>'
+    : list.map(p => `<div class="pick-row ${p.active ? '' : 'off'}"><div class="nm"><b>${esc(p.name)}</b><small>${esc(p.cat)}</small></div><span class="pr">${money(p.price)}</span>${p.active ? stepper(p.id, cart[p.id] || 0) : '<span class="tag">Agotado</span>'}</div>`).join('')
+      || '<div class="empty">Sin resultados.</div>';
   box.scrollTop = st;
   pickerSync();
 }
@@ -2108,11 +2120,9 @@ function pickerSync(){
   const fee = editing ? cartFee : ($('newType').value === 'Domicilio' ? r2(Number(settings.shipping) || 0) : 0);
   $('newItems').value = cartText(); $('newTotal').value = r2(sub + fee).toFixed(2);
   const rows = Object.entries(cart).map(([id, q]) => { const p = prodById(id); return p ? `<div class="cart-row"><div class="nm">${esc(p.name)}</div>${stepper(p.id, q)}<b class="lt">${money(q * Number(p.price))}</b></div>` : ''; }).join('')
-    + cartExtra.map((e, i) => `<div class="cart-row"><div class="nm">${esc(e.text)} <small class="muted">(fuera de Mi menú)</small></div><button type="button" class="danger" data-x="${i}" aria-label="Quitar línea">${ic('trash')}</button></div>`).join('');
-  $('cartList').innerHTML = (rows || '<div class="muted" style="font-size:13px">Aún no agregas productos.</div>')
-    + `<div class="cart-tot"><span>Subtotal</span><span>${money(sub)}</span></div>` + (fee ? `<div class="cart-tot"><span>${editing ? 'Envío y otros cargos' : 'Envío a domicilio'}</span><span>${money(fee)}</span></div>` : '');
-  const cb = $('cartBox'), nx = cb.nextElementSibling; cb.classList.remove('invalid');
-  if(nx && nx.classList.contains('ferr')) nx.remove();
+    + cartExtra.map((e, i) => `<div class="cart-row"><div class="nm">${esc(e.text)}</div><button type="button" class="danger" data-x="${i}">${ic('trash')}</button></div>`).join('');
+  $('cartList').innerHTML = (rows || '<div class="muted" style="font-size:13px">Sin productos en el pedido.</div>')
+    + `<div class="cart-tot"><span>Subtotal</span><span>${money(sub)}</span></div>` + (fee ? `<div class="cart-tot"><span>Envío</span><span>${money(fee)}</span></div>` : '');
 }
 $('cartBox').addEventListener('click', e => {
   const b = e.target.closest('button'); if(!b || b.disabled) return;
@@ -2121,14 +2131,13 @@ $('cartBox').addEventListener('click', e => {
   else if(b.dataset.c){ pickCat = b.dataset.c; renderPicker(); }
 });
 
-// ===== PANELES RETRACTILES (Ajustes) y barra Pantallas: el estado se recuerda en este dispositivo =====
 const UI_KEY = 'menuchat_ui_v1';
 let ui = {collapsed: {}, launcherMin: false};
 try{ ui = Object.assign(ui, JSON.parse(localStorage.getItem(UI_KEY) || '{}')); }catch(e){}
 const saveUI = () => { try{ localStorage.setItem(UI_KEY, JSON.stringify(ui)); }catch(e){} };
 function setCollapsed(p, v, persist = true){
   p.classList.toggle('collapsed', v);
-  const b = p.querySelector('.cbtn'); b.setAttribute('aria-expanded', String(!v)); b.setAttribute('aria-label', v ? 'Desplegar sección' : 'Contraer sección');
+  const b = p.querySelector('.cbtn'); b.setAttribute('aria-expanded', String(!v));
   if(persist){ ui.collapsed[p.dataset.collapse] = v; saveUI(); }
 }
 function initCollapsibles(){
@@ -2148,16 +2157,13 @@ function initCollapsibles(){
 function applyLauncher(){ $('svLauncher').classList.toggle('min', !!ui.launcherMin); $('svlToggle').setAttribute('aria-expanded', String(!ui.launcherMin)); }
 function toggleLauncher(){ ui.launcherMin = !ui.launcherMin; applyLauncher(); saveUI(); }
 
-// ===== API PUBLICA: para integrar MenuChat con otras plataformas (iframe, Capacitor, Electron, etc.) =====
 window.MenuChat = {
   version: CONFIG.version,
   config: CONFIG,
   getState: () => ({orders, products, tables, settings}),
-  toast, playSound, togglePower, showPage,
-  hashPassword: p => sha256(CONFIG.passSalt + p)   // MenuChat.hashPassword('nueva').then(console.log) -> pegar en CONFIG.menuPassHash
+  toast, playSound, togglePower, showPage
 };
 
-// INICIALIZADOR CLOUD ASÍNCRONO
 async function initApp() {
   await loadState();
   loadSettingsToUI();
